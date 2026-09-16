@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 440" role="img" aria-labelledby="title desc">
+<title id="title">Cung chạy ven biển Đà Nẵng</title><desc id="desc">Minh họa cung đường chạy ven biển với sóng biển, hàng dừa và núi phía xa.</desc>
+<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#d7f1ee"/><stop offset="1" stop-color="#f4edcf"/></linearGradient><linearGradient id="sea" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#5fc7c2"/><stop offset="1" stop-color="#2f8e94"/></linearGradient></defs>
+<rect width="720" height="440" rx="34" fill="url(#sky)"/><circle cx="110" cy="87" r="42" fill="#f3dd71" opacity=".88"/>
+<path d="M430 190 C489 121 553 124 610 189 C642 157 676 161 720 203 L720 259 L405 259Z" fill="#5b9a79" opacity=".65"/>
+<path d="M0 208 C166 189 331 199 480 227 C562 242 643 241 720 224 L720 440 L0 440Z" fill="url(#sea)"/>
+<path d="M0 289 C145 269 284 278 426 303 C529 321 619 320 720 297 L720 440 L0 440Z" fill="#f7e8bd"/>
+<path d="M0 352 C131 317 262 320 395 356 C510 387 606 380 720 343" fill="none" stroke="#264c43" stroke-width="45" stroke-linecap="round"/>
+<path d="M19 353 C141 325 267 328 393 362 C503 392 598 385 700 351" fill="none" stroke="#e2f5e8" stroke-width="4" stroke-dasharray="20 20"/>
+<g stroke="#edfdf8" stroke-width="5" fill="none" opacity=".85"><path d="M64 247 Q104 226 144 246 T224 247"/><path d="M310 255 Q350 235 390 254 T470 255"/><path d="M525 270 Q565 251 605 269 T685 269"/></g>
+<g transform="translate(475 257)"><circle cx="25" cy="19" r="13" fill="#f2b179"/><path d="M18 38 L43 38 L54 72 L31 78 L17 62Z" fill="#ef7f52"/><path d="M20 58 L-2 80 M42 58 L66 46" stroke="#f2b179" stroke-width="8" stroke-linecap="round"/><path d="M31 78 L19 110 M45 75 L63 100" stroke="#183a33" stroke-width="11" stroke-linecap="round"/></g>
+<g stroke="#196c57" stroke-width="7" stroke-linecap="round"><path d="M160 278 L151 330"/><path d="M151 285 C121 263 113 247 105 232 M153 285 C177 256 189 245 205 237 M151 285 C133 250 134 233 139 214"/></g>
+</svg>

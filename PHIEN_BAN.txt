@@ -1,0 +1,5 @@
+AIRUN Đà Nẵng V4.1
+- Sửa font tiếng Việt
+- Bổ sung minh họa chạy bộ và Đà Nẵng
+- Tối ưu giao diện ảnh trên mobile
+- Tăng cache version để tránh hiển thị bản cũ sau deploy

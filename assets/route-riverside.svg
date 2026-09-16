@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 440" role="img" aria-labelledby="title desc">
+<title id="title">Cung chạy ven sông Đà Nẵng</title><desc id="desc">Minh họa đường chạy ven sông với cầu, cây xanh và người chạy.</desc>
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#dff5ea"/><stop offset="1" stop-color="#a6e0cd"/></linearGradient><linearGradient id="w" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#56b9b0"/><stop offset="1" stop-color="#2b827a"/></linearGradient></defs>
+<rect width="720" height="440" rx="34" fill="url(#g)"/><circle cx="608" cy="76" r="38" fill="#f3df78" opacity=".85"/>
+<path d="M0 218 C112 204 193 221 285 239 C411 264 521 248 720 208 L720 440 L0 440Z" fill="url(#w)"/>
+<path d="M0 315 C132 273 246 276 359 318 C480 363 598 348 720 300 L720 440 L0 440Z" fill="#f4f0d7"/>
+<path d="M0 347 C134 308 246 316 350 351 C487 397 591 384 720 338" fill="none" stroke="#2b4e45" stroke-width="42" stroke-linecap="round"/>
+<path d="M33 345 C154 316 256 325 351 357 C468 396 574 388 685 350" fill="none" stroke="#e2f6e8" stroke-width="4" stroke-dasharray="20 20"/>
+<g stroke="#0b7658" fill="none" stroke-linecap="round"><path d="M242 232 C304 146 392 146 463 229" stroke-width="10"/><path d="M253 232 L455 230" stroke-width="7"/><path d="M281 195 L281 232 M319 162 L319 231 M358 149 L358 231 M398 159 L398 231 M434 193 L434 230" stroke-width="3"/></g>
+<g transform="translate(500 246)"><circle cx="25" cy="20" r="13" fill="#f5b37c"/><path d="M18 39 L41 39 L53 74 L32 78 L18 63Z" fill="#f5c84d"/><path d="M20 59 L0 84 M40 61 L64 45" stroke="#f5b37c" stroke-width="8" stroke-linecap="round"/><path d="M30 78 L19 111 M44 75 L62 100" stroke="#183a33" stroke-width="11" stroke-linecap="round"/></g>
+<g fill="#0b7658" opacity=".9"><circle cx="94" cy="236" r="28"/><circle cx="132" cy="251" r="24"/><rect x="105" y="244" width="8" height="60" rx="4"/></g>
+</svg>
