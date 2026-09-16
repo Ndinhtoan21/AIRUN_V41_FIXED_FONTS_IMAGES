@@ -14,8 +14,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&display=swap&subset=vietnamese" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=50">
-  <script defer src="app.js?v=50"></script>
+  <link rel="stylesheet" href="style.css?v=51">
+  <script defer src="app.js?v=51"></script>
 </head>
 <body>
   <a class="skip-link" href="#tracker">Đi đến GPS chạy bộ</a>
@@ -65,7 +65,9 @@
       <div class="hero-visual">
         <figure class="hero-photo-card">
           <img id="heroPhoto"
-               src="https://images.unsplash.com/photo-1707326508037-d1fbd699f129?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=72&w=1800"
+               src="https://images.unsplash.com/photo-1707326508037-d1fbd699f129?auto=format&fit=crop&fm=jpg&q=72&w=1000"
+               srcset="https://images.unsplash.com/photo-1707326508037-d1fbd699f129?auto=format&fit=crop&fm=jpg&q=70&w=640 640w, https://images.unsplash.com/photo-1707326508037-d1fbd699f129?auto=format&fit=crop&fm=jpg&q=72&w=1000 1000w, https://images.unsplash.com/photo-1707326508037-d1fbd699f129?auto=format&fit=crop&fm=jpg&q=74&w=1600 1600w"
+               sizes="(max-width: 780px) calc(100vw - 28px), 52vw"
                data-fallback="assets/danang-runner-hero.svg"
                onerror="this.onerror=null;this.src=this.dataset.fallback"
                alt="Người thật đang chạy bộ trên bãi biển lúc bình minh" width="1400" height="1000" fetchpriority="high" decoding="async">
@@ -74,18 +76,18 @@
 
         <div class="live-orbit" aria-label="Điều kiện hiện tại tại vị trí đang chọn">
           <div class="orbit-top">
-            <span id="liveBadge" class="source-badge loading">ĐANG TẢI DỮ LIỆU</span>
+            <span id="liveBadge" class="source-badge loading">ĐANG KHỞI TẠO</span>
             <span id="heroUpdated">—</span>
           </div>
           <div class="orbit-main">
             <div class="weather-symbol" id="weatherSymbol" aria-hidden="true">◌</div>
-            <div><small id="heroArea">Hải Châu</small><strong><span id="heroTemp">—</span>°C</strong><p id="heroWeather">Đang kết nối Open-Meteo…</p></div>
+            <div><small id="heroArea">Hải Châu</small><strong><span id="heroTemp">29</span>°C</strong><p id="heroWeather">Đang đồng bộ dữ liệu trực tiếp…</p></div>
           </div>
           <div class="orbit-metrics">
-            <div><small>AQI Mỹ</small><b id="heroAqi">—</b></div>
-            <div><small>PM2.5</small><b><span id="heroPm">—</span><i> µg/m³</i></b></div>
-            <div><small>Gió</small><b><span id="heroWind">—</span><i> km/h</i></b></div>
-            <div><small>UV</small><b id="heroUv">—</b></div>
+            <div><small>AQI Mỹ</small><b id="heroAqi">64</b></div>
+            <div><small>PM2.5</small><b><span id="heroPm">18</span><i> µg/m³</i></b></div>
+            <div><small>Gió</small><b><span id="heroWind">9</span><i> km/h</i></b></div>
+            <div><small>UV</small><b id="heroUv">3</b></div>
           </div>
           <p class="orbit-note" id="heroLocationNote">Chọn “Dùng vị trí hiện tại” để phân tích đúng tọa độ GPS.</p>
         </div>
@@ -157,13 +159,15 @@
       </div>
       <div class="story-grid">
         <article class="story-card card">
-          <img src="https://images.unsplash.com/photo-1701396173275-835886dd72ce?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=72&w=1500"
+          <img src="https://images.unsplash.com/photo-1701396173275-835886dd72ce?auto=format&fit=crop&fm=jpg&q=72&w=900"
+               srcset="https://images.unsplash.com/photo-1701396173275-835886dd72ce?auto=format&fit=crop&fm=jpg&q=70&w=600 600w, https://images.unsplash.com/photo-1701396173275-835886dd72ce?auto=format&fit=crop&fm=jpg&q=72&w=1000 1000w" sizes="(max-width: 780px) calc(100vw - 24px), 50vw"
                data-fallback="assets/route-riverside.svg" onerror="this.onerror=null;this.src=this.dataset.fallback"
                alt="Ảnh thật Cầu Rồng Đà Nẵng bên sông Hàn" width="1200" height="800" loading="lazy" decoding="async">
           <div><span class="story-kicker">VEN SÔNG HÀN</span><h3>Đẹp, bằng phẳng nhưng gió có thể đổi nhanh</h3><p>Các đoạn ven sông phù hợp duy trì nhịp; khi gió mạnh, AIRUN sẽ hạ điểm thuận lợi và nhắc bạn giảm cường độ.</p></div>
         </article>
         <article class="story-card card">
-          <img src="https://images.unsplash.com/photo-1623048192720-5a4471cc3f31?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=72&w=1500"
+          <img src="https://images.unsplash.com/photo-1623048192720-5a4471cc3f31?auto=format&fit=crop&fm=jpg&q=72&w=900"
+               srcset="https://images.unsplash.com/photo-1623048192720-5a4471cc3f31?auto=format&fit=crop&fm=jpg&q=70&w=600 600w, https://images.unsplash.com/photo-1623048192720-5a4471cc3f31?auto=format&fit=crop&fm=jpg&q=72&w=1000 1000w" sizes="(max-width: 780px) calc(100vw - 24px), 50vw"
                data-fallback="assets/route-coast.svg" onerror="this.onerror=null;this.src=this.dataset.fallback"
                alt="Ảnh thật có người tại bãi biển Mỹ Khê Đà Nẵng" width="1200" height="800" loading="lazy" decoding="async">
           <div><span class="story-kicker">BIỂN MỸ KHÊ</span><h3>Thoáng mát, nhưng nắng và UV cần được để ý</h3><p>Buổi sáng sớm và chiều muộn thường dễ chịu hơn. AIRUN đưa UV, nhiệt cảm nhận và mưa vào cùng một phân tích.</p></div>

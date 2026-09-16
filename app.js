@@ -39,7 +39,7 @@ const WEATHER_TEXT = {
 };
 
 const STORAGE = {
-  plan:'airun-v50-plan', journal:'airun-v50-journal', cache:'airun-v50-live-cache', migrated:'airun-v50-migrated'
+  plan:'airun-v51-plan', journal:'airun-v51-journal', cache:'airun-v51-live-cache', migrated:'airun-v51-migrated'
 };
 
 const memoryCache = new Map();
@@ -123,7 +123,7 @@ function savePersistentCache(data){
   localSet(STORAGE.cache, trimmed);
 }
 
-async function fetchJSON(url, timeout = 12000){
+async function fetchJSON(url, timeout = 7000){
   const controller = new AbortController(); const timer = setTimeout(() => controller.abort(), timeout);
   try{
     const response = await fetch(url,{signal:controller.signal,headers:{Accept:'application/json'}});
@@ -152,7 +152,7 @@ async function fetchEnvironmentAt(lat, lon, options = {}){
     const stale = getStaleCache(cacheId); return stale ? {...stale,source:'cached'} : fallbackData(nearest.item,location);
   }
 
-  const point = `latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lon)}&timezone=Asia%2FHo_Chi_Minh&forecast_days=2`;
+  const point = `latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lon)}&timezone=Asia%2FHo_Chi_Minh&forecast_hours=36`;
   const weatherUrl = `https://api.open-meteo.com/v1/forecast?${point}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&hourly=temperature_2m,apparent_temperature,relative_humidity_2m,precipitation_probability,weather_code,wind_speed_10m,uv_index`;
   const airUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?${point}&current=us_aqi,pm2_5,pm10&hourly=us_aqi,pm2_5,pm10`;
 
@@ -282,7 +282,37 @@ function bestTimeFor(data, plan){
 
 function weatherText(code){ return WEATHER_TEXT[code] || ['Thời tiết thay đổi','◌']; }
 function sourceLabel(source){
-  return source==='live'?'Dữ liệu trực tiếp':source==='partial'?'Dữ liệu trực tiếp một phần':source==='cached'?'Dữ liệu đã lưu gần đây':'Dữ liệu mô phỏng';
+  return source==='live'?'Dữ liệu trực tiếp':source==='partial'?'Dữ liệu trực tiếp một phần':source==='cached'?'Dữ liệu đã lưu gần đây':'Dữ liệu dự phòng';
+}
+
+function quickEnvironmentForWard(key = selectedKey){
+  const item=ward(key);
+  const fresh=getPersistentCache(`ward:${item.key}`,45*60*1000);
+  const stale=getStaleCache(`ward:${item.key}`);
+  return fresh || (stale ? {...stale,source:'cached'} : fallbackData(item));
+}
+
+function quickEnvironmentForGps(location){
+  const near=nearestWard(location.lat,location.lon).item;
+  const cached=getStaleCache(location.cacheId);
+  if(cached)return {...cached,source:'cached',location:{lat:location.lat,lon:location.lon,label:location.label,accuracy:location.accuracy,mode:'gps'}};
+  return fallbackData(near,{lat:location.lat,lon:location.lon,label:location.label,accuracy:location.accuracy,mode:'gps'});
+}
+
+function renderEnvironmentInstant(data,{updating=false}={}){
+  activeData=data;
+  renderHero(data);
+  try{
+    const plan=currentPlan(),snapshot=snapshotFor(data,plan.time),result=analyzeSnapshot(snapshot,plan);
+    activeSnapshot=snapshot;activeResult=result;renderResult(data,snapshot,result);
+  }catch(error){console.warn('AIRUN quick render:',error);}
+  if(updating){
+    $('liveBadge').textContent='ĐANG CẬP NHẬT';
+    $('liveBadge').className='source-badge loading';
+    $('heroLocationNote').textContent=(data.location?.mode==='gps')
+      ? `Đã có vị trí GPS ±${round(data.location.accuracy||0)} m · đang đồng bộ thời tiết và AQI trực tiếp.`
+      : 'AIRUN đang hiển thị dữ liệu gần nhất/dự phòng trong khi đồng bộ Open-Meteo.';
+  }
 }
 
 function renderHero(data){
@@ -292,6 +322,8 @@ function renderHero(data){
   $('heroUpdated').textContent=new Date(data.updated).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});
   $('liveBadge').textContent=sourceLabel(data.source).toUpperCase();$('liveBadge').className=`source-badge ${data.source==='live'?'':data.source}`;
   if(data.location?.mode==='gps') $('heroLocationNote').textContent=`GPS ±${round(data.location.accuracy||0)} m · dữ liệu được lấy theo tọa độ hiện tại của thiết bị.`;
+  else if(data.source==='demo') $('heroLocationNote').textContent='Đang dùng dữ liệu dự phòng tức thời. AIRUN sẽ tự thay bằng dữ liệu trực tiếp khi Open-Meteo phản hồi.';
+  else if(data.source==='cached') $('heroLocationNote').textContent='Đang dùng dữ liệu đã lưu gần đây trong lúc chờ cập nhật mới.';
   else $('heroLocationNote').textContent='Đang dùng tọa độ đại diện của khu vực. Bấm “Dùng vị trí hiện tại” để chính xác hơn.';
 }
 
@@ -346,8 +378,21 @@ function updateMapSide(){
 async function selectWard(key,{scroll=false,force=false,analyze=true}={}){
   gpsLocation=null;setGpsPlanUi();selectedKey=ward(key).key;$('area').value=selectedKey;savePlanSettings();updateMapSide();
   if(map){const item=ward();map.flyTo([item.lat,item.lon],Math.max(map.getZoom(),11),{duration:.7});markers.get(selectedKey)?.openPopup();}
-  $('heroArea').textContent=ward().name;$('liveBadge').textContent='ĐANG TẢI DỮ LIỆU';$('liveBadge').className='source-badge loading';
-  const data=await fetchEnvironment(selectedKey,force);activeData=data;renderHero(data);if(analyze)await analyzePlan(false);if(scroll)$('planner').scrollIntoView({behavior:'smooth'});
+
+  // Never leave the dashboard blank while an external API is slow.
+  const quick=quickEnvironmentForWard(selectedKey);
+  renderEnvironmentInstant(quick,{updating:true});
+
+  try{
+    const data=await fetchEnvironment(selectedKey,force);
+    activeData=data;renderHero(data);
+    if(analyze){const plan=currentPlan(),snapshot=snapshotFor(data,plan.time),result=analyzeSnapshot(snapshot,plan);activeSnapshot=snapshot;activeResult=result;renderResult(data,snapshot,result);}
+  }catch(error){
+    console.warn('AIRUN live update failed:',error);
+    renderEnvironmentInstant(quick);
+    $('heroLocationNote').textContent='Open-Meteo đang phản hồi chậm hoặc mạng không ổn định. AIRUN vẫn hoạt động với dữ liệu dự phòng; GPS chạy bộ không bị ảnh hưởng.';
+  }
+  if(scroll)$('planner').scrollIntoView({behavior:'smooth'});
 }
 
 async function analyzePlan(showLoading=true){
@@ -362,7 +407,7 @@ async function analyzePlan(showLoading=true){
 
 function savePlanSettings(){localSet(STORAGE.plan,{key:selectedKey,time:$('time').value,duration:$('duration').value,intensity,sensitive:$('sensitive').checked});}
 function restorePlanSettings(){
-  const plan=localGet(STORAGE.plan,localGet('airun-v40-plan',{}));
+  const plan=localGet(STORAGE.plan,localGet('airun-v50-plan',localGet('airun-v40-plan',{})));
   if(plan.key&&WARDS.some(x=>x.key===plan.key))selectedKey=plan.key;if(plan.time)$('time').value=plan.time;if(plan.duration)$('duration').value=String(plan.duration);
   if(['Nhẹ','Vừa','Cao'].includes(plan.intensity))intensity=plan.intensity;$('sensitive').checked=Boolean(plan.sensitive);
   document.querySelectorAll('[data-intensity]').forEach(button=>button.classList.toggle('active',button.dataset.intensity===intensity));
@@ -404,7 +449,7 @@ function haversine(lat1,lon1,lat2,lon2){
 function requestGPSPosition(){
   return new Promise((resolve,reject)=>{
     if(!navigator.geolocation){reject(new Error('unsupported'));return;}
-    navigator.geolocation.getCurrentPosition(resolve,reject,{enableHighAccuracy:true,timeout:15000,maximumAge:5000});
+    navigator.geolocation.getCurrentPosition(resolve,reject,{enableHighAccuracy:true,timeout:10000,maximumAge:15000});
   });
 }
 
@@ -417,16 +462,32 @@ function showUserMarker(lat,lon,accuracy){
 
 async function useGPS({scroll=true}={}){
   if(!navigator.geolocation){showToast('Trình duyệt này không hỗ trợ GPS.');return null;}
-  showToast('Đang lấy vị trí GPS chính xác…');
+  showToast('Đang xác định vị trí GPS…');
+  $('liveBadge').textContent='ĐANG XÁC ĐỊNH GPS';$('liveBadge').className='source-badge loading';
   try{
     const position=await requestGPSPosition();const {latitude,longitude,accuracy}=position.coords;const near=nearestWard(latitude,longitude);selectedKey=near.item.key;$('area').value=selectedKey;
     const close=near.distance<=25;const label=close?`${near.item.name} · GPS`:'Vị trí GPS hiện tại';
     gpsLocation={lat:latitude,lon:longitude,accuracy,label,cacheId:`gps:${latitude.toFixed(3)},${longitude.toFixed(3)}`};setGpsPlanUi();updateMapSide();showUserMarker(latitude,longitude,accuracy);
-    $('liveBadge').textContent='ĐANG TẢI DỮ LIỆU';$('liveBadge').className='source-badge loading';
-    const data=await fetchEnvironmentAt(latitude,longitude,{key:selectedKey,label,cacheId:gpsLocation.cacheId,accuracy,mode:'gps',force:true});activeData=data;renderHero(data);await analyzePlan(false);savePlanSettings();
-    if(scroll)$('planner').scrollIntoView({behavior:'smooth'});showToast(`Đã dùng GPS ±${round(accuracy)} m để lấy dữ liệu.`);return position;
+
+    // GPS is available immediately; show usable values before waiting for APIs.
+    const quick=quickEnvironmentForGps(gpsLocation);
+    renderEnvironmentInstant(quick,{updating:true});
+
+    try{
+      const data=await fetchEnvironmentAt(latitude,longitude,{key:selectedKey,label,cacheId:gpsLocation.cacheId,accuracy,mode:'gps',force:true});
+      activeData=data;renderHero(data);
+      const plan=currentPlan(),snapshot=snapshotFor(data,plan.time),result=analyzeSnapshot(snapshot,plan);activeSnapshot=snapshot;activeResult=result;renderResult(data,snapshot,result);
+    }catch(apiError){
+      console.warn('AIRUN GPS environment update failed:',apiError);
+      renderEnvironmentInstant(quick);
+      $('heroLocationNote').textContent=`GPS ±${round(accuracy)} m đã sẵn sàng. Open-Meteo đang phản hồi chậm nên AIRUN tạm dùng dữ liệu dự phòng.`;
+    }
+    savePlanSettings();
+    if(scroll)$('planner').scrollIntoView({behavior:'smooth'});showToast(`GPS đã sẵn sàng · độ chính xác khoảng ±${round(accuracy)} m.`);return position;
   }catch(error){
-    const code=error?.code;showToast(code===1?'Bạn chưa cấp quyền vị trí cho AIRUN.':code===3?'GPS mất quá lâu để phản hồi. Hãy thử ngoài trời.':'Chưa lấy được vị trí GPS.');return null;
+    const code=error?.code;
+    const data=quickEnvironmentForWard(selectedKey);renderEnvironmentInstant(data);
+    showToast(code===1?'Bạn chưa cấp quyền vị trí cho AIRUN.':code===3?'GPS mất quá lâu để phản hồi. Hãy thử ra gần cửa sổ hoặc ngoài trời.':'Chưa lấy được vị trí GPS.');return null;
   }
 }
 
@@ -637,8 +698,13 @@ function bindEvents(){
 
 async function init(){
   $('area').innerHTML=WARDS.map(item=>`<option value="${item.key}">${escapeHTML(item.name)}</option>`).join('');restorePlanSettings();$('area').value=selectedKey;renderWardControls();updateMapSide();renderJournal();calculatePace();updateConnection();bindEvents();initDialogs();initPWA();updateTrackerMetrics();
+
+  // First meaningful paint: numbers appear immediately, even on a slow network.
+  renderEnvironmentInstant(quickEnvironmentForWard(selectedKey),{updating:true});
+
+  // Maps and live environment data load independently so neither can block the UI.
   loadLeaflet().then(initMaps).catch(()=>{$('mapFallback').hidden=false;});
-  await selectWard(selectedKey,{analyze:true});
+  selectWard(selectedKey,{analyze:true}).catch(error=>console.warn('AIRUN initial live update:',error));
 }
 
 if(hasDom())document.addEventListener('DOMContentLoaded',init);
