@@ -1,6 +1,0 @@
-services:
-  - type: web
-    name: airun-da-nang
-    runtime: static
-    buildCommand: echo "AIRUN V4.1 - no build required"
-    staticPublishPath: .

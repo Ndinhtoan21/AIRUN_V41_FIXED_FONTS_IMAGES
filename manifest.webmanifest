@@ -1,14 +1,13 @@
 {
-  "name": "AIRUN Đà Nẵng",
-  "short_name": "AIRUN",
-  "description": "Biết không khí, chọn đúng nhịp chạy.",
-  "start_url": "./",
-  "scope": "./",
-  "display": "standalone",
-  "background_color": "#f5f9f6",
-  "theme_color": "#0b6b53",
-  "lang": "vi",
-  "icons": [
-    {"src":"assets/icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
-  ]
+  "name":"AIRUN Đà Nẵng",
+  "short_name":"AIRUN",
+  "description":"GPS chạy bộ, thời tiết, AQI và trợ lý chọn thời điểm chạy ngoài trời tại Đà Nẵng.",
+  "start_url":"./",
+  "scope":"./",
+  "display":"standalone",
+  "orientation":"any",
+  "background_color":"#f4f8f5",
+  "theme_color":"#075b49",
+  "lang":"vi",
+  "icons":[{"src":"assets/icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
 }

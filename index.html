@@ -3,121 +3,186 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#0b6b53">
-  <meta name="description" content="AIRUN Đà Nẵng giúp người chạy xem thời tiết, chất lượng không khí và chọn kế hoạch phù hợp.">
-  <title>AIRUN Đà Nẵng · Biết không khí, chọn đúng nhịp chạy</title>
+  <meta name="theme-color" content="#075b49">
+  <meta name="description" content="AIRUN Đà Nẵng: GPS chạy bộ, thời tiết, AQI và trợ lý chọn thời điểm chạy ngoài trời.">
+  <title>AIRUN Đà Nẵng · GPS Running & Air Intelligence</title>
   <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="preconnect" href="https://api.open-meteo.com">
   <link rel="preconnect" href="https://air-quality-api.open-meteo.com">
+  <link rel="preconnect" href="https://images.unsplash.com">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&display=swap&subset=vietnamese" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=41">
-  <script defer src="app.js?v=41"></script>
+  <link rel="stylesheet" href="style.css?v=50">
+  <script defer src="app.js?v=50"></script>
 </head>
 <body>
-  <a class="skip-link" href="#planner">Đi đến phần lập kế hoạch</a>
+  <a class="skip-link" href="#tracker">Đi đến GPS chạy bộ</a>
 
   <div class="status-bar" role="status">
     <div class="status-inner">
       <span><i class="pulse" aria-hidden="true"></i><b>AIRUN LIVE</b></span>
       <span id="connectionText">Đang kiểm tra kết nối…</span>
-      <button id="dataInfoBtn" type="button">Nguồn dữ liệu & quyền riêng tư</button>
+      <button id="dataInfoBtn" type="button">Dữ liệu & quyền riêng tư</button>
     </div>
   </div>
 
   <header class="nav" id="top">
     <a class="brand" href="#top" aria-label="AIRUN Đà Nẵng, về đầu trang">
       <span class="brand-mark" aria-hidden="true">A</span>
-      <span><strong>AIRUN</strong><small>ĐÀ NẴNG</small><em>Biết không khí · Chọn đúng nhịp chạy</em></span>
+      <span><strong>AIRUN</strong><small>ĐÀ NẴNG</small><em>GPS · AIR · RUN SMART</em></span>
     </a>
     <button id="menuBtn" class="menu-btn" type="button" aria-expanded="false" aria-controls="mainNav">☰ <span>Menu</span></button>
     <nav id="mainNav" aria-label="Điều hướng chính">
+      <a href="#tracker">Chạy GPS</a>
       <a href="#planner">Phân tích</a>
       <a href="#compare">So sánh</a>
       <a href="#mapSection">Bản đồ</a>
-      <a href="#tools">Tiện ích</a>
       <a href="#journal">Nhật ký</a>
     </nav>
-    <button id="installBtn" class="install-btn" type="button" hidden>＋ Cài ứng dụng</button>
+    <button id="installBtn" class="install-btn" type="button" hidden>＋ Cài AIRUN</button>
   </header>
 
   <main>
     <section class="hero" aria-labelledby="heroTitle">
-      <div class="hero-noise" aria-hidden="true"></div>
+      <div class="hero-glow" aria-hidden="true"></div>
       <div class="hero-content">
-        <p class="eyebrow light">AIR · RUN · DECIDE</p>
-        <h1 id="heroTitle">Ra đường với một<br><span>kế hoạch dễ thở hơn.</span></h1>
-        <p class="hero-lead">AIRUN kết hợp thời tiết, chất lượng không khí, thời lượng và cường độ để đưa ra một gợi ý rõ ràng trước khi bạn chạy.</p>
+        <p class="eyebrow light">GPS · WEATHER · AIR QUALITY</p>
+        <h1 id="heroTitle">Chạy thông minh hơn<br><span>giữa Đà Nẵng.</span></h1>
+        <p class="hero-lead">AIRUN dùng vị trí GPS của bạn để đọc điều kiện chạy tại nơi bạn đang đứng, phân tích thời tiết – AQI và theo dõi quãng đường, pace, tốc độ theo thời gian thực.</p>
         <div class="hero-actions">
-          <a class="primary light-btn" href="#planner">Phân tích trong 30 giây</a>
-          <button id="heroGps" class="ghost-btn" type="button">⌖ Dùng vị trí của tôi</button>
+          <a class="primary light-btn" href="#tracker">▶ Bắt đầu chạy GPS</a>
+          <button id="heroGps" class="ghost-btn" type="button">⌖ Dùng vị trí hiện tại</button>
         </div>
         <div class="hero-trust">
           <span>✓ Không cần API key</span>
-          <span>✓ Không gửi GPS lên máy chủ AIRUN</span>
-          <span>✓ Có chế độ mất mạng</span>
+          <span>✓ GPS xử lý ngay trên thiết bị</span>
+          <span>✓ Không có máy chủ lưu lộ trình</span>
         </div>
       </div>
+
       <div class="hero-visual">
-        <figure class="hero-art-card">
-          <img src="assets/danang-runner-hero.svg" alt="Minh họa người chạy bộ ven sông Hàn và đường chân trời Đà Nẵng" width="920" height="620">
-          <figcaption><span>Đà Nẵng · ngoài trời</span><b>Chạy theo dữ liệu, không chạy theo cảm tính.</b></figcaption>
+        <figure class="hero-photo-card">
+          <img id="heroPhoto"
+               src="https://images.unsplash.com/photo-1707326508037-d1fbd699f129?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=72&w=1800"
+               data-fallback="assets/danang-runner-hero.svg"
+               onerror="this.onerror=null;this.src=this.dataset.fallback"
+               alt="Người thật đang chạy bộ trên bãi biển lúc bình minh" width="1400" height="1000" fetchpriority="high" decoding="async">
+          <figcaption><span>Ảnh chạy bộ thực tế</span><b>AIRUN phân tích dữ liệu theo vị trí Đà Nẵng của bạn.</b></figcaption>
         </figure>
-        <div class="live-orbit" aria-label="Điều kiện hiện tại tại khu vực đang chọn">
+
+        <div class="live-orbit" aria-label="Điều kiện hiện tại tại vị trí đang chọn">
           <div class="orbit-top">
             <span id="liveBadge" class="source-badge loading">ĐANG TẢI DỮ LIỆU</span>
             <span id="heroUpdated">—</span>
           </div>
           <div class="orbit-main">
             <div class="weather-symbol" id="weatherSymbol" aria-hidden="true">◌</div>
-            <div><small id="heroArea">Hải Châu</small><strong><span id="heroTemp">—</span>°C</strong><p id="heroWeather">Đang kết nối nguồn dữ liệu…</p></div>
+            <div><small id="heroArea">Hải Châu</small><strong><span id="heroTemp">—</span>°C</strong><p id="heroWeather">Đang kết nối Open-Meteo…</p></div>
           </div>
           <div class="orbit-metrics">
             <div><small>AQI Mỹ</small><b id="heroAqi">—</b></div>
             <div><small>PM2.5</small><b><span id="heroPm">—</span><i> µg/m³</i></b></div>
             <div><small>Gió</small><b><span id="heroWind">—</span><i> km/h</i></b></div>
+            <div><small>UV</small><b id="heroUv">—</b></div>
           </div>
-          <p class="orbit-note">Dữ liệu dự báo theo mô hình, không phải cảm biến đặt tại từng phường.</p>
+          <p class="orbit-note" id="heroLocationNote">Chọn “Dùng vị trí hiện tại” để phân tích đúng tọa độ GPS.</p>
         </div>
       </div>
     </section>
 
-    <section class="steps" aria-label="Ba bước sử dụng AIRUN">
-      <div><b>01</b><span><strong>Chọn kế hoạch</strong><small>Khu vực · giờ · cường độ</small></span></div>
-      <i aria-hidden="true">→</i>
-      <div><b>02</b><span><strong>AIRUN phân tích</strong><small>Không khí · thời tiết · rủi ro</small></span></div>
-      <i aria-hidden="true">→</i>
-      <div><b>03</b><span><strong>Bạn quyết định</strong><small>Chạy · đổi giờ · chạy trong nhà</small></span></div>
+    <section class="quick-strip" aria-label="Tính năng chính">
+      <div><span>01</span><b>GPS trực tiếp</b><small>Theo dõi quãng đường & pace</small></div>
+      <div><span>02</span><b>Không khí + thời tiết</b><small>AQI, PM2.5, nhiệt, mưa, gió, UV</small></div>
+      <div><span>03</span><b>Gợi ý giải thích được</b><small>Biết vì sao nên chạy hay đổi giờ</small></div>
+      <div><span>04</span><b>Riêng tư</b><small>Dữ liệu chạy lưu cục bộ trên máy</small></div>
+    </section>
+
+    <section class="section-wrap tracker-section" id="tracker">
+      <div class="section-heading tracker-heading">
+        <div><p class="eyebrow">GPS RUNNING TRACKER</p><h2>Bắt đầu một buổi chạy thật.</h2><p>Để điện thoại nhìn thấy bầu trời tốt nhất có thể. AIRUN tự lọc điểm GPS nhiễu trước khi cộng quãng đường.</p></div>
+        <span id="trackerStatus" class="tracker-state idle"><i></i> Chưa bắt đầu</span>
+      </div>
+
+      <div class="tracker-shell card">
+        <div class="tracker-dashboard">
+          <div class="tracker-location-row">
+            <div><small>VỊ TRÍ GPS</small><strong id="trackerLocation">Chưa có vị trí</strong><span id="trackerAccuracy">Độ chính xác —</span></div>
+            <div class="gps-bars" id="gpsBars" aria-label="Tín hiệu GPS"><i></i><i></i><i></i><i></i></div>
+          </div>
+
+          <div class="tracker-distance"><small>QUÃNG ĐƯỜNG</small><strong id="trackerDistance">0.00</strong><span>km</span></div>
+          <div class="tracker-stats">
+            <div><small>THỜI GIAN</small><strong id="trackerTime">00:00:00</strong></div>
+            <div><small>PACE</small><strong id="trackerPace">—</strong><span>phút/km</span></div>
+            <div><small>TỐC ĐỘ</small><strong id="trackerSpeed">0.0</strong><span>km/h</span></div>
+          </div>
+
+          <div class="tracker-env" id="trackerEnv">
+            <div><small>AQI</small><b id="trackerAqi">—</b></div>
+            <div><small>NHIỆT ĐỘ</small><b id="trackerTemp">—</b></div>
+            <div><small>GIÓ</small><b id="trackerWind">—</b></div>
+            <div><small>ĐÁNH GIÁ</small><b id="trackerAdvice">Chưa có</b></div>
+          </div>
+
+          <div class="tracker-alert" id="trackerAlert" role="status">
+            <span>◎</span><p><b>Sẵn sàng.</b> Bấm “Bắt đầu chạy” và cấp quyền vị trí cho trình duyệt.</p>
+          </div>
+
+          <div class="tracker-controls">
+            <button id="startRunBtn" class="run-start" type="button">▶ Bắt đầu chạy</button>
+            <button id="pauseRunBtn" class="run-secondary" type="button" disabled>Ⅱ Tạm dừng</button>
+            <button id="finishRunBtn" class="run-finish" type="button" disabled>■ Kết thúc</button>
+          </div>
+          <p class="tracker-note">Theo dõi GPS trên web hoạt động tốt nhất khi AIRUN đang mở trên màn hình. AIRUN sẽ cố giữ màn hình sáng nếu trình duyệt hỗ trợ Screen Wake Lock.</p>
+        </div>
+
+        <div class="tracker-map-wrap">
+          <div id="runMap" class="run-map" aria-label="Bản đồ lộ trình chạy GPS"></div>
+          <div id="runMapFallback" class="run-map-placeholder"><span>⌖</span><b>Lộ trình GPS sẽ xuất hiện ở đây</b><p>Nếu bản đồ nền chưa tải được, các chỉ số GPS vẫn tiếp tục hoạt động.</p></div>
+          <div class="map-float"><span class="live-dot"></span><b id="routePointCount">0</b> điểm GPS hợp lệ</div>
+        </div>
+      </div>
+
+      <div class="run-summary card" id="runSummary" hidden>
+        <div><p class="eyebrow">BUỔI CHẠY GẦN NHẤT</p><h3 id="summaryTitle">Đã hoàn thành</h3><p id="summaryMeta">—</p></div>
+        <div class="summary-metrics"><span><b id="summaryDistance">0.00 km</b>Quãng đường</span><span><b id="summaryTime">00:00</b>Thời gian</span><span><b id="summaryPace">—</b>Pace TB</span></div>
+      </div>
     </section>
 
     <section class="section-wrap city-stories" aria-labelledby="cityStoriesTitle">
       <div class="section-heading city-heading">
-        <div><p class="eyebrow">CHẠY GIỮA ĐÀ NẴNG</p><h2 id="cityStoriesTitle">Không khí thay đổi theo cung đường.</h2><p>Hai kiểu không gian chạy phổ biến để bạn hình dung trước khi chọn khu vực và thời điểm.</p></div>
+        <div><p class="eyebrow">CHẠY GIỮA ĐÀ NẴNG</p><h2>Không chỉ là dữ liệu trên màn hình.</h2><p>AIRUN đặt dữ liệu vào bối cảnh những không gian chạy thực tế của thành phố.</p></div>
       </div>
       <div class="story-grid">
         <article class="story-card card">
-          <img src="assets/route-riverside.svg" alt="Minh họa cung chạy ven sông tại Đà Nẵng" width="720" height="440" loading="lazy">
-          <div><span class="story-kicker">VEN SÔNG</span><h3>Thoáng, đẹp và dễ duy trì nhịp</h3><p>Phù hợp chạy nhẹ đến vừa; lưu ý gió mạnh hơn ở khu vực cầu và mặt sông.</p></div>
+          <img src="https://images.unsplash.com/photo-1701396173275-835886dd72ce?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=72&w=1500"
+               data-fallback="assets/route-riverside.svg" onerror="this.onerror=null;this.src=this.dataset.fallback"
+               alt="Ảnh thật Cầu Rồng Đà Nẵng bên sông Hàn" width="1200" height="800" loading="lazy" decoding="async">
+          <div><span class="story-kicker">VEN SÔNG HÀN</span><h3>Đẹp, bằng phẳng nhưng gió có thể đổi nhanh</h3><p>Các đoạn ven sông phù hợp duy trì nhịp; khi gió mạnh, AIRUN sẽ hạ điểm thuận lợi và nhắc bạn giảm cường độ.</p></div>
         </article>
         <article class="story-card card">
-          <img src="assets/route-coast.svg" alt="Minh họa cung chạy ven biển tại Đà Nẵng" width="720" height="440" loading="lazy">
-          <div><span class="story-kicker">VEN BIỂN</span><h3>Mát hơn nhưng cần để ý gió và nắng</h3><p>Khung giờ sáng sớm hoặc chiều muộn thường dễ chịu hơn; AIRUN sẽ giúp bạn so sánh theo dữ liệu.</p></div>
+          <img src="https://images.unsplash.com/photo-1623048192720-5a4471cc3f31?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=72&w=1500"
+               data-fallback="assets/route-coast.svg" onerror="this.onerror=null;this.src=this.dataset.fallback"
+               alt="Ảnh thật có người tại bãi biển Mỹ Khê Đà Nẵng" width="1200" height="800" loading="lazy" decoding="async">
+          <div><span class="story-kicker">BIỂN MỸ KHÊ</span><h3>Thoáng mát, nhưng nắng và UV cần được để ý</h3><p>Buổi sáng sớm và chiều muộn thường dễ chịu hơn. AIRUN đưa UV, nhiệt cảm nhận và mưa vào cùng một phân tích.</p></div>
         </article>
       </div>
     </section>
 
     <section class="section-wrap planner-section" id="planner">
       <div class="section-heading">
-        <div><p class="eyebrow">KẾ HOẠCH 30 GIÂY</p><h2>Hôm nay bạn muốn chạy thế nào?</h2></div>
+        <div><p class="eyebrow">SMART RUN ADVISOR</p><h2>Trước khi chạy, hãy kiểm tra điều kiện.</h2></div>
         <button id="refreshBtn" class="soft-btn" type="button">↻ Cập nhật dữ liệu</button>
       </div>
 
       <div class="planner-grid">
         <form class="card form-card" id="planForm">
-          <div class="card-title"><span class="step-number">1</span><div><h3>Kế hoạch của bạn</h3><p>AIRUN tự động ghi nhớ lựa chọn gần nhất trên thiết bị này.</p></div></div>
-          <label for="area">Khu vực chạy</label>
+          <div class="card-title"><span class="step-number">1</span><div><h3>Kế hoạch của bạn</h3><p>Có thể dùng một phường hoặc vị trí GPS chính xác.</p></div></div>
+          <button id="plannerGpsBtn" class="location-action" type="button">⌖ Phân tích đúng vị trí GPS của tôi</button>
+          <div id="gpsPlanChip" class="gps-plan-chip" hidden>GPS đang bật · <b id="gpsPlanLabel">—</b><button id="clearGpsPlan" type="button">Dùng lại khu vực</button></div>
+          <label for="area">Khu vực đại diện</label>
           <select id="area" name="area"></select>
           <div class="field-pair">
             <div><label for="time">Giờ bắt đầu</label><input id="time" name="time" type="time" value="17:30"></div>
@@ -133,13 +198,13 @@
           </fieldset>
           <label class="check-row"><input id="sensitive" type="checkbox"><span><b>Tôi thuộc nhóm nhạy cảm</b><small>Hen, bệnh hô hấp/tim mạch, trẻ em hoặc người lớn tuổi</small></span></label>
           <button class="primary analyze-btn" id="analyzeBtn" type="submit"><span>✦</span> Phân tích kế hoạch</button>
-          <p class="form-note">AIRUN hỗ trợ tham khảo, không thay thế tư vấn y tế hoặc quan sát thực tế.</p>
+          <p class="form-note">AIRUN hỗ trợ ra quyết định, không thay thế tư vấn y tế hoặc cảnh báo chính thức.</p>
         </form>
 
         <article class="card result-card" aria-live="polite">
           <div class="card-title result-title"><span class="step-number purple">2</span><div><h3>Kết quả phân tích</h3><p id="resultSource">Đang chuẩn bị dữ liệu…</p></div><span id="resultStatusPill" class="result-pill neutral">Chờ phân tích</span></div>
           <div class="decision-panel neutral" id="decisionPanel">
-            <div class="decision-copy"><span class="decision-icon" id="decisionIcon" aria-hidden="true">◌</span><div><small>AIRUN GỢI Ý</small><h2 id="decisionTitle">Hãy tạo kế hoạch đầu tiên</h2><p id="decisionText">Chọn khu vực và nhấn “Phân tích kế hoạch”.</p></div></div>
+            <div class="decision-copy"><span class="decision-icon" id="decisionIcon" aria-hidden="true">◌</span><div><small>AIRUN GỢI Ý</small><h2 id="decisionTitle">Đang đọc dữ liệu</h2><p id="decisionText">AIRUN sẽ giải thích các yếu tố quan trọng trước khi bạn chạy.</p></div></div>
             <div class="score-ring" id="scoreRing" style="--score:0%"><strong id="scoreValue">—</strong><small>/10</small><span>thuận lợi</span></div>
           </div>
           <div class="metric-grid">
@@ -148,13 +213,14 @@
             <div><span class="metric-icon temp">°C</span><small>Nhiệt độ</small><strong id="metricTemp">—</strong><em id="metricFeels">Cảm giác —</em></div>
             <div><span class="metric-icon wind">↝</span><small>Gió</small><strong id="metricWind">—</strong><em>km/h</em></div>
             <div><span class="metric-icon rain">%</span><small>Khả năng mưa</small><strong id="metricRain">—</strong><em id="metricHumidity">Độ ẩm —</em></div>
+            <div><span class="metric-icon uv">UV</span><small>UV</small><strong id="metricUv">—</strong><em id="metricUvLabel">Chưa có</em></div>
           </div>
           <div class="reason-box">
             <div class="reason-head"><span>✦</span><div><h3>Vì sao AIRUN gợi ý như vậy?</h3><p>Mỗi kết luận đều đi kèm dấu hiệu để bạn tự kiểm tra.</p></div></div>
             <ul id="reasonList"><li>Chưa có phân tích.</li></ul>
           </div>
           <div class="best-time" id="bestTimeBox">
-            <span class="best-time-icon">◷</span><div><small>KHUNG GIỜ ĐÁNG CÂN NHẮC</small><strong id="bestTime">Đang tính…</strong><p id="bestTimeReason">AIRUN sẽ so sánh các giờ trong ngày.</p></div>
+            <span class="best-time-icon">◷</span><div><small>KHUNG GIỜ ĐÁNG CÂN NHẮC</small><strong id="bestTime">Đang tính…</strong><p id="bestTimeReason">AIRUN so sánh các giờ chạy phổ biến trong dữ liệu dự báo.</p></div>
           </div>
           <div class="decision-actions" aria-label="Lưu quyết định chạy">
             <button type="button" data-decision="Giữ kế hoạch">✓ Giữ kế hoạch</button>
@@ -164,61 +230,61 @@
           </div>
           <label class="sr-only" for="note">Ghi chú cho buổi chạy</label>
           <textarea id="note" rows="2" maxlength="280" placeholder="Ghi chú ngắn cho buổi chạy hôm nay…"></textarea>
-          <button id="savePlanBtn" class="save-btn" type="button">Lưu vào nhật ký</button>
+          <button id="savePlanBtn" class="save-btn" type="button">Lưu kế hoạch vào nhật ký</button>
         </article>
       </div>
     </section>
 
     <section class="section-wrap compare-section" id="compare">
       <div class="section-heading">
-        <div><p class="eyebrow">SO SÁNH NHANH</p><h2>Ở đâu dễ thở hơn lúc này?</h2><p>So sánh năm khu vực đại diện bằng cùng một thang điểm.</p></div>
-        <button id="compareBtn" class="soft-btn" type="button">So sánh dữ liệu trực tiếp</button>
+        <div><p class="eyebrow">SO SÁNH NHANH</p><h2>Ở đâu dễ chạy hơn vào giờ bạn chọn?</h2><p>AIRUN dùng cùng kế hoạch và cùng thời điểm để so sánh năm khu vực.</p></div>
+        <button id="compareBtn" class="soft-btn" type="button">So sánh trực tiếp</button>
       </div>
-      <div class="compare-grid" id="compareGrid" aria-live="polite"><div class="empty-state">Bấm “So sánh dữ liệu trực tiếp” để bắt đầu.</div></div>
-      <p class="source-line">Nguồn trực tiếp: Open-Meteo Weather API và Air Quality API. AQI là dự báo mô hình theo ô lưới, không phải số đo cảm biến tại phường.</p>
+      <div class="compare-grid" id="compareGrid" aria-live="polite"><div class="empty-state">Bấm “So sánh trực tiếp” để bắt đầu.</div></div>
+      <p class="source-line">Nguồn trực tiếp: Open-Meteo Weather API và Air Quality API. AQI là dữ liệu mô hình theo ô lưới, không phải cảm biến đặt tại từng phường.</p>
     </section>
 
     <section class="section-wrap map-section" id="mapSection">
       <div class="section-heading">
-        <div><p class="eyebrow">BẢN ĐỒ 23 PHƯỜNG</p><h2>Chọn khu vực bằng bản đồ</h2><p>23 phường thuộc thành phố Đà Nẵng sau sắp xếp năm 2025; mỗi dấu là điểm đại diện, không phải đường ranh giới hành chính.</p></div>
-        <button id="gpsBtn" class="soft-btn" type="button">⌖ Tìm phường gần tôi</button>
+        <div><p class="eyebrow">BẢN ĐỒ KHU VỰC</p><h2>Chọn nhanh bằng bản đồ</h2><p>Mỗi dấu là tọa độ đại diện để lấy dữ liệu dự báo. GPS của bạn có thể chính xác hơn điểm đại diện này.</p></div>
+        <button id="gpsBtn" class="soft-btn" type="button">⌖ Tìm vị trí của tôi</button>
       </div>
       <div class="map-layout card">
         <div class="map-wrap">
-          <div id="map" role="application" aria-label="Bản đồ các phường thuộc thành phố Đà Nẵng"></div>
-          <div id="mapFallback" class="map-fallback" hidden><b>Bản đồ trực tuyến chưa tải được</b><p>Bạn vẫn có thể chọn khu vực trong danh sách bên cạnh và dùng đầy đủ chức năng phân tích.</p></div>
+          <div id="map" role="application" aria-label="Bản đồ các khu vực Đà Nẵng"></div>
+          <div id="mapFallback" class="map-fallback" hidden><b>Bản đồ trực tuyến chưa tải được</b><p>Bạn vẫn có thể chọn khu vực trong danh sách và dùng đầy đủ phân tích.</p></div>
         </div>
         <aside class="map-side">
           <div class="map-side-head"><div><small>KHU VỰC ĐANG CHỌN</small><h3 id="mapAreaName">Hải Châu</h3></div><span id="mapAreaAqi">AQI —</span></div>
           <p id="mapAreaDescription">Trung tâm đô thị; phù hợp các cung đường ven sông và công viên.</p>
           <div class="map-facts"><span><b id="mapAreaTemp">—°C</b>Nhiệt độ</span><span><b id="mapAreaScore">—/10</b>Thuận lợi</span></div>
-          <label for="wardSearch">Tìm nhanh một phường</label>
+          <label for="wardSearch">Tìm nhanh khu vực</label>
           <input id="wardSearch" type="search" placeholder="Ví dụ: Sơn Trà, Hội An…" autocomplete="off">
           <div id="wardList" class="ward-list"></div>
-          <a id="openOsm" class="map-link" href="https://www.openstreetmap.org" target="_blank" rel="noopener">Mở khu vực trên OpenStreetMap ↗</a>
+          <a id="openOsm" class="map-link" href="https://www.openstreetmap.org" target="_blank" rel="noopener">Mở trên OpenStreetMap ↗</a>
         </aside>
       </div>
     </section>
 
     <section class="section-wrap tools-section" id="tools">
-      <div class="section-heading"><div><p class="eyebrow">BỘ CÔNG CỤ NHỎ</p><h2>Chuẩn bị tốt hơn cho mỗi buổi chạy</h2></div></div>
+      <div class="section-heading"><div><p class="eyebrow">RUN TOOLKIT</p><h2>Những tiện ích nhỏ nhưng hữu dụng</h2></div></div>
       <div class="tools-grid">
         <article class="card tool-card kit-card">
-          <div class="tool-icon">🎒</div><div><h3>Mang gì hôm nay?</h3><p>Danh sách tự thay đổi theo kế hoạch và điều kiện đang chọn.</p></div>
-          <ul id="kitList" class="kit-list"><li>Giày chạy và trang phục thoáng</li><li>Nước uống cá nhân</li><li>Điện thoại đã sạc pin</li></ul>
+          <div class="tool-icon">🎒</div><div><h3>Mang gì hôm nay?</h3><p>Danh sách thay đổi theo thời lượng và thời tiết.</p></div>
+          <ul id="kitList" class="kit-list"><li>Giày chạy và trang phục thoáng</li><li>Nước uống cá nhân</li><li>Điện thoại đủ pin</li></ul>
         </article>
         <article class="card tool-card pace-card">
-          <div class="tool-icon">⏱</div><div><h3>Tính pace</h3><p>Biết nhịp chạy trung bình theo quãng đường và thời gian.</p></div>
+          <div class="tool-icon">⏱</div><div><h3>Tính pace thủ công</h3><p>Dùng khi bạn muốn đặt mục tiêu trước buổi chạy.</p></div>
           <div class="pace-inputs"><label>Quãng đường<input id="paceDistance" type="number" min="0.5" max="100" step="0.1" value="5"><span>km</span></label><label>Thời gian<input id="paceMinutes" type="number" min="1" max="600" step="1" value="35"><span>phút</span></label></div>
           <div class="pace-result"><small>PACE ƯỚC TÍNH</small><strong id="paceResult">7:00</strong><span>phút/km</span></div>
         </article>
         <article class="card tool-card safety-card">
-          <div class="tool-icon">🛡</div><div><h3>Kiểm tra an toàn</h3><p>Bốn điều nhỏ trước khi rời nhà.</p></div>
+          <div class="tool-icon">🛡</div><div><h3>Checklist an toàn</h3><p>Kiểm tra nhanh trước khi rời nhà.</p></div>
           <div class="safety-checks">
             <label><input type="checkbox"> Tôi đã khởi động</label>
             <label><input type="checkbox"> Tôi mang đủ nước</label>
             <label><input type="checkbox"> Tôi đã báo lộ trình nếu chạy một mình</label>
-            <label><input type="checkbox"> Tôi sẽ dừng lại khi thấy khó chịu</label>
+            <label><input type="checkbox"> Tôi sẽ dừng nếu thấy khó chịu</label>
           </div>
         </article>
       </div>
@@ -226,37 +292,40 @@
 
     <section class="section-wrap journal-section" id="journal">
       <div class="section-heading">
-        <div><p class="eyebrow">NHẬT KÝ TRÊN THIẾT BỊ</p><h2>Nhìn lại các quyết định của bạn</h2><p>Dữ liệu chỉ được lưu trong trình duyệt hiện tại.</p></div>
+        <div><p class="eyebrow">NHẬT KÝ TRÊN THIẾT BỊ</p><h2>Nhìn lại quyết định và buổi chạy</h2><p>Kế hoạch và tóm tắt buổi chạy được lưu trong trình duyệt hiện tại; AIRUN không gửi chúng lên máy chủ riêng.</p></div>
         <div class="journal-actions"><button id="exportBtn" class="soft-btn" type="button">↓ Xuất CSV</button><button id="clearJournalBtn" class="text-btn danger" type="button">Xóa nhật ký</button></div>
       </div>
-      <div id="journalList" class="journal-list"><div class="empty-state">Chưa có kế hoạch nào được lưu.</div></div>
+      <div id="journalList" class="journal-list"><div class="empty-state">Chưa có dữ liệu được lưu.</div></div>
     </section>
 
     <section class="method-section">
-      <div><p class="eyebrow light">MÔ HÌNH GIẢI THÍCH ĐƯỢC</p><h2>AIRUN không chỉ đưa ra một con số.</h2><p>Điểm thuận lợi được tính từ AQI, PM2.5, nhiệt độ cảm nhận, mưa, gió, cường độ và nhóm nhạy cảm. Các yếu tố bất lợi bị trừ điểm và được nêu rõ trong phần giải thích.</p></div>
-      <div class="method-flow"><span>Dữ liệu mở</span><i>→</i><span>Chuẩn hóa</span><i>→</i><span>Chấm điểm</span><i>→</i><span>Giải thích</span><i>→</i><span>Người dùng quyết định</span></div>
+      <div><p class="eyebrow light">GIẢI THÍCH ĐƯỢC</p><h2>AIRUN không dùng một “điểm AI” bí ẩn.</h2><p>Điểm thuận lợi được tính từ AQI, PM2.5, nhiệt độ cảm nhận, mưa, gió, UV, cường độ và thời lượng. Mỗi yếu tố bất lợi đều được hiển thị để người chạy tự quyết định.</p></div>
+      <div class="method-flow"><span>GPS</span><i>→</i><span>Dữ liệu mở</span><i>→</i><span>Lọc nhiễu</span><i>→</i><span>Chấm điểm</span><i>→</i><span>Giải thích</span><i>→</i><span>Bạn quyết định</span></div>
     </section>
   </main>
 
   <footer>
-    <div class="footer-brand"><span class="brand-mark small">A</span><div><b>AIRUN ĐÀ NẴNG</b><small>Biết không khí · Chọn đúng nhịp chạy</small></div></div>
-    <p>AIRUN là sản phẩm hỗ trợ giáo dục và ra quyết định. Không dùng thay cho khuyến cáo y tế, cảnh báo thiên tai hoặc số đo quan trắc chính thức.</p>
-    <div class="footer-links"><a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap</a><button id="footerDataBtn" type="button">Quyền riêng tư</button></div>
+    <div class="footer-brand"><span class="brand-mark small">A</span><div><b>AIRUN ĐÀ NẴNG</b><small>GPS · AIR · RUN SMART</small></div></div>
+    <p>AIRUN là công cụ hỗ trợ tham khảo. Không dùng thay cho khuyến cáo y tế, cảnh báo thiên tai hay số liệu quan trắc chính thức. Ảnh chạy bộ và ảnh Đà Nẵng sử dụng từ Unsplash theo giấy phép của nền tảng.</p>
+    <div class="footer-links"><a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap</a><a href="https://unsplash.com/" target="_blank" rel="noopener">Unsplash</a><button id="footerDataBtn" type="button">Quyền riêng tư</button></div>
   </footer>
 
   <button id="backTop" class="back-top" type="button" aria-label="Lên đầu trang">↑</button>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
   <dialog id="dataDialog">
     <button id="dialogClose" class="dialog-close" type="button" aria-label="Đóng">×</button>
     <p class="eyebrow">MINH BẠCH DỮ LIỆU</p>
     <h2>Dữ liệu và quyền riêng tư</h2>
     <div class="dialog-grid">
-      <div><b>🌦 Thời tiết</b><p>Lấy từ Open-Meteo Weather API theo tọa độ khu vực đã chọn. Đây là dữ liệu dự báo mô hình.</p></div>
-      <div><b>🌿 Không khí</b><p>Lấy từ Open-Meteo Air Quality API. Độ phân giải có thể rộng hơn địa giới một phường.</p></div>
-      <div><b>📍 GPS</b><p>Chỉ được yêu cầu khi bạn chủ động bấm nút. AIRUN dùng GPS trong trình duyệt để tìm phường gần nhất.</p></div>
-      <div><b>💾 Nhật ký</b><p>Lưu bằng localStorage trên thiết bị. AIRUN không có máy chủ nhận nhật ký cá nhân.</p></div>
+      <div><b>🌦 Thời tiết</b><p>Open-Meteo Weather API theo tọa độ GPS hoặc khu vực đã chọn. Đây là dữ liệu dự báo mô hình.</p></div>
+      <div><b>🌿 Không khí</b><p>Open-Meteo Air Quality API cung cấp AQI Mỹ, PM2.5 và PM10 theo ô lưới dự báo.</p></div>
+      <div><b>📍 GPS</b><p>GPS chỉ được bật khi bạn chủ động yêu cầu. Chế độ chạy dùng watchPosition để nhận các điểm liên tục và lọc điểm có độ chính xác kém.</p></div>
+      <div><b>🏃 Lộ trình</b><p>Lộ trình được vẽ trong phiên chạy. Nhật ký mặc định chỉ lưu tóm tắt, không lưu toàn bộ chuỗi tọa độ.</p></div>
+      <div><b>💾 Nhật ký</b><p>Dữ liệu được lưu bằng localStorage trên thiết bị. AIRUN không có máy chủ riêng nhận nhật ký cá nhân.</p></div>
+      <div><b>⚠ Dữ liệu dự phòng</b><p>Nếu API không truy cập được, AIRUN ưu tiên dữ liệu đã lưu gần đây; nếu không có sẽ hiển thị rõ là dữ liệu mô phỏng để giao diện không bị trống.</p></div>
     </div>
-    <p class="dialog-note">Khi nguồn trực tiếp không khả dụng, AIRUN chuyển sang bộ dữ liệu dự phòng và hiển thị nhãn rõ ràng.</p>
+    <p class="dialog-note">GPS trên trình duyệt web có thể bị hệ điều hành hạn chế khi tắt màn hình hoặc chuyển ứng dụng. Để theo dõi ổn định, nên giữ AIRUN ở foreground hoặc cài dưới dạng PWA.</p>
     <button id="dialogOk" class="primary" type="button">Đã hiểu</button>
   </dialog>
 </body>
