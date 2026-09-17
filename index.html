@@ -14,16 +14,17 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&display=swap&subset=vietnamese" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=52">
-  <script defer src="app.js?v=52"></script>
+  <link rel="stylesheet" href="style.css?v=53">
+  <script defer src="app.js?v=53"></script>
 </head>
 <body>
+  <noscript><div class="noscript-banner">AIRUN cần JavaScript để GPS và dữ liệu trực tiếp hoạt động. Hãy bật JavaScript rồi tải lại trang.</div></noscript>
   <a class="skip-link" href="#tracker">Đi đến GPS chạy bộ</a>
 
   <div class="status-bar" role="status">
     <div class="status-inner">
       <span><i class="pulse" aria-hidden="true"></i><b>AIRUN LIVE</b></span>
-      <span id="connectionText">Đang kiểm tra kết nối…</span>
+      <span id="connectionText">Đang khởi động AIRUN…</span>
       <button id="dataInfoBtn" type="button">Dữ liệu & quyền riêng tư</button>
     </div>
   </div>
@@ -76,7 +77,7 @@
 
         <div class="live-orbit" aria-label="Điều kiện hiện tại tại vị trí đang chọn">
           <div class="orbit-top">
-            <span id="liveBadge" class="source-badge loading">ĐANG KHỞI TẠO</span>
+            <span id="liveBadge" class="source-badge demo">DỮ LIỆU DỰ PHÒNG</span>
             <span id="heroUpdated">—</span>
           </div>
           <div class="orbit-main">
@@ -89,7 +90,17 @@
             <div><small>Gió</small><b><span id="heroWind">9</span><i> km/h</i></b></div>
             <div><small>UV</small><b id="heroUv">3</b></div>
           </div>
-          <p class="orbit-note" id="heroLocationNote">Chọn “Dùng vị trí hiện tại” để phân tích đúng tọa độ GPS.</p>
+          <p class="orbit-note" id="heroLocationNote">Đang hiển thị số liệu dự phòng. AIRUN sẽ thay bằng dữ liệu trực tiếp ngay khi API phản hồi.</p>
+          <div class="system-status" aria-label="Trạng thái kết nối AIRUN">
+            <div class="system-chip" data-state="idle" id="jsStatusChip"><i></i><span><small>ỨNG DỤNG</small><b id="jsStatus">Chưa khởi động</b></span></div>
+            <div class="system-chip" data-state="idle" id="weatherStatusChip"><i></i><span><small>WEATHER API</small><b id="weatherApiStatus">Chưa kết nối</b></span></div>
+            <div class="system-chip" data-state="idle" id="airStatusChip"><i></i><span><small>AIR API</small><b id="airApiStatus">Chưa kết nối</b></span></div>
+            <div class="system-chip" data-state="idle" id="gpsStatusChip"><i></i><span><small>GPS</small><b id="gpsStatusText">Chưa yêu cầu</b></span></div>
+          </div>
+          <div class="system-actions">
+            <button id="diagnosticBtn" class="mini-action" type="button">Kiểm tra kết nối ngay</button>
+            <span id="apiLastUpdate">Chưa có dữ liệu API trực tiếp</span>
+          </div>
         </div>
       </div>
     </section>
@@ -332,5 +343,31 @@
     <p class="dialog-note">GPS trên trình duyệt web có thể bị hệ điều hành hạn chế khi tắt màn hình hoặc chuyển ứng dụng. Để theo dõi ổn định, nên giữ AIRUN ở foreground hoặc cài dưới dạng PWA.</p>
     <button id="dialogOk" class="primary" type="button">Đã hiểu</button>
   </dialog>
+
+  <script>
+  (()=>{
+    setTimeout(()=>{
+      if(window.__AIRUN_APP_READY==='v53')return;
+      const connection=document.getElementById('connectionText');
+      const chip=document.getElementById('jsStatusChip');
+      const label=document.getElementById('jsStatus');
+      const button=document.getElementById('diagnosticBtn');
+      if(connection)connection.textContent='JavaScript chính chưa khởi động · GPS/API chưa thể hoạt động';
+      if(chip)chip.dataset.state='error';
+      if(label)label.textContent='app.js chưa chạy';
+      if(button){
+        button.textContent='Sửa cache & tải lại';
+        button.onclick=async()=>{
+          button.disabled=true;button.textContent='Đang làm sạch cache…';
+          try{
+            if('serviceWorker' in navigator){const regs=await navigator.serviceWorker.getRegistrations();await Promise.all(regs.map(reg=>reg.unregister()));}
+            if('caches' in window){const keys=await caches.keys();await Promise.all(keys.map(key=>caches.delete(key)));}
+          }catch{}
+          const url=new URL(location.href);url.searchParams.set('airunRepair',Date.now());location.replace(url.toString());
+        };
+      }
+    },2500);
+  })();
+  </script>
 </body>
 </html>

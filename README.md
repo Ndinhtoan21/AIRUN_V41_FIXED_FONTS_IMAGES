@@ -1,19 +1,17 @@
-# AIRUN Đà Nẵng V5.0 — GPS-first
+# AIRUN Đà Nẵng V5.3 — GPS + Live Environment
 
-AIRUN là Static Site/PWA chạy trực tiếp trong trình duyệt, không cần backend và không cần API key.
+AIRUN là Static Site/PWA chạy trực tiếp trong trình duyệt, không cần backend và không cần API key cho Open-Meteo.
 
-## Điểm mới V5.0
-- GPS chính xác theo tọa độ thiết bị, không chỉ chọn phường gần nhất.
-- GPS Running Tracker bằng `navigator.geolocation.watchPosition()`.
-- Tính quãng đường, thời gian, pace, tốc độ và độ chính xác GPS.
-- Lọc điểm GPS sai số lớn và bước nhảy tốc độ bất thường trước khi cộng quãng đường.
-- Vẽ lộ trình trực tiếp bằng Leaflet + OpenStreetMap.
-- Screen Wake Lock khi chạy trên trình duyệt hỗ trợ.
-- Thời tiết + AQI theo đúng tọa độ GPS qua Open-Meteo.
-- Bổ sung UV vào phân tích chạy.
-- Nếu API lỗi: ưu tiên cache gần đây; cuối cùng mới dùng dữ liệu mô phỏng và ghi nhãn rõ.
-- Nhật ký chỉ lưu tóm tắt buổi chạy, không lưu toàn bộ chuỗi tọa độ GPS.
-- Ảnh chụp thật từ Unsplash; SVG cũ chỉ là fallback khi ảnh mạng không tải được.
+## V5.3 tập trung vào độ ổn định
+- GPS theo tọa độ thiết bị bằng Web Geolocation API.
+- Running Tracker bằng `watchPosition()`.
+- Quãng đường, thời gian, pace, tốc độ và độ chính xác GPS.
+- Weather API và Air Quality API cập nhật độc lập, theo từng phần.
+- Bảng trạng thái realtime: App / Weather API / Air API / GPS.
+- Watchdog phát hiện trường hợp `app.js` không chạy.
+- Service Worker V5.3 không còn trả HTML thay cho JS/CSS.
+- Dữ liệu dự phòng luôn hiện ngay; dữ liệu live sẽ thay thế khi API phản hồi.
+- Leaflet + OpenStreetMap cho bản đồ và lộ trình chạy.
 
 ## Render
 - Service: Static Site
@@ -23,5 +21,12 @@ AIRUN là Static Site/PWA chạy trực tiếp trong trình duyệt, không cầ
 - Publish Directory: `.`
 - Environment Variables: không cần
 
-## Lưu ý GPS web
-GPS cần HTTPS (Render có HTTPS). Trên điện thoại, theo dõi ổn định nhất khi AIRUN đang ở foreground. Một số hệ điều hành có thể giảm/tắt cập nhật vị trí khi tắt màn hình hoặc chuyển ứng dụng; đây là giới hạn của web app, không phải lỗi thuật toán AIRUN.
+## Kiểm tra sau khi deploy
+1. Mở website.
+2. Quan sát 4 trạng thái dưới bảng số liệu.
+3. `Ứng dụng` phải hiện `V5.3 đang chạy`.
+4. Weather API / Air API sẽ hiện thời gian phản hồi, ví dụ `412 ms`.
+5. Bấm `Dùng vị trí hiện tại`; GPS sẽ đổi trạng thái ngay.
+6. Nếu `Ứng dụng` báo `app.js chưa chạy`, bấm `Sửa cache & tải lại`.
+
+GPS web cần HTTPS và quyền Location. Trên điện thoại, độ chính xác tốt hơn laptop và ổn định nhất khi AIRUN ở foreground.

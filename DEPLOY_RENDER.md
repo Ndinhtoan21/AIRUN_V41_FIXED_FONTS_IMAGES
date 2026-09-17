@@ -1,21 +1,23 @@
-# Cập nhật AIRUN V5 lên Render
+# Cập nhật AIRUN V5.3 lên Render
 
-Bạn KHÔNG cần tạo Static Site mới nếu `airun-da-nang` đã hoạt động.
+Không tạo Static Site mới.
 
-1. Giải nén ZIP V5.
-2. Thay toàn bộ file trong repository GitHub AIRUN hiện tại bằng nội dung V5 (giữ file ở root repo).
-3. Commit và Push vào branch `main`.
-4. Render sẽ Auto Deploy nếu đang bật.
-5. Nếu Render chưa chạy: Dashboard > airun-da-nang > Manual Deploy > Deploy latest commit.
-6. Sau khi deploy, mở site bằng tab ẩn danh hoặc Ctrl+Shift+R một lần để tránh cache service worker V4/V4.1.
+1. Giải nén ZIP V5.3.
+2. Copy đè toàn bộ file vào ROOT repository AIRUN hiện tại.
+3. Commit + push branch `main`.
+4. Render Auto Deploy; nếu chưa chạy thì Manual Deploy > Deploy latest commit.
+5. Sau khi Live, mở trang và kiểm tra bảng trạng thái kết nối.
 
-Cấu hình vẫn là Static Site:
+Cấu hình Render:
+- Static Site
+- Root Directory: trống
 - Build Command: `echo "No build required"`
 - Publish Directory: `.`
-- Root Directory: trống
 
-## Test GPS
-- Mở website trên điện thoại qua HTTPS.
-- Bấm `Bắt đầu chạy` hoặc `Dùng vị trí hiện tại`.
-- Chọn Allow/Cho phép vị trí chính xác.
-- Nếu GPS sai số >80 m, AIRUN vẫn hiển thị vị trí nhưng không cộng điểm đó vào quãng đường.
+## Dấu hiệu bản mới đã chạy
+- `Ứng dụng: V5.3 đang chạy`
+- Weather API và Air API hiện số ms khi phản hồi.
+- Nút `Kiểm tra kết nối ngay` xuất hiện dưới các số liệu.
+
+## Nếu trình duyệt vẫn giữ bản cũ
+Bản V5.3 có watchdog. Nếu app.js không chạy, sau 2,5 giây nút sẽ đổi thành `Sửa cache & tải lại`; bấm nút này để gỡ Service Worker/cache cũ và tải lại.
