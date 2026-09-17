@@ -26,4 +26,4 @@ assert.equal(parsePace('6:30'),6.5);
 assert.equal(parsePace('6.5'),6.5);
 assert.equal(parsePace('6:75'),null);
 const est=planEstimate({duration:60,pace:6,intensity:'Vừa'});assert.equal(est.distance,10);assert.equal(est.speed,10);
-console.log('AIRUN V5.5 tests: OK');
+console.log('AIRUN V5.6 tests: OK');

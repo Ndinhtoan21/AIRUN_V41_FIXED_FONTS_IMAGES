@@ -637,6 +637,10 @@ async function fetchJSON(url, timeout = 7000, retries = 0, onRetry = null){
     try{
       const response = await fetch(url,{signal:controller.signal,cache:'no-store',headers:{Accept:'application/json'}});
       if(!response.ok) throw new Error(`HTTP ${response.status}`);
+      const contentType = response.headers.get('content-type') || '';
+      if(!contentType.includes('application/json')){
+        throw new Error('PROXY_NOT_CONFIGURED');
+      }
       const data = await response.json();
       if(!data || data.error) throw new Error(data?.reason || 'API trả về dữ liệu không hợp lệ');
       return data;
@@ -658,6 +662,7 @@ function nearestWard(lat,lon){
 function apiErrorLabel(error){
   if(error?.name==='AbortError') return 'Timeout';
   const text=String(error?.message||'');
+  if(text.includes('PROXY_NOT_CONFIGURED')) return 'Chưa cấu hình proxy';
   if(/HTTP\s+\d+/.test(text)) return text;
   if(typeof navigator!=='undefined' && !navigator.onLine) return 'Ngoại tuyến';
   return 'Không phản hồi';
@@ -681,11 +686,12 @@ async function fetchEnvironmentAt(lat, lon, options = {}){
     const stale = getStaleCache(cacheId); return stale ? {...stale,source:'cached'} : fallbackData(nearest.item,location);
   }
 
-  const tz=encodeURIComponent('Asia/Ho_Chi_Minh');
-  const base = `latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lon)}&timezone=${tz}&forecast_hours=36`;
-  // V5.5: only TWO external requests. Each returns current + hourly data together.
-  const weatherUrl = `https://api.open-meteo.com/v1/forecast?${base}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&hourly=temperature_2m,apparent_temperature,relative_humidity_2m,precipitation_probability,weather_code,wind_speed_10m,uv_index`;
-  const airUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?${base}&current=us_aqi,pm2_5,pm10,uv_index&hourly=us_aqi,pm2_5,pm10,uv_index`;
+  // V5.6: same-origin Render proxy. Browser no longer calls Open-Meteo domains directly.
+  // Render rewrites /api/weather/:lat/:lon and /api/air/:lat/:lon to Open-Meteo.
+  const safeLat = Number(lat).toFixed(5);
+  const safeLon = Number(lon).toFixed(5);
+  const weatherUrl = `/api/weather/${safeLat}/${safeLon}`;
+  const airUrl = `/api/air/${safeLat}/${safeLon}`;
 
   const stale = getStaleCache(cacheId);
   const backup = stale ? {...stale,source:'cached',location} : fallbackData(nearest.item,location);
@@ -711,7 +717,7 @@ async function fetchEnvironmentAt(lat, lon, options = {}){
 
   setSystemStatus('weather','loading','Đang kết nối…');
   setSystemStatus('air','loading','Đang kết nối…');
-  setApiUpdateText('Đang kết nối 2 nguồn dữ liệu trực tiếp…');
+  setApiUpdateText('Đang kết nối Weather + Air qua proxy Render…');
 
   const weatherTask=(async()=>{
     const started=performance.now();
@@ -731,13 +737,9 @@ async function fetchEnvironmentAt(lat, lon, options = {}){
         const old=hourlyMap.get(time)||{time};
         hourlyMap.set(time,{...old,time,
           temp:h.temperature_2m?.[index],feels:h.apparent_temperature?.[index],humidity:h.relative_humidity_2m?.[index],
-          rain:h.precipitation_probability?.[index],wind:h.wind_speed_10m?.[index],uv:h.uv_index?.[index],code:h.weather_code?.[index]
+          rain:h.precipitation_probability?.[index],wind:h.wind_speed_10m?.[index],code:h.weather_code?.[index]
         });
       });
-      // Use the nearest hourly UV value as current UV if available.
-      const nowHour=vnIso().slice(0,13)+':00';
-      const uvNow=hourlyMap.get(nowHour)?.uv;
-      if(Number.isFinite(uvNow))current.uv=uvNow;
       weatherOk=true;weatherMs=Math.max(1,Math.round(performance.now()-started));
       setSystemStatus('weather','ok',`${weatherMs} ms`);publish('weather');return true;
     }catch(error){console.warn('AIRUN Weather:',error);setSystemStatus('weather','error',apiErrorLabel(error));return false;}
@@ -773,7 +775,7 @@ async function fetchEnvironmentAt(lat, lon, options = {}){
     publish('ready');
     return result;
   }
-  setApiUpdateText('Không kết nối được Open-Meteo · đang dùng dữ liệu dự phòng');
+  setApiUpdateText('Proxy/API chưa kết nối · đang dùng dữ liệu dự phòng');
   return backup;
 }
 
@@ -1476,7 +1478,7 @@ function initDialogs(){
 }
 
 function initPWA(){
-  // V5.5 stability mode: remove legacy service workers/caches so stale JS can no longer control the app.
+  // V5.6 proxy mode: remove legacy service workers/caches so stale JS can no longer control the app.
   if('serviceWorker' in navigator){
     navigator.serviceWorker.getRegistrations().then(regs=>Promise.all(regs.map(reg=>reg.unregister()))).catch(()=>{});
   }
@@ -1486,7 +1488,7 @@ function initPWA(){
 
 async function runDiagnostics(){
   const button=$('diagnosticBtn');setBusy(button,true,'Đang kiểm tra…');
-  setSystemStatus('js','ok','V5.5 đang chạy');updateConnection();
+  setSystemStatus('js','ok','V5.6 Proxy đang chạy');updateConnection();
   try{
     const permission=await geolocationPermissionState();
     setSystemStatus('gps',permission==='denied'?'error':permission==='granted'?'ok':'warn',permission==='denied'?'Bị chặn':permission==='granted'?'Đã cấp quyền':'Chưa cấp quyền');
@@ -1524,7 +1526,7 @@ let airunInitialized=false;
 async function init(){
   if(airunInitialized)return;airunInitialized=true;
   if(typeof window!=='undefined')window.__AIRUN_APP_READY='v55';
-  setSystemStatus('js','ok','V5.5 đang chạy');
+  setSystemStatus('js','ok','V5.6 Proxy đang chạy');
   safeCall('khu vực',()=>{$('area').innerHTML=WARDS.map(item=>`<option value="${item.key}">${escapeHTML(item.name)}</option>`).join('');});
   safeCall('khôi phục cài đặt',restorePlanSettings);
   safeCall('chọn khu vực',()=>{$('area').value=selectedKey;});
