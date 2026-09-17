@@ -88,7 +88,7 @@ function asNumber(value,fallback=null){const n=Number(value);return Number.isFin
 function runAsyncTask(name,task){
   Promise.resolve().then(task).catch(error=>{
     console.error(`AIRUN async ${name}:`,error);
-    setSystemStatus('js','warn','V5.8 · tác vụ phụ lỗi');
+    setSystemStatus('js','warn','V6.0 · tác vụ phụ lỗi');
     showToast(`${name} chưa hoàn tất. Các chức năng khác vẫn hoạt động.`);
   });
 }
@@ -96,13 +96,13 @@ function runAsyncTask(name,task){
 if(typeof window!=='undefined'){
   window.addEventListener('error',event=>{
     console.error('AIRUN global error:',event.error||event.message);
-    setSystemStatus('js','warn','V5.8 · có lỗi phụ');
+    setSystemStatus('js','warn','V6.0 · có lỗi phụ');
     setApiUpdateText(`Lỗi giao diện phụ: ${String(event.message||'không xác định').slice(0,80)}`);
   });
   window.addEventListener('unhandledrejection',event=>{
     console.error('AIRUN rejected promise:',event.reason);
     // Một tác vụ phụ (bản đồ/GPS refine/animation) không được làm người dùng nghĩ toàn app đã chết.
-    setSystemStatus('js','warn','V5.8 · tác vụ phụ lỗi');
+    setSystemStatus('js','warn','V6.0 · tác vụ phụ lỗi');
   });
 }
 
@@ -201,62 +201,58 @@ function apiErrorLabel(error){
 }
 
 async function fetchEnvironmentAt(lat, lon, options = {}){
-  const nearest = nearestWard(lat,lon);
-  const key = options.key || nearest.item.key;
-  const label = options.label || nearest.item.name;
-  const cacheId = options.cacheId || `geo:${lat.toFixed(3)},${lon.toFixed(3)}`;
-  const force = Boolean(options.force);
-  const location = {lat,lon,label,accuracy:options.accuracy ?? null,mode:options.mode || 'ward'};
-  const onProgress = typeof options.onProgress==='function' ? options.onProgress : null;
+  const nearest=nearestWard(lat,lon);
+  const key=options.key||nearest.item.key;
+  const label=options.label||nearest.item.name;
+  const cacheId=options.cacheId||`geo:${Number(lat).toFixed(3)},${Number(lon).toFixed(3)}`;
+  const location={lat:Number(lat),lon:Number(lon),label,accuracy:options.accuracy??null,mode:options.mode||'ward'};
+  const onProgress=typeof options.onProgress==='function'?options.onProgress:null;
+  const backup=fallbackData(nearest.item,location);
+  const hourlyMap=new Map((backup.hourly||[]).map(row=>[row.time,{...row}]));
+  let current={...backup.current};
+  let weatherOk=false,airOk=false,weatherMs=null,airMs=null;
 
-  // Trạng thái phải đổi NGAY khi hàm được gọi để người dùng biết request thật sự đã bắt đầu.
   setSystemStatus('weather','loading','Đang kết nối…');
   setSystemStatus('air','loading','Đang kết nối…');
-  setApiUpdateText(`Đang gọi proxy Render cho ${label}…`);
+  setApiUpdateText(`Đang lấy dữ liệu trực tiếp cho ${label}…`);
 
-  const mem = memoryCache.get(cacheId);
-  if(!force && mem && Date.now()-mem.updated < 90*1000) return mem;
-  const stored = !force && getPersistentCache(cacheId,5*60*1000);
-  if(stored){memoryCache.set(cacheId,stored);return stored;}
-  if(typeof navigator !== 'undefined' && !navigator.onLine){
-    setSystemStatus('weather','warn','Ngoại tuyến');setSystemStatus('air','warn','Ngoại tuyến');
-    const stale = getStaleCache(cacheId); return stale ? {...stale,source:'cached'} : fallbackData(nearest.item,location);
+  if(typeof navigator!=='undefined'&&!navigator.onLine){
+    setSystemStatus('weather','warn','Ngoại tuyến');
+    setSystemStatus('air','warn','Ngoại tuyến');
+    return backup;
   }
 
-  // V5.6: same-origin Render proxy. Browser no longer calls Open-Meteo domains directly.
-  // Render rewrites /api/weather/:lat/:lon and /api/air/:lat/:lon to Open-Meteo.
-  const safeLat = Number(lat).toFixed(5);
-  const safeLon = Number(lon).toFixed(5);
-  const weatherUrl = `/api/weather/${safeLat}/${safeLon}`;
-  const airUrl = `/api/air/${safeLat}/${safeLon}`;
-
-  const stale = getStaleCache(cacheId);
-  const backup = stale ? {...stale,source:'cached',location} : fallbackData(nearest.item,location);
-  const hourlyMap = new Map((backup.hourly||[]).map(row=>[row.time,{...row}]));
-  let current = {...backup.current};
-  let weatherOk=false, airOk=false;
-  let weatherMs=null, airMs=null;
+  const safeLat=Number(lat).toFixed(5),safeLon=Number(lon).toFixed(5);
+  const weatherUrl=`/api/weather/${safeLat}/${safeLon}`;
+  const airUrl=`/api/air/${safeLat}/${safeLon}`;
 
   const buildResult=()=>({
     cacheId,key,
-    source:weatherOk&&airOk?'live':(weatherOk||airOk?'partial':backup.source),
-    forecastSource:weatherOk&&airOk?'live':(weatherOk||airOk?'partial':backup.source),
+    source:weatherOk&&airOk?'live':(weatherOk||airOk?'partial':'demo'),
+    forecastSource:(weatherOk||airOk)?'partial':'demo',
     updated:Date.now(),location,current:{...current},
     hourly:[...hourlyMap.values()].sort((a,b)=>a.time.localeCompare(b.time)),
-    liveParts:{weather:weatherOk,air:airOk,weatherForecast:weatherOk,airForecast:airOk},
-    latency:{weather:weatherMs,air:airMs}
+    liveParts:{weather:weatherOk,air:airOk},latency:{weather:weatherMs,air:airMs}
   });
   const publish=part=>{
-    const result=buildResult();
-    if(onProgress){try{onProgress(result,part);}catch(error){console.warn('AIRUN progress render:',error);}}
-    return result;
+    const data=buildResult();
+    if(onProgress){try{onProgress(data,part);}catch(error){console.warn('AIRUN progress:',error);}}
+    return data;
   };
+
+  async function readProxy(url){
+    const response=await fetch(url,{cache:'no-store',headers:{Accept:'application/json'}});
+    const text=await response.text();
+    if(!response.ok)throw new Error(`HTTP ${response.status}: ${text.slice(0,100)}`);
+    let json;try{json=JSON.parse(text);}catch{throw new Error(/<html/i.test(text)?'PROXY_NOT_CONFIGURED':'API_NOT_JSON');}
+    if(!json||json.error)throw new Error(json?.reason||'API_INVALID');
+    return json;
+  }
 
   const weatherTask=(async()=>{
     const started=performance.now();
     try{
-      const w=await fetchJSON(weatherUrl,5200,1,()=>setSystemStatus('weather','loading','Đang thử lại…'));
-      const wc=w.current||{};
+      const w=await readProxy(weatherUrl),wc=w.current||{};
       current={...current,
         temp:asNumber(wc.temperature_2m,current.temp),
         feels:asNumber(wc.apparent_temperature,current.feels),
@@ -265,38 +261,21 @@ async function fetchEnvironmentAt(lat, lon, options = {}){
         code:asNumber(wc.weather_code,current.code),
         rain:asNumber(wc.precipitation,null)!==null?(asNumber(wc.precipitation,0)>0?100:0):current.rain
       };
-      const h=w.hourly||{},times=h.time||[];
-      times.forEach((time,index)=>{
-        const old=hourlyMap.get(time)||{time};
-        hourlyMap.set(time,{...old,time,
-          temp:h.temperature_2m?.[index],feels:h.apparent_temperature?.[index],humidity:h.relative_humidity_2m?.[index],
-          rain:h.precipitation_probability?.[index],wind:h.wind_speed_10m?.[index],code:h.weather_code?.[index]
-        });
-      });
-      weatherOk=true;weatherMs=Math.max(1,Math.round(performance.now()-started));
-      setSystemStatus('weather','ok',`${weatherMs} ms`);publish('weather');return true;
-    }catch(error){console.warn('AIRUN Weather:',error);setSystemStatus('weather','error',apiErrorLabel(error));return false;}
+      const h=w.hourly||{},times=Array.isArray(h.time)?h.time:[];
+      times.forEach((time,index)=>{const old=hourlyMap.get(time)||{time};hourlyMap.set(time,{...old,time,temp:h.temperature_2m?.[index],feels:h.apparent_temperature?.[index],humidity:h.relative_humidity_2m?.[index],rain:h.precipitation_probability?.[index],wind:h.wind_speed_10m?.[index],code:h.weather_code?.[index]});});
+      weatherOk=true;weatherMs=Math.max(1,Math.round(performance.now()-started));setSystemStatus('weather','ok',`${weatherMs} ms`);publish('weather');
+    }catch(error){console.warn('AIRUN Weather proxy:',error);setSystemStatus('weather','error',apiErrorLabel(error));}
   })();
 
   const airTask=(async()=>{
     const started=performance.now();
     try{
-      const a=await fetchJSON(airUrl,5200,1,()=>setSystemStatus('air','loading','Đang thử lại…'));
-      const ac=a.current||{};
-      current={...current,
-        aqi:asNumber(ac.us_aqi,current.aqi),
-        pm:asNumber(ac.pm2_5,current.pm),
-        pm10:asNumber(ac.pm10,current.pm10),
-        uv:asNumber(ac.uv_index,current.uv)
-      };
-      const h=a.hourly||{},times=h.time||[];
-      times.forEach((time,index)=>{
-        const old=hourlyMap.get(time)||{time};
-        hourlyMap.set(time,{...old,time,aqi:h.us_aqi?.[index],pm:h.pm2_5?.[index],pm10:h.pm10?.[index],uv:asNumber(h.uv_index?.[index],old.uv)});
-      });
-      airOk=true;airMs=Math.max(1,Math.round(performance.now()-started));
-      setSystemStatus('air','ok',`${airMs} ms`);publish('air');return true;
-    }catch(error){console.warn('AIRUN Air:',error);setSystemStatus('air','error',apiErrorLabel(error));return false;}
+      const a=await readProxy(airUrl),ac=a.current||{};
+      current={...current,aqi:asNumber(ac.us_aqi,current.aqi),pm:asNumber(ac.pm2_5,current.pm),pm10:asNumber(ac.pm10,current.pm10),uv:asNumber(ac.uv_index,current.uv)};
+      const h=a.hourly||{},times=Array.isArray(h.time)?h.time:[];
+      times.forEach((time,index)=>{const old=hourlyMap.get(time)||{time};hourlyMap.set(time,{...old,time,aqi:h.us_aqi?.[index],pm:h.pm2_5?.[index],pm10:h.pm10?.[index],uv:asNumber(h.uv_index?.[index],old.uv)});});
+      airOk=true;airMs=Math.max(1,Math.round(performance.now()-started));setSystemStatus('air','ok',`${airMs} ms`);publish('air');
+    }catch(error){console.warn('AIRUN Air proxy:',error);setSystemStatus('air','error',apiErrorLabel(error));}
   })();
 
   await Promise.allSettled([weatherTask,airTask]);
@@ -308,7 +287,7 @@ async function fetchEnvironmentAt(lat, lon, options = {}){
     publish('ready');
     return result;
   }
-  setApiUpdateText('Proxy/API chưa kết nối · đang dùng dữ liệu dự phòng');
+  setApiUpdateText('Proxy chưa trả dữ liệu · đang dùng số liệu dự phòng');
   return backup;
 }
 
@@ -439,15 +418,11 @@ function sourceLabel(source){
 
 function quickEnvironmentForWard(key = selectedKey){
   const item=ward(key);
-  const fresh=getPersistentCache(`ward:${item.key}`,45*60*1000);
-  const stale=getStaleCache(`ward:${item.key}`);
-  return fresh || (stale ? {...stale,source:'cached'} : fallbackData(item));
+  return fallbackData(item);
 }
 
 function quickEnvironmentForGps(location){
   const near=nearestWard(location.lat,location.lon).item;
-  const cached=getStaleCache(location.cacheId);
-  if(cached)return {...cached,source:'cached',location:{lat:location.lat,lon:location.lon,label:location.label,accuracy:location.accuracy,mode:'gps'}};
   return fallbackData(near,{lat:location.lat,lon:location.lon,label:location.label,accuracy:location.accuracy,mode:'gps'});
 }
 
@@ -535,11 +510,26 @@ function setGpsPlanUi(){
   else chip.hidden=true;
 }
 
+function osmEmbedUrl(lat,lon,zoom=14){
+  const d=zoom>=15?0.018:zoom>=13?0.04:0.08;
+  const left=(Number(lon)-d).toFixed(6),right=(Number(lon)+d).toFixed(6),bottom=(Number(lat)-d*.62).toFixed(6),top=(Number(lat)+d*.62).toFixed(6);
+  return `https://www.openstreetmap.org/export/embed.html?bbox=${encodeURIComponent(`${left},${bottom},${right},${top}`)}&layer=mapnik&marker=${Number(lat).toFixed(6)},${Number(lon).toFixed(6)}`;
+}
+function renderAreaMap(lat,lon,label){
+  const frame=$('areaMapFrame');if(!frame)return;
+  const next=osmEmbedUrl(lat,lon,14);
+  if(frame.dataset.src!==next){frame.dataset.src=next;frame.src=next;}
+  frame.title=`Bản đồ ${label||'khu vực đang chọn'}`;
+  const fallback=$('mapFallback');if(fallback)fallback.hidden=true;
+}
 function updateMapSide(){
-  const item=ward();$('mapAreaName').textContent=gpsLocation?`${item.name} · GPS`:item.name;$('mapAreaDescription').textContent=gpsLocation?'Đang phân tích theo tọa độ GPS chính xác của thiết bị; khu vực này chỉ là tên gần nhất.':item.desc;
-  const lat=gpsLocation?.lat??item.lat,lon=gpsLocation?.lon??item.lon;$('openOsm').href=`https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=15/${lat}/${lon}`;
+  const item=ward();
+  $('mapAreaName').textContent=gpsLocation?`${item.name} · GPS`:item.name;
+  $('mapAreaDescription').textContent=gpsLocation?'Đang phân tích theo tọa độ GPS chính xác của thiết bị; khu vực này chỉ là tên gần nhất.':item.desc;
+  const lat=gpsLocation?.lat??item.lat,lon=gpsLocation?.lon??item.lon;
+  $('openOsm').href=`https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=15/${lat}/${lon}`;
   document.querySelectorAll('[data-ward]').forEach(button=>button.classList.toggle('active',button.dataset.ward===selectedKey));
-  markers.forEach((marker,key)=>{const icon=marker.getElement();if(icon)icon.classList.toggle('selected',key===selectedKey);});
+  renderAreaMap(lat,lon,gpsLocation?.label||item.name);
 }
 
 async function selectWard(key,{scroll=false,force=false,analyze=true}={}){
@@ -605,24 +595,11 @@ function renderWardControls(filter=''){
   $('wardList').querySelectorAll('[data-ward]').forEach(button=>button.addEventListener('click',()=>runAsyncTask('Chọn khu vực',()=>selectWard(button.dataset.ward,{analyze:true}))));
 }
 
-function loadLeaflet(){
-  if(window.L)return Promise.resolve();
-  const css=document.createElement('link');css.rel='stylesheet';css.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';css.crossOrigin='anonymous';document.head.append(css);
-  return new Promise((resolve,reject)=>{const script=document.createElement('script'),timer=setTimeout(()=>reject(new Error('Leaflet timeout')),9000);script.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';script.crossOrigin='anonymous';script.async=true;script.onload=()=>{clearTimeout(timer);resolve();};script.onerror=()=>{clearTimeout(timer);reject(new Error('Leaflet unavailable'));};document.head.append(script);});
-}
-
+function loadLeaflet(){return Promise.resolve();}
 function initMaps(){
-  if(!window.L){$('mapFallback').hidden=false;return;}
-  try{
-    map=L.map('map',{scrollWheelZoom:false,zoomControl:true}).setView([15.95,108.25],9);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'&copy; OpenStreetMap contributors'}).addTo(map);
-    WARDS.forEach(item=>{const icon=L.divIcon({className:`airun-marker ${item.key===selectedKey?'selected':''}`,html:'<span></span>',iconSize:[29,29],iconAnchor:[14,14]});const marker=L.marker([item.lat,item.lon],{icon,title:item.name}).addTo(map).bindPopup(`<b>${escapeHTML(item.name)}</b><br>${escapeHTML(item.desc)}`);marker.on('click',()=>selectWard(item.key,{analyze:true}));markers.set(item.key,marker);});
-  }catch{$('mapFallback').hidden=false;}
-  try{
-    runMap=L.map('runMap',{scrollWheelZoom:false,zoomControl:true}).setView([16.06,108.22],13);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap contributors'}).addTo(runMap);
-    $('runMapFallback').style.display='none';
-  }catch{runMap=null;}
+  updateMapSide();
+  const fallback=$('mapFallback');if(fallback)fallback.hidden=true;
+  const runFallback=$('runMapFallback');if(runFallback)runFallback.style.display='grid';
 }
 
 function haversine(lat1,lon1,lat2,lon2){
@@ -825,14 +802,23 @@ function updateTrackerMetrics(){
   $('trackerDistance').textContent=tracker.distanceKm.toFixed(2);const seconds=trackerElapsedSeconds();$('trackerTime').textContent=formatDuration(seconds);
   $('trackerPace').textContent=tracker.distanceKm>=.05?formatPace((seconds/60)/tracker.distanceKm):'—';$('trackerSpeed').textContent=round(tracker.currentSpeed,1).toFixed(1);$('routePointCount').textContent=tracker.points.length;
 }
-function updateRunMap(point,accepted=true){
-  if(!runMap||!window.L)return;
-  const latlng=[point.lat,point.lon];
-  if(!runMarker)runMarker=L.circleMarker(latlng,{radius:7,color:'#075b49',fillColor:'#c8f16b',fillOpacity:1,weight:4}).addTo(runMap);else runMarker.setLatLng(latlng);
-  if(accepted){if(!runPolyline)runPolyline=L.polyline([latlng],{color:'#075b49',weight:6,opacity:.9,lineCap:'round'}).addTo(runMap);else runPolyline.addLatLng(latlng);}
-  if(tracker.points.length<=2)runMap.setView(latlng,16);else runMap.panTo(latlng,{animate:true,duration:.35});
+function renderRunRoute(){
+  const svg=$('runRouteSvg');if(!svg)return;
+  const pts=tracker.points||[];
+  if(!pts.length){svg.innerHTML='';return;}
+  const lats=pts.map(p=>p.lat),lons=pts.map(p=>p.lon),minLat=Math.min(...lats),maxLat=Math.max(...lats),minLon=Math.min(...lons),maxLon=Math.max(...lons);
+  const spanLat=Math.max(maxLat-minLat,0.00015),spanLon=Math.max(maxLon-minLon,0.00015),pad=24,w=600,h=420;
+  const xy=p=>[pad+((p.lon-minLon)/spanLon)*(w-pad*2),h-pad-((p.lat-minLat)/spanLat)*(h-pad*2)];
+  const coords=pts.map(p=>xy(p));const path=coords.map((p,i)=>`${i?'L':'M'} ${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join(' ');
+  const first=coords[0],last=coords[coords.length-1];
+  svg.setAttribute('viewBox',`0 0 ${w} ${h}`);
+  svg.innerHTML=`<defs><pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse"><path d="M 30 0 L 0 0 0 30" fill="none" stroke="#d8e6df" stroke-width="1"/></pattern></defs><rect width="100%" height="100%" fill="#eef6f2"/><rect width="100%" height="100%" fill="url(#grid)"/><path d="${path}" fill="none" stroke="#08664f" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${first[0]}" cy="${first[1]}" r="9" fill="#ffffff" stroke="#08664f" stroke-width="5"/><circle cx="${last[0]}" cy="${last[1]}" r="10" fill="#c8f16b" stroke="#08664f" stroke-width="5"/>`;
+  const f=$('runMapFallback');if(f)f.style.display=pts.length>=2?'none':'grid';
 }
-function resetRunMap(){if(runPolyline){runPolyline.remove();runPolyline=null;}if(runMarker){runMarker.remove();runMarker=null;}if(runMap)runMap.setView([16.06,108.22],13);}
+function updateRunMap(point,accepted=true){
+  if(accepted)renderRunRoute();
+}
+function resetRunMap(){const svg=$('runRouteSvg');if(svg)svg.innerHTML='';const f=$('runMapFallback');if(f)f.style.display='grid';}
 
 async function requestWakeLock(){
   if(!('wakeLock' in navigator)||document.visibilityState!=='visible')return;
@@ -1015,26 +1001,19 @@ function initDialogs(){
 }
 
 async function clearLegacyServiceWorkerControl(){
-  if(!('serviceWorker' in navigator)) return false;
+  if(!('serviceWorker' in navigator))return false;
   try{
-    const wasControlled=Boolean(navigator.serviceWorker.controller);
-    const regs=await navigator.serviceWorker.getRegistrations();
-    await Promise.all(regs.map(reg=>reg.unregister()));
+    const regs=await navigator.serviceWorker.getRegistrations();await Promise.all(regs.map(reg=>reg.unregister()));
     if('caches' in window){const keys=await caches.keys();await Promise.all(keys.filter(k=>k.startsWith('airun-')).map(k=>caches.delete(k)));}
-    // Worker cũ vẫn có thể kiểm soát tab hiện tại cho tới lần reload kế tiếp.
-    if(wasControlled && !sessionStorage.getItem('airun-v58-worker-cleared')){
-      sessionStorage.setItem('airun-v58-worker-cleared','1');
-      const url=new URL(location.href);url.searchParams.set('v58',Date.now());location.replace(url.toString());
-      return true;
-    }
-  }catch(error){console.warn('AIRUN worker cleanup:',error);}
+  }catch(error){console.warn('AIRUN cache cleanup:',error);}
   return false;
 }
+
 function initPWA(){const button=$('installBtn');if(button)button.hidden=true;}
 
 async function runDiagnostics(){
   const button=$('diagnosticBtn');setBusy(button,true,'Đang kiểm tra…');
-  setSystemStatus('js','ok','V5.8 Live API đang chạy');updateConnection();
+  setSystemStatus('js','ok','V6.0 Live API đang chạy');updateConnection();
   try{
     const permission=await geolocationPermissionState();
     setSystemStatus('gps',permission==='denied'?'error':permission==='granted'?'ok':'warn',permission==='denied'?'Bị chặn':permission==='granted'?'Đã cấp quyền':'Chưa cấp quyền');
@@ -1072,8 +1051,8 @@ let airunInitialized=false;
 async function init(){
   if(airunInitialized)return;airunInitialized=true;
   if(await clearLegacyServiceWorkerControl()) return;
-  if(typeof window!=='undefined')window.__AIRUN_APP_READY='v58';
-  setSystemStatus('js','ok','V5.8 Live API đang chạy');
+  if(typeof window!=='undefined')window.__AIRUN_APP_READY='v60';
+  setSystemStatus('js','ok','V6.0 Live API đang chạy');
   safeCall('khu vực',()=>{$('area').innerHTML=WARDS.map(item=>`<option value="${item.key}">${escapeHTML(item.name)}</option>`).join('');});
   safeCall('khôi phục cài đặt',restorePlanSettings);
   safeCall('chọn khu vực',()=>{$('area').value=selectedKey;});
@@ -1096,7 +1075,7 @@ async function init(){
   safeCall('dữ liệu tức thời',()=>renderEnvironmentInstant(quickEnvironmentForWard(selectedKey),{updating:true}));
 
   // Bản đồ, API và GPS là các luồng độc lập; một luồng lỗi không làm chết nút bấm.
-  loadLeaflet().then(initMaps).catch(()=>{const fallback=$('mapFallback');if(fallback)fallback.hidden=false;});
+  loadLeaflet().then(initMaps).catch(error=>{console.warn('AIRUN map init:',error);const fallback=$('mapFallback');if(fallback)fallback.hidden=false;});
   selectWard(selectedKey,{analyze:true,force:true}).catch(error=>{console.warn('AIRUN initial live update:',error);setApiUpdateText('API chưa phản hồi · đang dùng dữ liệu dự phòng');});
 }
 
