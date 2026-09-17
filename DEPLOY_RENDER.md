@@ -1,14 +1,8 @@
-# Deploy AIRUN V7.0
+# Deploy AIRUN V7.1
 
-1. Giữ nguyên Static Site `airun-da-nang` trên Render.
-2. Giữ nguyên 2 Rewrite Rule Weather/Air hiện tại.
-3. Copy các file V7.0 vào root repo AIRUN.
-4. Commit + push branch `main`.
-5. Chờ Render `Deploy succeeded`.
-6. Hard refresh website một lần.
-7. Vào phần `Cung chạy gợi ý` → `Kết nối bản đồ nâng cao`.
-8. Dán Mapbox public token (`pk...`) và GraphHopper API key.
-9. Bấm `Lưu & kiểm tra kết nối`.
-10. Chọn 3 km / 5 km / 10 km / Theo kế hoạch → `Tạo cung chạy phù hợp`.
-
-Không gửi token/key vào chat hoặc commit trực tiếp vào GitHub.
+1. Giải nén và copy đè toàn bộ file vào repo AIRUN hiện tại.
+2. Không đổi hai Rewrite Rule Weather/Air trên Render.
+3. Commit và push main.
+4. Chờ Render Auto Deploy.
+5. Mở AIRUN và hard refresh một lần (Ctrl+Shift+R).
+6. Mapbox token và GraphHopper key đã lưu từ V7.0 vẫn được đọc lại.
