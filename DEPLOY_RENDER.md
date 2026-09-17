@@ -1,13 +1,14 @@
-# Deploy AIRUN V5.4 lên Render
+# Deploy AIRUN V6.2
 
-Không tạo site mới.
+Không tạo site Render mới.
 
-1. Giải nén ZIP V5.4.
-2. Copy đè các file vào repo AIRUN hiện tại.
-3. Commit + push branch `main`.
-4. Render Static Site `airun-da-nang` sẽ Auto Deploy.
-5. Sau khi `Live`, mở site và kiểm tra dòng `Ứng dụng: V5.4 đang chạy`.
+1. Xóa/thay các file cũ trong repo AIRUN (không xóa .git).
+2. Copy toàn bộ nội dung gói V6.2 vào root repo.
+3. Giữ nguyên 2 Rewrite Rule Weather/Air đang hoạt động trên Render.
+4. Commit + push branch main.
+5. Chờ Render Auto Deploy hoàn tất.
+6. Hard refresh một lần (Ctrl+Shift+R) sau deploy.
 
-Nếu vẫn thấy V5.3 hoặc thấp hơn:
-- hard refresh / xóa Site Data;
-- hoặc bấm `Sửa cache & tải lại` nếu watchdog hiển thị.
+Bản V6.2 không đăng ký Service Worker mới, nhằm tránh cache PWA cũ gây lỗi.
+
+Lưu ý routing: AIRUN dùng Valhalla public demo theo fair-use để thử tạo cung đi-về. Đây phù hợp demo/thi thử nghiệm; khi triển khai production đông người dùng nên chuyển routing sang backend/API riêng có SLA.

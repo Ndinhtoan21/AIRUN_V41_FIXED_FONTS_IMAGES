@@ -37,6 +37,13 @@
 .method-section{background:linear-gradient(120deg,#052f27,#0b7159);color:#fff;padding:58px max(24px,calc((100% - var(--max))/2));display:grid;grid-template-columns:.78fr 1.22fr;gap:58px;align-items:center}.method-section h2{font-size:35px;line-height:1.16;margin:0 0 12px;letter-spacing:-.035em}.method-section p:not(.eyebrow){color:#c7ded5;font-size:10px;line-height:1.8}.method-flow{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px}.method-flow span{border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);padding:9px 11px;border-radius:10px;font-size:8px;font-weight:800}.method-flow i{font-style:normal;color:var(--lime)}
 footer{background:#041f1a;color:#c7ddd5;padding:30px max(24px,calc((100% - var(--max))/2));display:grid;grid-template-columns:auto 1fr auto;gap:32px;align-items:center}.footer-brand{display:flex;align-items:center;gap:9px}.brand-mark.small{width:34px;height:34px;border-radius:10px;font-size:16px}.footer-brand b,.footer-brand small{display:block}.footer-brand b{font-size:11px;color:#fff}.footer-brand small{font-size:7px}footer>p{font-size:7px;margin:0;max-width:600px;line-height:1.7}.footer-links{display:flex;gap:10px;align-items:center}.footer-links a,.footer-links button{font-size:7px;color:#c7ddd5;background:transparent;border:0;text-decoration:underline;padding:0}.back-top{position:fixed;right:16px;bottom:16px;z-index:90;width:42px;height:42px;border:0;border-radius:50%;background:var(--green);color:#fff;box-shadow:var(--shadow);font-size:18px;opacity:0;pointer-events:none;transform:translateY(10px);transition:.2s}.back-top.show{opacity:1;pointer-events:auto;transform:none}.toast{position:fixed;left:50%;bottom:20px;z-index:9999;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#102f28;color:#fff;border-radius:12px;padding:10px 15px;box-shadow:var(--shadow);font-size:9px;transition:.25s;max-width:min(500px,calc(100% - 28px));text-align:center}.toast.show{opacity:1;transform:translate(-50%,0)}
 dialog{border:0;border-radius:20px;padding:25px;width:min(680px,calc(100% - 30px));box-shadow:0 28px 90px rgba(0,0,0,.28);color:var(--ink)}dialog::backdrop{background:rgba(2,31,24,.62);backdrop-filter:blur(5px)}dialog h2{font-size:28px;margin:0 0 15px}.dialog-close{position:absolute;right:13px;top:11px;border:0;background:#edf5f1;width:33px;height:33px;border-radius:50%;font-size:20px}.dialog-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.dialog-grid>div{padding:12px;border:1px solid var(--line);border-radius:11px;background:#f8fbf9}.dialog-grid b{font-size:10px}.dialog-grid p{font-size:8px;color:var(--muted);margin:3px 0 0;line-height:1.6}.dialog-note{font-size:8px;color:var(--muted);margin:12px 0}.dialog-note+.primary{width:100%}
+
+/* AIRUN V6.2 — simple plan → route → run flow */
+.route-plan-cta{width:100%;margin-top:9px;background:#0b6b53;color:#fff}.route-layout{grid-template-columns:minmax(0,1.55fr) minmax(310px,.55fr)}
+.route-map-wrap{overflow:hidden}.route-base-map{pointer-events:none}.suggested-route-svg{position:absolute;inset:0;width:100%;height:100%;z-index:4;pointer-events:none}.route-map-badge{position:absolute;left:14px;top:14px;z-index:5;padding:8px 11px;border-radius:999px;background:rgba(255,255,255,.94);box-shadow:var(--soft-shadow);font-size:8px;font-weight:900;color:var(--green)}
+.route-side{display:flex;flex-direction:column;gap:12px}.route-step{display:flex;gap:10px;align-items:flex-start}.route-step>span{display:grid;place-items:center;width:27px;height:27px;flex:0 0 27px;border-radius:50%;background:#e6f5ee;color:var(--green);font-size:10px;font-weight:900}.route-step small{display:block;font-size:6px;color:var(--muted);font-weight:900;letter-spacing:.08em}.route-step h3{margin:1px 0 2px;font-size:21px}.route-step p{margin:0;font-size:8px;color:var(--muted);line-height:1.5}
+.route-distance-chips{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}.route-distance-chips button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 4px;font-size:8px;font-weight:800}.route-distance-chips button.active{background:var(--green);border-color:var(--green);color:#fff}.route-generate{width:100%;min-height:44px}.route-result{padding:13px;border-radius:15px;background:#f1f7f4;border:1px solid #dcebe4}.route-result-head{display:flex;align-items:center;justify-content:space-between;gap:10px}.route-result-head span{font-size:6px;font-weight:900;letter-spacing:.08em;color:var(--green);background:#e0f1e9;padding:5px 7px;border-radius:999px}.route-result-head b{font-size:18px}.route-result h3{font-size:14px;margin:8px 0 3px}.route-result>p{font-size:8px;color:var(--muted);margin:0 0 10px}.route-result-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}.route-result-grid span{background:#fff;border-radius:10px;padding:8px}.route-result-grid small,.route-result-grid b{display:block}.route-result-grid small{font-size:6px;color:var(--muted)}.route-result-grid b{font-size:12px;margin-top:2px}.route-result-actions{display:grid;grid-template-columns:1.2fr .8fr;gap:6px;margin-top:9px}.route-result-actions button{padding:10px 8px;font-size:8px}.route-status{font-size:8px;color:var(--muted);margin:0;padding:8px 10px;background:#f6f8f7;border-radius:10px}.route-status.error{background:#fdecec;color:#923d3d}.route-status.ok{background:#e8f7ef;color:#126646}.route-area-options{border-top:1px solid var(--line);padding-top:10px}.route-area-options summary{cursor:pointer;font-size:8px;font-weight:800;color:var(--green)}.route-area-options label{font-size:7px}.route-env-head{margin-top:2px}.pace-result em{display:block;font-style:normal;font-size:9px;color:#b9ded0;margin-top:4px}
+@media(max-width:780px){.route-layout{grid-template-columns:1fr}.route-map-wrap{min-height:350px}.route-side{padding:16px}.route-distance-chips{grid-template-columns:repeat(2,1fr)}.route-step h3{font-size:19px}.route-step p,.route-status,.route-result>p{font-size:10px}.route-result-actions{grid-template-columns:1fr}.route-map-badge{font-size:10px}}
 @media(max-width:1050px){.nav{padding:0 18px}.nav nav{position:absolute;top:69px;left:13px;right:13px;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:8px;display:none;flex-direction:column;align-items:stretch}.nav nav.open{display:flex}.nav nav a{padding:10px}.menu-btn{display:inline-flex;align-items:center;gap:6px}.install-btn{display:none!important}.brand{flex:1}.hero{grid-template-columns:1fr 1fr;gap:32px}.hero h1{font-size:50px}.hero-visual .live-orbit{margin:-60px 15px 0 -15px}.tracker-shell{grid-template-columns:1fr 1fr}.tracker-dashboard{padding:22px}.metric-grid{grid-template-columns:repeat(3,1fr)}.compare-grid{grid-template-columns:repeat(3,1fr)}.map-layout{grid-template-columns:1.2fr .8fr}.tools-grid{grid-template-columns:1fr 1fr}.safety-card{grid-column:1/-1}}
 @media(max-width:780px){html{scroll-padding-top:76px}.status-inner{padding:0 12px}.status-inner>span:nth-child(2){white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.status-inner button{display:none}.nav{height:65px;padding:0 12px}.brand-mark{width:36px;height:36px;border-radius:11px}.brand strong{font-size:19px}.brand em{display:none}.menu-btn span{display:none}.hero{min-height:auto;grid-template-columns:1fr;padding:48px 16px 74px}.hero h1{font-size:46px}.hero-visual{margin-top:8px}.hero-photo-card{transform:none;border-radius:23px}.hero-photo-card img{height:360px}.hero-visual .live-orbit{margin:-48px 9px 0 22px}.orbit-metrics{grid-template-columns:repeat(4,1fr)}.quick-strip{margin:-35px 11px 0;grid-template-columns:1fr 1fr;padding:12px}.section-wrap{padding-left:12px;padding-right:12px;padding-top:70px}.section-heading{align-items:flex-start}.section-heading h2{font-size:32px}.tracker-shell{grid-template-columns:1fr}.tracker-map-wrap{min-height:440px}.tracker-dashboard{order:1}.tracker-map-wrap{order:2}.tracker-distance strong{font-size:64px}.story-grid{grid-template-columns:1fr}.planner-grid{grid-template-columns:1fr}.metric-grid{grid-template-columns:repeat(6,minmax(105px,1fr));overflow-x:auto;padding-bottom:5px;scroll-snap-type:x mandatory}.metric-grid>div{scroll-snap-align:start}.compare-grid{grid-template-columns:repeat(5,minmax(180px,1fr));overflow-x:auto;padding-bottom:8px;scroll-snap-type:x mandatory}.compare-card{scroll-snap-align:start}.map-layout{grid-template-columns:1fr}.map-wrap{min-height:420px}.tools-grid{grid-template-columns:1fr}.safety-card{grid-column:auto}.method-section{grid-template-columns:1fr;gap:18px;padding:43px 18px}.method-flow{justify-content:flex-start}footer{grid-template-columns:1fr;gap:13px;padding:25px 18px}.footer-links{flex-wrap:wrap}.dialog-grid{grid-template-columns:1fr}.run-summary{align-items:flex-start;flex-direction:column}.summary-metrics{width:100%;justify-content:space-between}}
 @media(max-width:480px){.hero{padding-top:36px}.hero h1{font-size:38px}.hero-photo-card img{height:300px}.hero-visual .live-orbit{margin:-30px 0 0}.hero-actions{display:grid}.hero-actions>*{width:100%}.hero-trust{display:grid}.orbit-metrics{grid-template-columns:1fr 1fr}.orbit-metrics>div:nth-child(2){border-right:0}.orbit-metrics>div:nth-child(-n+2){border-bottom:1px solid var(--line)}.quick-strip{grid-template-columns:1fr}.quick-strip>div{border-bottom:1px solid var(--line);padding:7px}.quick-strip>div:last-child{border:0}.section-heading{display:block}.section-heading .soft-btn,.journal-actions,.tracker-state{margin-top:12px}.section-heading .soft-btn{width:100%}.tracker-dashboard{padding:17px}.tracker-distance{padding:24px 0 18px}.tracker-distance strong{font-size:57px}.tracker-stats{grid-template-columns:1fr 1fr}.tracker-stats>div:nth-child(2){border-right:0}.tracker-stats>div:last-child{grid-column:1/-1;border-top:1px solid var(--line)}.tracker-env{grid-template-columns:1fr 1fr}.tracker-controls{grid-template-columns:1fr 1fr}.run-start{grid-column:1/-1}.field-pair{grid-template-columns:1fr}.decision-panel{grid-template-columns:1fr}.score-ring{width:82px;height:82px}.decision-actions{grid-template-columns:1fr 1fr}.map-wrap,.tracker-map-wrap{min-height:350px}.pace-inputs{grid-template-columns:1fr}.journal-item{grid-template-columns:auto 1fr}.journal-score{grid-column:2}.journal-delete{position:absolute;right:21px}.journal-item{position:relative}.summary-metrics{gap:12px}.summary-metrics b{font-size:13px}}
@@ -140,8 +147,8 @@ dialog{border:0;border-radius:20px;padding:25px;width:min(680px,calc(100% - 30px
 
 /* AIRUN V6 map core */
 .run-route-svg{position:absolute;inset:0;width:100%;height:100%;z-index:2;background:#eef6f2}.tracker-map-wrap{overflow:hidden}.map-fallback[hidden]{display:none!important}.area-map-frame{display:block}
-
-  </style>
+\n\n/* AIRUN V6.2 — GPS map always visible + live route overlay */\n.run-map-frame{position:absolute;inset:0;width:100%;height:100%;border:0;z-index:1;background:#e7f0ec}.run-route-svg{position:absolute;inset:0;width:100%;height:100%;z-index:2;background:transparent;pointer-events:none}.run-map-placeholder{position:absolute;left:14px;right:14px;bottom:14px;inset:auto 14px 14px 14px;z-index:5;display:flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid rgba(8,102,79,.12);border-radius:12px;background:rgba(255,255,255,.94);box-shadow:0 8px 24px rgba(15,48,38,.10);color:#49665c;text-align:left;backdrop-filter:blur(8px)}.run-map-placeholder span{font-size:18px;color:var(--green);flex:0 0 auto}.run-map-placeholder b{display:none}.run-map-placeholder p{font-size:8px;max-width:none;margin:0;line-height:1.45}.tracker-map-wrap{background:#dfeae5}.map-float{z-index:6}.run-map-frame+ .run-route-svg{display:block}\n@media(max-width:780px){.run-map-placeholder{left:9px;right:9px;bottom:9px;padding:8px 10px}.run-map-placeholder p{font-size:10px}.tracker-map-wrap{min-height:360px}}\n
+</style>
 </head>
 <body>
   <noscript><div class="noscript-banner">AIRUN cần JavaScript để GPS và dữ liệu trực tiếp hoạt động. Hãy bật JavaScript rồi tải lại trang.</div></noscript>
@@ -162,10 +169,9 @@ dialog{border:0;border-radius:20px;padding:25px;width:min(680px,calc(100% - 30px
     </a>
     <button id="menuBtn" class="menu-btn" type="button" aria-expanded="false" aria-controls="mainNav">☰ <span>Menu</span></button>
     <nav id="mainNav" aria-label="Điều hướng chính">
+      <a href="#planner">Kế hoạch</a>
+      <a href="#mapSection">Cung chạy</a>
       <a href="#tracker">Chạy GPS</a>
-      <a href="#planner">Phân tích</a>
-      <a href="#compare">So sánh</a>
-      <a href="#mapSection">Bản đồ</a>
       <a href="#journal">Nhật ký</a>
     </nav>
     <button id="installBtn" class="install-btn" type="button" hidden>＋ Cài AIRUN</button>
@@ -177,9 +183,9 @@ dialog{border:0;border-radius:20px;padding:25px;width:min(680px,calc(100% - 30px
       <div class="hero-content">
         <p class="eyebrow light">GPS · WEATHER · AIR QUALITY</p>
         <h1 id="heroTitle">Chạy thông minh hơn<br><span>giữa Đà Nẵng.</span></h1>
-        <p class="hero-lead">AIRUN dùng vị trí GPS của bạn để đọc điều kiện chạy tại nơi bạn đang đứng, phân tích thời tiết – AQI và theo dõi quãng đường, pace, tốc độ theo thời gian thực.</p>
+        <p class="hero-lead">AIRUN giúp bạn chọn mục tiêu, kiểm tra điều kiện, gợi ý cung chạy phù hợp rồi theo dõi GPS khi bắt đầu chạy.</p>
         <div class="hero-actions">
-          <a class="primary light-btn" href="#tracker">▶ Bắt đầu chạy GPS</a>
+          <a class="primary light-btn" href="#planner">✦ Lên kế hoạch chạy</a>
           <button id="heroGps" class="ghost-btn" type="button">⌖ Dùng vị trí hiện tại</button>
         </div>
         <div class="hero-trust">
@@ -232,84 +238,10 @@ dialog{border:0;border-radius:20px;padding:25px;width:min(680px,calc(100% - 30px
     </section>
 
     <section class="quick-strip" aria-label="Tính năng chính">
-      <div><span>01</span><b>GPS trực tiếp</b><small>Theo dõi quãng đường & pace</small></div>
-      <div><span>02</span><b>Không khí + thời tiết</b><small>AQI, PM2.5, nhiệt, mưa, gió, UV</small></div>
-      <div><span>03</span><b>Gợi ý giải thích được</b><small>Biết vì sao nên chạy hay đổi giờ</small></div>
-      <div><span>04</span><b>Riêng tư</b><small>Dữ liệu chạy lưu cục bộ trên máy</small></div>
-    </section>
-
-    <section class="section-wrap tracker-section" id="tracker">
-      <div class="section-heading tracker-heading">
-        <div><p class="eyebrow">GPS RUNNING TRACKER</p><h2>Bắt đầu một buổi chạy thật.</h2><p>Để điện thoại nhìn thấy bầu trời tốt nhất có thể. AIRUN tự lọc điểm GPS nhiễu trước khi cộng quãng đường.</p></div>
-        <span id="trackerStatus" class="tracker-state idle"><i></i> Chưa bắt đầu</span>
-      </div>
-
-      <div class="tracker-shell card">
-        <div class="tracker-dashboard">
-          <div class="tracker-location-row">
-            <div><small>VỊ TRÍ GPS</small><strong id="trackerLocation">Chưa có vị trí</strong><span id="trackerAccuracy">Độ chính xác —</span></div>
-            <div class="gps-bars" id="gpsBars" aria-label="Tín hiệu GPS"><i></i><i></i><i></i><i></i></div>
-          </div>
-
-          <div class="tracker-distance"><small>QUÃNG ĐƯỜNG</small><strong id="trackerDistance">0.00</strong><span>km</span></div>
-          <div class="tracker-stats">
-            <div><small>THỜI GIAN</small><strong id="trackerTime">00:00:00</strong></div>
-            <div><small>PACE</small><strong id="trackerPace">—</strong><span>phút/km</span></div>
-            <div><small>TỐC ĐỘ</small><strong id="trackerSpeed">0.0</strong><span>km/h</span></div>
-          </div>
-
-          <div class="tracker-env" id="trackerEnv">
-            <div><small>AQI</small><b id="trackerAqi">—</b></div>
-            <div><small>NHIỆT ĐỘ</small><b id="trackerTemp">—</b></div>
-            <div><small>GIÓ</small><b id="trackerWind">—</b></div>
-            <div><small>ĐÁNH GIÁ</small><b id="trackerAdvice">Chưa có</b></div>
-          </div>
-
-          <div class="tracker-alert" id="trackerAlert" role="status">
-            <span>◎</span><p><b>Sẵn sàng.</b> Bấm “Bắt đầu chạy” và cấp quyền vị trí cho trình duyệt.</p>
-          </div>
-
-          <div class="tracker-controls">
-            <button id="startRunBtn" class="run-start" type="button">▶ Bắt đầu chạy</button>
-            <button id="pauseRunBtn" class="run-secondary" type="button" disabled>Ⅱ Tạm dừng</button>
-            <button id="finishRunBtn" class="run-finish" type="button" disabled>■ Kết thúc</button>
-          </div>
-          <p class="tracker-note">Theo dõi GPS trên web hoạt động tốt nhất khi AIRUN đang mở trên màn hình. AIRUN sẽ cố giữ màn hình sáng nếu trình duyệt hỗ trợ Screen Wake Lock.</p>
-        </div>
-
-        <div class="tracker-map-wrap">
-          <svg id="runRouteSvg" class="run-route-svg" viewBox="0 0 600 420" role="img" aria-label="Sơ đồ lộ trình GPS trực tiếp"></svg>
-          <div id="runMapFallback" class="run-map-placeholder"><span>⌖</span><b>Lộ trình GPS sẽ xuất hiện ở đây</b><p>Nếu bản đồ nền chưa tải được, các chỉ số GPS vẫn tiếp tục hoạt động.</p></div>
-          <div class="map-float"><span class="live-dot"></span><b id="routePointCount">0</b> điểm GPS hợp lệ</div>
-        </div>
-      </div>
-
-      <div class="run-summary card" id="runSummary" hidden>
-        <div><p class="eyebrow">BUỔI CHẠY GẦN NHẤT</p><h3 id="summaryTitle">Đã hoàn thành</h3><p id="summaryMeta">—</p></div>
-        <div class="summary-metrics"><span><b id="summaryDistance">0.00 km</b>Quãng đường</span><span><b id="summaryTime">00:00</b>Thời gian</span><span><b id="summaryPace">—</b>Pace TB</span></div>
-      </div>
-    </section>
-
-    <section class="section-wrap city-stories" aria-labelledby="cityStoriesTitle">
-      <div class="section-heading city-heading">
-        <div><p class="eyebrow">CHẠY GIỮA ĐÀ NẴNG</p><h2>Không chỉ là dữ liệu trên màn hình.</h2><p>AIRUN đặt dữ liệu vào bối cảnh những không gian chạy thực tế của thành phố.</p></div>
-      </div>
-      <div class="story-grid">
-        <article class="story-card card">
-          <img src="https://images.unsplash.com/photo-1701396173275-835886dd72ce?auto=format&fit=crop&fm=jpg&q=72&w=900"
-               srcset="https://images.unsplash.com/photo-1701396173275-835886dd72ce?auto=format&fit=crop&fm=jpg&q=70&w=600 600w, https://images.unsplash.com/photo-1701396173275-835886dd72ce?auto=format&fit=crop&fm=jpg&q=72&w=1000 1000w" sizes="(max-width: 780px) calc(100vw - 24px), 50vw"
-               data-fallback="assets/route-riverside.svg" onerror="this.onerror=null;this.src=this.dataset.fallback"
-               alt="Ảnh thật Cầu Rồng Đà Nẵng bên sông Hàn" width="1200" height="800" loading="lazy" decoding="async">
-          <div><span class="story-kicker">VEN SÔNG HÀN</span><h3>Đẹp, bằng phẳng nhưng gió có thể đổi nhanh</h3><p>Các đoạn ven sông phù hợp duy trì nhịp; khi gió mạnh, AIRUN sẽ hạ điểm thuận lợi và nhắc bạn giảm cường độ.</p></div>
-        </article>
-        <article class="story-card card">
-          <img src="https://images.unsplash.com/photo-1623048192720-5a4471cc3f31?auto=format&fit=crop&fm=jpg&q=72&w=900"
-               srcset="https://images.unsplash.com/photo-1623048192720-5a4471cc3f31?auto=format&fit=crop&fm=jpg&q=70&w=600 600w, https://images.unsplash.com/photo-1623048192720-5a4471cc3f31?auto=format&fit=crop&fm=jpg&q=72&w=1000 1000w" sizes="(max-width: 780px) calc(100vw - 24px), 50vw"
-               data-fallback="assets/route-coast.svg" onerror="this.onerror=null;this.src=this.dataset.fallback"
-               alt="Ảnh thật có người tại bãi biển Mỹ Khê Đà Nẵng" width="1200" height="800" loading="lazy" decoding="async">
-          <div><span class="story-kicker">BIỂN MỸ KHÊ</span><h3>Thoáng mát, nhưng nắng và UV cần được để ý</h3><p>Buổi sáng sớm và chiều muộn thường dễ chịu hơn. AIRUN đưa UV, nhiệt cảm nhận và mưa vào cùng một phân tích.</p></div>
-        </article>
-      </div>
+      <div><span>01</span><b>Chọn mục tiêu</b><small>Bạn muốn chạy bao lâu và với nhịp nào?</small></div>
+      <div><span>02</span><b>Kiểm tra điều kiện</b><small>AQI, nhiệt độ, mưa, gió và UV</small></div>
+      <div><span>03</span><b>Tạo cung chạy</b><small>AIRUN ghép số km với vị trí của bạn</small></div>
+      <div><span>04</span><b>Bắt đầu chạy</b><small>GPS theo dõi quãng đường thực tế</small></div>
     </section>
 
     <section class="section-wrap planner-section" id="planner">
@@ -340,7 +272,7 @@ dialog{border:0;border-radius:20px;padding:25px;width:min(680px,calc(100% - 30px
               <em id="estimatedSpeed">≈ 8.6 km/h</em>
             </div>
           </div>
-          <p class="pace-help" id="paceHelp">Nhập pace dạng 6:30. AIRUN sẽ tính quãng đường ngay, không cần GPS hay API.</p>
+          <p class="pace-help" id="paceHelp">Pace là thời gian để chạy 1 km. Ví dụ 7:00 nghĩa là 7 phút/km. AIRUN tự tính số km cho bạn.</p>
           <fieldset>
             <legend>Cường độ</legend>
             <div class="segment" id="intensityGroup">
@@ -389,9 +321,127 @@ dialog{border:0;border-radius:20px;padding:25px;width:min(680px,calc(100% - 30px
           <label class="sr-only" for="note">Ghi chú cho buổi chạy</label>
           <textarea id="note" rows="2" maxlength="280" placeholder="Ghi chú ngắn cho buổi chạy hôm nay…"></textarea>
           <button id="savePlanBtn" class="save-btn" type="button">Lưu kế hoạch vào nhật ký</button>
+          <button id="routeFromPlanBtn" class="primary route-plan-cta" type="button">⌁ Tạo cung chạy theo kế hoạch</button>
         </article>
       </div>
     </section>
+
+    <section class="section-wrap map-section" id="mapSection">
+      <div class="section-heading">
+        <div><p class="eyebrow">CUNG CHẠY GỢI Ý</p><h2>Từ số km trong kế hoạch đến một cung chạy dễ hiểu.</h2><p>AIRUN lấy vị trí hiện tại nếu có. Nếu chưa dùng GPS, AIRUN bắt đầu từ khu vực bạn đã chọn.</p></div>
+        <button id="gpsBtn" class="soft-btn" type="button">⌖ Dùng vị trí của tôi</button>
+      </div>
+      <div class="map-layout route-layout card">
+        <div class="map-wrap route-map-wrap">
+          <iframe id="areaMapFrame" class="area-map-frame route-base-map" title="Bản đồ cung chạy gợi ý" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+          <svg id="suggestedRouteSvg" class="suggested-route-svg" viewBox="0 0 700 500" preserveAspectRatio="none" aria-hidden="true"></svg>
+          <div id="routeMapBadge" class="route-map-badge">Chưa tạo cung chạy</div>
+          <div id="mapFallback" class="map-fallback" hidden><b>Bản đồ trực tuyến chưa tải được</b><p>Bạn vẫn có thể tạo kế hoạch và mở vị trí trên OpenStreetMap.</p></div>
+        </div>
+        <aside class="map-side route-side">
+          <div class="route-step"><span>1</span><div><small>MỤC TIÊU</small><h3><b id="routeTargetValue">4.29</b> km</h3><p id="routeTargetHint">Lấy từ kế hoạch hiện tại.</p></div></div>
+          <div class="route-distance-chips" aria-label="Chọn nhanh quãng đường">
+            <button type="button" data-route-km="3">3 km</button><button type="button" data-route-km="5">5 km</button><button type="button" data-route-km="10">10 km</button><button type="button" id="routeUsePlan" class="active">Theo kế hoạch</button>
+          </div>
+          <div class="route-step route-origin"><span>2</span><div><small>ĐIỂM XUẤT PHÁT</small><h3 id="routeOriginName">Hải Châu</h3><p id="routeOriginNote">Dùng khu vực đã chọn. GPS sẽ chính xác hơn.</p></div></div>
+          <button id="generateRouteBtn" class="primary route-generate" type="button">⌁ Tạo cung chạy phù hợp</button>
+          <div id="routeResult" class="route-result" hidden>
+            <div class="route-result-head"><span id="routeSourcePill">CUNG GỢI Ý</span><b id="routeDistanceResult">— km</b></div>
+            <h3 id="routeResultTitle">Cung chạy đi – về</h3>
+            <p id="routeResultText">AIRUN sẽ ưu tiên cung đơn giản, dễ theo dõi và gần quãng đường mục tiêu.</p>
+            <div class="route-result-grid"><span><small>Thời gian dự kiến</small><b id="routeEta">—</b></span><span><small>Điều kiện</small><b id="routeEnvScore">—/10</b></span></div>
+            <div class="route-result-actions"><button id="useSuggestedRouteBtn" class="primary" type="button">▶ Dùng cung này & chạy</button><button id="regenerateRouteBtn" class="soft-btn" type="button">↻ Tạo cung khác</button></div>
+          </div>
+          <p id="routeStatusText" class="route-status">Chọn số km rồi bấm “Tạo cung chạy phù hợp”.</p>
+          <details class="route-area-options">
+            <summary>Không dùng GPS? Chọn khu vực khác</summary>
+            <label for="wardSearch">Tìm khu vực</label>
+            <input id="wardSearch" type="search" placeholder="Ví dụ: Sơn Trà, Hội An…" autocomplete="off">
+            <div id="wardList" class="ward-list"></div>
+          </details>
+          <div class="map-side-head route-env-head"><div><small>ĐIỀU KIỆN HIỆN TẠI</small><h3 id="mapAreaName">Hải Châu</h3></div><span id="mapAreaAqi">AQI —</span></div>
+          <p id="mapAreaDescription">AIRUN sẽ dùng dữ liệu môi trường tại điểm xuất phát để đánh giá kế hoạch.</p>
+          <div class="map-facts"><span><b id="mapAreaTemp">—°C</b>Nhiệt độ</span><span><b id="mapAreaScore">—/10</b>Thuận lợi</span></div>
+          <a id="openOsm" class="map-link" href="https://www.openstreetmap.org" target="_blank" rel="noopener">Mở vị trí trên OpenStreetMap ↗</a>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section-wrap tracker-section" id="tracker">
+      <div class="section-heading tracker-heading">
+        <div><p class="eyebrow">BƯỚC CUỐI · CHẠY GPS</p><h2>Bắt đầu chạy theo cung bạn đã chọn.</h2><p>Nếu bạn chưa tạo cung gợi ý, GPS vẫn hoạt động bình thường. Điểm GPS yếu vẫn hiện trên bản đồ nhưng không được cộng sai vào quãng đường.</p></div>
+        <span id="trackerStatus" class="tracker-state idle"><i></i> Chưa bắt đầu</span>
+      </div>
+
+      <div class="tracker-shell card">
+        <div class="tracker-dashboard">
+          <div class="tracker-location-row">
+            <div><small>VỊ TRÍ GPS</small><strong id="trackerLocation">Chưa có vị trí</strong><span id="trackerAccuracy">Độ chính xác —</span></div>
+            <div class="gps-bars" id="gpsBars" aria-label="Tín hiệu GPS"><i></i><i></i><i></i><i></i></div>
+          </div>
+
+          <div class="tracker-distance"><small>QUÃNG ĐƯỜNG</small><strong id="trackerDistance">0.00</strong><span>km</span></div>
+          <div class="tracker-stats">
+            <div><small>THỜI GIAN</small><strong id="trackerTime">00:00:00</strong></div>
+            <div><small>PACE</small><strong id="trackerPace">—</strong><span>phút/km</span></div>
+            <div><small>TỐC ĐỘ</small><strong id="trackerSpeed">0.0</strong><span>km/h</span></div>
+          </div>
+
+          <div class="tracker-env" id="trackerEnv">
+            <div><small>AQI</small><b id="trackerAqi">—</b></div>
+            <div><small>NHIỆT ĐỘ</small><b id="trackerTemp">—</b></div>
+            <div><small>GIÓ</small><b id="trackerWind">—</b></div>
+            <div><small>ĐÁNH GIÁ</small><b id="trackerAdvice">Chưa có</b></div>
+          </div>
+
+          <div class="tracker-alert" id="trackerAlert" role="status">
+            <span>◎</span><p><b>Sẵn sàng.</b> Bấm “Bắt đầu chạy” và cấp quyền vị trí cho trình duyệt.</p>
+          </div>
+
+          <div class="tracker-controls">
+            <button id="startRunBtn" class="run-start" type="button">▶ Bắt đầu chạy</button>
+            <button id="pauseRunBtn" class="run-secondary" type="button" disabled>Ⅱ Tạm dừng</button>
+            <button id="finishRunBtn" class="run-finish" type="button" disabled>■ Kết thúc</button>
+          </div>
+          <p class="tracker-note">Theo dõi GPS trên web hoạt động tốt nhất khi AIRUN đang mở trên màn hình. AIRUN sẽ cố giữ màn hình sáng nếu trình duyệt hỗ trợ Screen Wake Lock.</p>
+        </div>
+
+        <div class="tracker-map-wrap">
+          <iframe id="runMapFrame" class="run-map-frame" title="Bản đồ GPS buổi chạy" loading="eager" referrerpolicy="no-referrer-when-downgrade"></iframe>
+          <svg id="runRouteSvg" class="run-route-svg" viewBox="0 0 600 420" role="img" aria-label="Lộ trình GPS trực tiếp"></svg>
+          <div id="runMapFallback" class="run-map-placeholder"><span>⌖</span><b>Trạng thái GPS</b><p>Bản đồ đã sẵn sàng · bấm “Bắt đầu chạy” để định vị và vẽ lộ trình.</p></div>
+          <div class="map-float"><span class="live-dot"></span><b id="routePointCount">0</b> điểm GPS hợp lệ</div>
+        </div>
+      </div>
+
+      <div class="run-summary card" id="runSummary" hidden>
+        <div><p class="eyebrow">BUỔI CHẠY GẦN NHẤT</p><h3 id="summaryTitle">Đã hoàn thành</h3><p id="summaryMeta">—</p></div>
+        <div class="summary-metrics"><span><b id="summaryDistance">0.00 km</b>Quãng đường</span><span><b id="summaryTime">00:00</b>Thời gian</span><span><b id="summaryPace">—</b>Pace TB</span></div>
+      </div>
+    </section>
+
+    <section class="section-wrap city-stories" aria-labelledby="cityStoriesTitle">
+      <div class="section-heading city-heading">
+        <div><p class="eyebrow">CHẠY GIỮA ĐÀ NẴNG</p><h2>Không chỉ là dữ liệu trên màn hình.</h2><p>AIRUN đặt dữ liệu vào bối cảnh những không gian chạy thực tế của thành phố.</p></div>
+      </div>
+      <div class="story-grid">
+        <article class="story-card card">
+          <img src="https://images.unsplash.com/photo-1701396173275-835886dd72ce?auto=format&fit=crop&fm=jpg&q=72&w=900"
+               srcset="https://images.unsplash.com/photo-1701396173275-835886dd72ce?auto=format&fit=crop&fm=jpg&q=70&w=600 600w, https://images.unsplash.com/photo-1701396173275-835886dd72ce?auto=format&fit=crop&fm=jpg&q=72&w=1000 1000w" sizes="(max-width: 780px) calc(100vw - 24px), 50vw"
+               data-fallback="assets/route-riverside.svg" onerror="this.onerror=null;this.src=this.dataset.fallback"
+               alt="Ảnh thật Cầu Rồng Đà Nẵng bên sông Hàn" width="1200" height="800" loading="lazy" decoding="async">
+          <div><span class="story-kicker">VEN SÔNG HÀN</span><h3>Đẹp, bằng phẳng nhưng gió có thể đổi nhanh</h3><p>Các đoạn ven sông phù hợp duy trì nhịp; khi gió mạnh, AIRUN sẽ hạ điểm thuận lợi và nhắc bạn giảm cường độ.</p></div>
+        </article>
+        <article class="story-card card">
+          <img src="https://images.unsplash.com/photo-1623048192720-5a4471cc3f31?auto=format&fit=crop&fm=jpg&q=72&w=900"
+               srcset="https://images.unsplash.com/photo-1623048192720-5a4471cc3f31?auto=format&fit=crop&fm=jpg&q=70&w=600 600w, https://images.unsplash.com/photo-1623048192720-5a4471cc3f31?auto=format&fit=crop&fm=jpg&q=72&w=1000 1000w" sizes="(max-width: 780px) calc(100vw - 24px), 50vw"
+               data-fallback="assets/route-coast.svg" onerror="this.onerror=null;this.src=this.dataset.fallback"
+               alt="Ảnh thật có người tại bãi biển Mỹ Khê Đà Nẵng" width="1200" height="800" loading="lazy" decoding="async">
+          <div><span class="story-kicker">BIỂN MỸ KHÊ</span><h3>Thoáng mát, nhưng nắng và UV cần được để ý</h3><p>Buổi sáng sớm và chiều muộn thường dễ chịu hơn. AIRUN đưa UV, nhiệt cảm nhận và mưa vào cùng một phân tích.</p></div>
+        </article>
+      </div>
+    </section>
+
 
     <section class="section-wrap compare-section" id="compare">
       <div class="section-heading">
@@ -402,27 +452,6 @@ dialog{border:0;border-radius:20px;padding:25px;width:min(680px,calc(100% - 30px
       <p class="source-line">Nguồn trực tiếp: Open-Meteo Weather API và Air Quality API. AQI là dữ liệu mô hình theo ô lưới, không phải cảm biến đặt tại từng phường.</p>
     </section>
 
-    <section class="section-wrap map-section" id="mapSection">
-      <div class="section-heading">
-        <div><p class="eyebrow">BẢN ĐỒ KHU VỰC</p><h2>Chọn nhanh bằng bản đồ</h2><p>Mỗi dấu là tọa độ đại diện để lấy dữ liệu dự báo. GPS của bạn có thể chính xác hơn điểm đại diện này.</p></div>
-        <button id="gpsBtn" class="soft-btn" type="button">⌖ Tìm vị trí của tôi</button>
-      </div>
-      <div class="map-layout card">
-        <div class="map-wrap">
-          <iframe id="areaMapFrame" class="area-map-frame" title="Bản đồ khu vực đang chọn" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-          <div id="mapFallback" class="map-fallback" hidden><b>Bản đồ trực tuyến chưa tải được</b><p>Bạn vẫn có thể mở vị trí bằng liên kết OpenStreetMap ở bên phải.</p></div>
-        </div>
-        <aside class="map-side">
-          <div class="map-side-head"><div><small>KHU VỰC ĐANG CHỌN</small><h3 id="mapAreaName">Hải Châu</h3></div><span id="mapAreaAqi">AQI —</span></div>
-          <p id="mapAreaDescription">Trung tâm đô thị; phù hợp các cung đường ven sông và công viên.</p>
-          <div class="map-facts"><span><b id="mapAreaTemp">—°C</b>Nhiệt độ</span><span><b id="mapAreaScore">—/10</b>Thuận lợi</span></div>
-          <label for="wardSearch">Tìm nhanh khu vực</label>
-          <input id="wardSearch" type="search" placeholder="Ví dụ: Sơn Trà, Hội An…" autocomplete="off">
-          <div id="wardList" class="ward-list"></div>
-          <a id="openOsm" class="map-link" href="https://www.openstreetmap.org" target="_blank" rel="noopener">Mở trên OpenStreetMap ↗</a>
-        </aside>
-      </div>
-    </section>
 
     <section class="section-wrap tools-section" id="tools">
       <div class="section-heading"><div><p class="eyebrow">RUN TOOLKIT</p><h2>Những tiện ích nhỏ nhưng hữu dụng</h2></div></div>
@@ -432,9 +461,9 @@ dialog{border:0;border-radius:20px;padding:25px;width:min(680px,calc(100% - 30px
           <ul id="kitList" class="kit-list"><li>Giày chạy và trang phục thoáng</li><li>Nước uống cá nhân</li><li>Điện thoại đủ pin</li></ul>
         </article>
         <article class="card tool-card pace-card">
-          <div class="tool-icon">⏱</div><div><h3>Tính pace thủ công</h3><p>Dùng khi bạn muốn đặt mục tiêu trước buổi chạy.</p></div>
+          <div class="tool-icon">⏱</div><div><h3>Hiểu pace của bạn</h3><p>Nhập quãng đường và thời gian; AIRUN đổi thành phút cho mỗi 1 km.</p></div>
           <div class="pace-inputs"><label>Quãng đường<input id="paceDistance" type="number" min="0.5" max="100" step="0.1" value="5"><span>km</span></label><label>Thời gian<input id="paceMinutes" type="number" min="1" max="600" step="1" value="35"><span>phút</span></label></div>
-          <div class="pace-result"><small>PACE ƯỚC TÍNH</small><strong id="paceResult">7:00</strong><span>phút/km</span></div>
+          <div class="pace-result"><small>PACE ƯỚC TÍNH</small><strong id="paceResult">7 phút 00 giây</strong><span>cho mỗi 1 km</span><em id="paceSpeedResult">≈ 8.6 km/h</em></div>
         </article>
         <article class="card tool-card safety-card">
           <div class="tool-icon">🛡</div><div><h3>Checklist an toàn</h3><p>Kiểm tra nhanh trước khi rời nhà.</p></div>
@@ -479,7 +508,7 @@ dialog{border:0;border-radius:20px;padding:25px;width:min(680px,calc(100% - 30px
       <div><b>🌦 Thời tiết</b><p>Open-Meteo Weather API theo tọa độ GPS hoặc khu vực đã chọn. Đây là dữ liệu dự báo mô hình.</p></div>
       <div><b>🌿 Không khí</b><p>Open-Meteo Air Quality API cung cấp AQI Mỹ, PM2.5 và PM10 theo ô lưới dự báo.</p></div>
       <div><b>📍 GPS</b><p>GPS chỉ được bật khi bạn chủ động yêu cầu. Chế độ chạy dùng watchPosition để nhận các điểm liên tục và lọc điểm có độ chính xác kém.</p></div>
-      <div><b>🏃 Lộ trình</b><p>Lộ trình được vẽ trong phiên chạy. Nhật ký mặc định chỉ lưu tóm tắt, không lưu toàn bộ chuỗi tọa độ.</p></div>
+      <div><b>🏃 Lộ trình</b><p>Cung chạy gợi ý dùng mạng đường OpenStreetMap khi dịch vụ định tuyến công khai phản hồi; nếu dịch vụ bận, AIRUN chỉ hiển thị phác thảo tham khảo. GPS thực tế vẫn được theo dõi riêng khi chạy.</p></div>
       <div><b>💾 Nhật ký</b><p>Dữ liệu được lưu bằng localStorage trên thiết bị. AIRUN không có máy chủ riêng nhận nhật ký cá nhân.</p></div>
       <div><b>⚠ Dữ liệu dự phòng</b><p>Nếu API không truy cập được, AIRUN ưu tiên dữ liệu đã lưu gần đây; nếu không có sẽ hiển thị rõ là dữ liệu mô phỏng để giao diện không bị trống.</p></div>
     </div>
@@ -529,7 +558,7 @@ const WEATHER_TEXT = {
 };
 
 const STORAGE = {
-  plan:'airun-v58-plan', journal:'airun-v58-journal', cache:'airun-v58-live-cache', migrated:'airun-v58-migrated'
+  plan:'airun-v62-plan', journal:'airun-v62-journal', cache:'airun-v62-live-cache', migrated:'airun-v62-migrated'
 };
 
 const memoryCache = new Map();
@@ -551,9 +580,12 @@ let installPrompt = null;
 
 const tracker = {
   status:'idle', watchId:null, startedAt:0, pausedMs:0, pauseStarted:0, timer:null,
-  distanceKm:0, points:[], lastPoint:null, speedSamples:[], currentSpeed:0,
-  wakeLock:null, envLastAt:0, envPoint:null, lastEnvResult:null
+  distanceKm:0, points:[], rawPoints:[], rawPoint:null, lastPoint:null, speedSamples:[], currentSpeed:0,
+  wakeLock:null, envLastAt:0, envPoint:null, lastEnvResult:null,
+  lastFixAt:0, recoveryTimer:null, recoveryBusy:false, mapBounds:null, mapSrc:'', plannedRoute:null
 };
+
+const routePlanner={targetKm:null,usePlan:true,seed:0,current:null,busy:false};
 
 function ward(key = selectedKey){ return WARDS.find(item => item.key === key) || WARDS[0]; }
 function safeJSON(raw, fallback){ try{return JSON.parse(raw)}catch{return fallback} }
@@ -578,7 +610,7 @@ function asNumber(value,fallback=null){const n=Number(value);return Number.isFin
 function runAsyncTask(name,task){
   Promise.resolve().then(task).catch(error=>{
     console.error(`AIRUN async ${name}:`,error);
-    setSystemStatus('js','warn','V6.0 · tác vụ phụ lỗi');
+    setSystemStatus('js','warn','V6.2 · tác vụ phụ lỗi');
     showToast(`${name} chưa hoàn tất. Các chức năng khác vẫn hoạt động.`);
   });
 }
@@ -586,13 +618,13 @@ function runAsyncTask(name,task){
 if(typeof window!=='undefined'){
   window.addEventListener('error',event=>{
     console.error('AIRUN global error:',event.error||event.message);
-    setSystemStatus('js','warn','V6.0 · có lỗi phụ');
+    setSystemStatus('js','warn','V6.2 · có lỗi phụ');
     setApiUpdateText(`Lỗi giao diện phụ: ${String(event.message||'không xác định').slice(0,80)}`);
   });
   window.addEventListener('unhandledrejection',event=>{
     console.error('AIRUN rejected promise:',event.reason);
     // Một tác vụ phụ (bản đồ/GPS refine/animation) không được làm người dùng nghĩ toàn app đã chết.
-    setSystemStatus('js','warn','V6.0 · tác vụ phụ lỗi');
+    setSystemStatus('js','warn','V6.2 · tác vụ phụ lỗi');
   });
 }
 
@@ -892,6 +924,7 @@ function updatePlanEstimate(){
   if($('planSummaryPace'))$('planSummaryPace').textContent=`pace ${formatPace(estimate.pace)}/km`;
   if($('planSummaryDuration'))$('planSummaryDuration').textContent=`${plan.duration} phút`;
   if($('planSummarySpeed'))$('planSummarySpeed').textContent=`≈ ${estimate.speed.toFixed(1)} km/h`;
+  if(typeof syncRoutePlanCard==='function')syncRoutePlanCard(estimate);
   return estimate;
 }
 
@@ -1020,6 +1053,7 @@ function updateMapSide(){
   $('openOsm').href=`https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=15/${lat}/${lon}`;
   document.querySelectorAll('[data-ward]').forEach(button=>button.classList.toggle('active',button.dataset.ward===selectedKey));
   renderAreaMap(lat,lon,gpsLocation?.label||item.name);
+  if(typeof syncRouteOrigin==='function')syncRouteOrigin();
 }
 
 async function selectWard(key,{scroll=false,force=false,analyze=true}={}){
@@ -1089,7 +1123,7 @@ function loadLeaflet(){return Promise.resolve();}
 function initMaps(){
   updateMapSide();
   const fallback=$('mapFallback');if(fallback)fallback.hidden=true;
-  const runFallback=$('runMapFallback');if(runFallback)runFallback.style.display='grid';
+  resetRunMap();
 }
 
 function haversine(lat1,lon1,lat2,lon2){
@@ -1212,6 +1246,11 @@ async function useGPS({scroll=true}={}){
       localSet('airun-v54-last-gps',{lat:latitude,lon:longitude,accuracy,label,at:Date.now()});
       setSystemStatus('gps','ok',`±${round(accuracy)} m`);
       setGpsPlanUi();updateMapSide();showUserMarker(latitude,longitude,accuracy);
+      if(tracker.status==='idle'){
+        const preview={lat:latitude,lon:longitude,accuracy:Number(accuracy||999),timestamp:Date.now()};
+        tracker.rawPoint=preview;tracker.rawPoints=[{...preview,_seenAt:Date.now()}];tracker.mapBounds=runMapBoundsAround(latitude,longitude);tracker.mapSrc='';setRunBasemap(tracker.mapBounds,true);renderRunRoute();
+        setRunMapHint(`Vị trí GPS đã sẵn sàng ±${round(accuracy)} m · bấm “Bắt đầu chạy” để ghi quãng đường.`,true);
+      }
       const quick=quickEnvironmentForGps(gpsLocation);renderEnvironmentInstant(quick,{updating:refreshEnvironment});
       $('heroLocationNote').textContent=`GPS đã kết nối ±${round(accuracy)} m${pos.__airunFix==='fast'?' · đang cải thiện độ chính xác ở nền':''}.`;
       if(refreshEnvironment){
@@ -1255,6 +1294,105 @@ async function useGPS({scroll=true}={}){
     gpsButtons.forEach(button=>setBusy(button,false));
   }
 }
+
+function syncRoutePlanCard(estimate=planEstimate(currentPlan())){
+  if(routePlanner.usePlan||!Number.isFinite(routePlanner.targetKm))routePlanner.targetKm=clamp(Number(estimate.distance)||3,1,30);
+  const value=$('routeTargetValue'),hint=$('routeTargetHint');
+  if(value)value.textContent=routePlanner.targetKm.toFixed(routePlanner.targetKm<10?2:1);
+  if(hint)hint.textContent=routePlanner.usePlan?`Theo kế hoạch ${currentPlan().duration} phút · pace ${formatPace(estimate.pace)}/km.`:'Bạn đã chọn nhanh số km riêng cho cung chạy.';
+  document.querySelectorAll('[data-route-km]').forEach(btn=>btn.classList.toggle('active',!routePlanner.usePlan&&Math.abs(Number(btn.dataset.routeKm)-routePlanner.targetKm)<.05));
+  const usePlan=$('routeUsePlan');if(usePlan)usePlan.classList.toggle('active',routePlanner.usePlan);
+  const gen=$('generateRouteBtn');if(gen&&!routePlanner.busy)gen.textContent=`⌁ Tạo cung khoảng ${routePlanner.targetKm.toFixed(routePlanner.targetKm<10?1:0)} km`;
+}
+function routeOrigin(){
+  if(gpsLocation)return {lat:gpsLocation.lat,lon:gpsLocation.lon,label:gpsLocation.label||'Vị trí GPS',accuracy:gpsLocation.accuracy,mode:'gps'};
+  const item=ward();return {lat:item.lat,lon:item.lon,label:item.name,accuracy:null,mode:'ward'};
+}
+function syncRouteOrigin(){
+  const origin=routeOrigin();
+  if($('routeOriginName'))$('routeOriginName').textContent=origin.label;
+  if($('routeOriginNote'))$('routeOriginNote').textContent=origin.mode==='gps'?`GPS ±${round(origin.accuracy||0)} m · sẽ dùng làm điểm xuất phát.`:'Đang dùng tâm khu vực đại diện. Bấm “Dùng vị trí của tôi” để chính xác hơn.';
+}
+function setRouteStatus(text,tone=''){
+  const node=$('routeStatusText');if(!node)return;node.textContent=text;node.className=`route-status ${tone}`.trim();
+}
+function routeBounds(points){
+  if(!points?.length){const o=routeOrigin();return runMapBoundsAround(o.lat,o.lon);}
+  const lats=points.map(p=>p.lat),lons=points.map(p=>p.lon);let minLat=Math.min(...lats),maxLat=Math.max(...lats),minLon=Math.min(...lons),maxLon=Math.max(...lons);
+  const centerLat=(minLat+maxLat)/2,cos=Math.max(.35,Math.cos(centerLat*Math.PI/180));
+  const minLatSpan=.010,minLonSpan=.012/cos;let latSpan=Math.max(maxLat-minLat,minLatSpan),lonSpan=Math.max(maxLon-minLon,minLonSpan);latSpan*=1.3;lonSpan*=1.3;
+  const cLat=(minLat+maxLat)/2,cLon=(minLon+maxLon)/2;return {left:cLon-lonSpan/2,right:cLon+lonSpan/2,bottom:cLat-latSpan/2,top:cLat+latSpan/2};
+}
+function osmEmbedBoundsUrl(bounds){
+  const bbox=`${bounds.left.toFixed(6)},${bounds.bottom.toFixed(6)},${bounds.right.toFixed(6)},${bounds.top.toFixed(6)}`;
+  return `https://www.openstreetmap.org/export/embed.html?bbox=${encodeURIComponent(bbox)}&layer=mapnik`;
+}
+function projectRoute(points,bounds,w=700,h=500){
+  const x=lon=>((lon-bounds.left)/(bounds.right-bounds.left))*w,y=lat=>h-((lat-bounds.bottom)/(bounds.top-bounds.bottom))*h;
+  return {x,y,path:points.map((p,i)=>`${i?'L':'M'} ${x(p.lon).toFixed(1)} ${y(p.lat).toFixed(1)}`).join(' ')};
+}
+function renderSuggestedRoute(route){
+  if(!route?.points?.length)return;
+  const bounds=routeBounds(route.points),frame=$('areaMapFrame'),svg=$('suggestedRouteSvg');
+  if(frame){const src=osmEmbedBoundsUrl(bounds);frame.src=src;frame.dataset.src=src;}
+  if(svg){const {x,y,path}=projectRoute(route.points,bounds);const first=route.points[0],last=route.points[route.points.length-1];const stroke=route.source==='network'?'#0b6b53':'#d28a22';const dash=route.source==='network'?'':'stroke-dasharray="10 8"';svg.innerHTML=`<path d="${path}" fill="none" stroke="#fff" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" opacity=".95"/><path d="${path}" fill="none" stroke="${stroke}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" ${dash}/><circle cx="${x(first.lon).toFixed(1)}" cy="${y(first.lat).toFixed(1)}" r="11" fill="#fff" stroke="${stroke}" stroke-width="6"/><circle cx="${x(last.lon).toFixed(1)}" cy="${y(last.lat).toFixed(1)}" r="5" fill="${stroke}"/>`;}
+  const badge=$('routeMapBadge');if(badge)badge.textContent=route.source==='network'?`Cung đường thực tế · ${route.distanceKm.toFixed(2)} km`:`Phác thảo tham khảo · ${route.distanceKm.toFixed(2)} km`;
+}
+function destinationPoint(lat,lon,distanceKm,bearingDeg){
+  const R=6371,δ=distanceKm/R,θ=bearingDeg*Math.PI/180,φ1=lat*Math.PI/180,λ1=lon*Math.PI/180;
+  const φ2=Math.asin(Math.sin(φ1)*Math.cos(δ)+Math.cos(φ1)*Math.sin(δ)*Math.cos(θ));
+  const λ2=λ1+Math.atan2(Math.sin(θ)*Math.sin(δ)*Math.cos(φ1),Math.cos(δ)-Math.sin(φ1)*Math.sin(φ2));
+  return {lat:φ2*180/Math.PI,lon:λ2*180/Math.PI};
+}
+function decodePolyline6(str){
+  let index=0,lat=0,lon=0;const coords=[],factor=1e6;
+  while(index<str.length){let result=0,shift=0,b;do{b=str.charCodeAt(index++)-63;result|=(b&0x1f)<<shift;shift+=5;}while(b>=0x20&&index<=str.length);const dlat=(result&1)?~(result>>1):(result>>1);lat+=dlat;result=0;shift=0;do{b=str.charCodeAt(index++)-63;result|=(b&0x1f)<<shift;shift+=5;}while(b>=0x20&&index<=str.length);const dlon=(result&1)?~(result>>1):(result>>1);lon+=dlon;coords.push({lat:lat/factor,lon:lon/factor});}
+  return coords;
+}
+async function fetchPedestrianOutAndBack(origin,targetKm,bearing){
+  const outward=Math.max(.45,targetKm*.42),dest=destinationPoint(origin.lat,origin.lon,outward,bearing);
+  const body={locations:[{lat:origin.lat,lon:origin.lon},{lat:dest.lat,lon:dest.lon},{lat:origin.lat,lon:origin.lon}],costing:'pedestrian',units:'kilometers',directions_options:{units:'kilometers'}};
+  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),4500);
+  try{
+    const res=await fetch('https://valhalla1.openstreetmap.de/route',{method:'POST',mode:'cors',cache:'no-store',signal:controller.signal,headers:{'Content-Type':'application/json','X-Client-Id':'airun-da-nang.onrender.com'},body:JSON.stringify(body)});
+    const data=await res.json();if(!res.ok||!data?.trip?.legs?.length)throw new Error(data?.error||`Routing HTTP ${res.status}`);
+    const pts=[];for(const leg of data.trip.legs){const legPts=decodePolyline6(leg.shape||'');if(pts.length&&legPts.length)legPts.shift();pts.push(...legPts);}
+    const distance=Number(data.trip.summary?.length)||targetKm;return {points:pts,distanceKm:distance,source:'network',bearing};
+  }finally{clearTimeout(timer);}
+}
+function approximateLoop(origin,targetKm,seed=0){
+  const radius=Math.max(.3,targetKm/(2*Math.PI)),bearings=[270,315,0,45,90,135,180,225].map(v=>(v+seed*35)%360),pts=[{lat:origin.lat,lon:origin.lon}];
+  for(let i=0;i<8;i++)pts.push(destinationPoint(origin.lat,origin.lon,radius,bearings[i]));pts.push({lat:origin.lat,lon:origin.lon});
+  let d=0;for(let i=1;i<pts.length;i++)d+=haversine(pts[i-1].lat,pts[i-1].lon,pts[i].lat,pts[i].lon);return {points:pts,distanceKm:d,source:'approx',bearing:null};
+}
+async function generateSuggestedRoute({regenerate=false}={}){
+  if(routePlanner.busy)return;routePlanner.busy=true;const btn=$('generateRouteBtn');setBusy(btn,true,'Đang tìm cung chạy…');
+  if(regenerate)routePlanner.seed=(routePlanner.seed+1)%6;
+  const target=clamp(Number(routePlanner.targetKm||planEstimate().distance)||3,1,30),origin=routeOrigin();
+  setRouteStatus(`Đang tìm cung khoảng ${target.toFixed(1)} km từ ${origin.label}…`);
+  let route=null,networkError=null;const bearings=[270,0,180,225,315,90];
+  for(let i=0;i<1&&!route;i++){
+    const bearing=bearings[(routePlanner.seed+i)%bearings.length];
+    try{const candidate=await fetchPedestrianOutAndBack(origin,target,bearing);if(candidate.points.length>5)route=candidate;}catch(error){networkError=error;console.warn('AIRUN route service:',error);}
+  }
+  if(!route)route=approximateLoop(origin,target,routePlanner.seed);
+  route.targetKm=target;route.origin=origin;route.generatedAt=Date.now();routePlanner.current=route;renderSuggestedRoute(route);
+  const pace=planEstimate().pace,etaMin=route.distanceKm*pace,score=activeResult?.score??null;
+  $('routeResult').hidden=false;$('routeDistanceResult').textContent=`${route.distanceKm.toFixed(2)} km`;$('routeEta').textContent=`≈ ${Math.round(etaMin)} phút`;$('routeEnvScore').textContent=score!==null?`${score}/10`:'—';
+  $('routeSourcePill').textContent=route.source==='network'?'THEO ĐƯỜNG THỰC TẾ':'PHÁC THẢO THAM KHẢO';
+  $('routeResultTitle').textContent=route.source==='network'?'Cung đi – về dễ theo dõi':'Vùng chạy ước tính';
+  $('routeResultText').textContent=route.source==='network'?`Cung được ghép theo mạng đường đi bộ và gần mục tiêu ${target.toFixed(1)} km. Bạn có thể tạo lại để đổi hướng.`:'Dịch vụ định tuyến công khai chưa phản hồi. Đường nét đứt chỉ minh họa phạm vi quãng đường, không dùng để dẫn đường.';
+  setRouteStatus(route.source==='network'?`Đã tạo cung ${route.distanceKm.toFixed(2)} km · chênh ${(route.distanceKm-target)>=0?'+':''}${(route.distanceKm-target).toFixed(2)} km so với mục tiêu.`:`Chưa lấy được đường phố thực tế${networkError?' · '+apiErrorLabel(networkError):''}. Đang hiển thị phác thảo.`,route.source==='network'?'ok':'error');
+  const open=$('openOsm');if(open)open.href=`https://www.openstreetmap.org/?mlat=${origin.lat}&mlon=${origin.lon}#map=15/${origin.lat}/${origin.lon}`;
+  setBusy(btn,false);routePlanner.busy=false;syncRoutePlanCard();return route;
+}
+function useSuggestedRoute(){
+  const route=routePlanner.current;if(!route){showToast('Hãy tạo cung chạy trước.');return;}
+  tracker.plannedRoute=route;
+  tracker.mapBounds=routeBounds(route.points);tracker.mapSrc='';setRunBasemap(tracker.mapBounds,true);renderRunRoute();
+  setRunMapHint(`Đã nạp cung gợi ý ${route.distanceKm.toFixed(2)} km · đường xanh lam là kế hoạch, GPS thực tế sẽ được vẽ khi bạn chạy.`,true);
+  $('tracker').scrollIntoView({behavior:'smooth'});showToast(`Đã đưa cung ${route.distanceKm.toFixed(2)} km vào GPS Tracker.`);
+}
 async function compareAreas(){
   const button=$('compareBtn');setBusy(button,true,'Đang so sánh…');$('compareGrid').innerHTML='<div class="empty-state">Đang tải dữ liệu cho 5 khu vực…</div>';
   const keys=[selectedKey,'SonTra','NguHanhSon','HoaXuan','HoiAn'].filter((key,index,array)=>array.indexOf(key)===index).slice(0,5);while(keys.length<5){const extra=WARDS.find(item=>!keys.includes(item.key));keys.push(extra.key);}
@@ -1267,8 +1405,11 @@ async function compareAreas(){
 }
 
 function calculatePace(){
-  const distance=Number($('paceDistance').value),minutes=Number($('paceMinutes').value);if(distance<=0||minutes<=0){$('paceResult').textContent='—';return;}
-  $('paceResult').textContent=formatPace(minutes/distance);
+  const distance=Number($('paceDistance').value),minutes=Number($('paceMinutes').value);
+  if(distance<=0||minutes<=0){$('paceResult').textContent='—';if($('paceSpeedResult'))$('paceSpeedResult').textContent='—';return;}
+  const pace=minutes/distance,whole=Math.floor(pace),sec=Math.round((pace-whole)*60),speed=60/pace;
+  $('paceResult').textContent=`${whole} phút ${String(sec===60?0:sec).padStart(2,'0')} giây`;
+  if($('paceSpeedResult'))$('paceSpeedResult').textContent=`≈ ${speed.toFixed(1)} km/h`;
 }
 
 function formatDuration(seconds){
@@ -1292,23 +1433,93 @@ function updateTrackerMetrics(){
   $('trackerDistance').textContent=tracker.distanceKm.toFixed(2);const seconds=trackerElapsedSeconds();$('trackerTime').textContent=formatDuration(seconds);
   $('trackerPace').textContent=tracker.distanceKm>=.05?formatPace((seconds/60)/tracker.distanceKm):'—';$('trackerSpeed').textContent=round(tracker.currentSpeed,1).toFixed(1);$('routePointCount').textContent=tracker.points.length;
 }
+function runMapBoundsAround(lat,lon){
+  const centerLat=Number(lat),centerLon=Number(lon);
+  const halfLat=.0062;
+  const cos=Math.max(.35,Math.cos(centerLat*Math.PI/180));
+  const halfLon=.0078/cos;
+  return {left:centerLon-halfLon,right:centerLon+halfLon,bottom:centerLat-halfLat,top:centerLat+halfLat};
+}
+function runMapEmbedUrl(bounds){
+  const bbox=`${bounds.left.toFixed(6)},${bounds.bottom.toFixed(6)},${bounds.right.toFixed(6)},${bounds.top.toFixed(6)}`;
+  return `https://www.openstreetmap.org/export/embed.html?bbox=${encodeURIComponent(bbox)}&layer=mapnik`;
+}
+function pointInsideRunBounds(point,bounds,margin=.12){
+  if(!point||!bounds)return false;
+  const w=bounds.right-bounds.left,h=bounds.top-bounds.bottom;
+  return point.lon>bounds.left+w*margin&&point.lon<bounds.right-w*margin&&point.lat>bounds.bottom+h*margin&&point.lat<bounds.top-h*margin;
+}
+function expandedRunBounds(point){
+  const pts=[...(tracker.plannedRoute?.points||[]),...(tracker.rawPoints||[]),...(tracker.points||[])];if(point)pts.push(point);
+  if(!pts.length){const item=ward();return runMapBoundsAround(item.lat,item.lon);}
+  const lats=pts.map(p=>p.lat),lons=pts.map(p=>p.lon);
+  let minLat=Math.min(...lats),maxLat=Math.max(...lats),minLon=Math.min(...lons),maxLon=Math.max(...lons);
+  const centerLat=(minLat+maxLat)/2,cos=Math.max(.35,Math.cos(centerLat*Math.PI/180));
+  const minLatSpan=.0124,minLonSpan=.0156/cos;
+  let latSpan=Math.max(maxLat-minLat,minLatSpan),lonSpan=Math.max(maxLon-minLon,minLonSpan);
+  const centerLon=(minLon+maxLon)/2;latSpan*=1.28;lonSpan*=1.28;
+  return {left:centerLon-lonSpan/2,right:centerLon+lonSpan/2,bottom:centerLat-latSpan/2,top:centerLat+latSpan/2};
+}
+function setRunBasemap(bounds,force=false){
+  const frame=$('runMapFrame');if(!frame)return;
+  const next=runMapEmbedUrl(bounds);
+  if(force||tracker.mapSrc!==next){tracker.mapSrc=next;frame.src=next;frame.dataset.src=next;}
+}
+function setRunMapHint(text,visible=true){
+  const node=$('runMapFallback');if(!node)return;
+  node.style.display=visible?'flex':'none';
+  const p=node.querySelector('p');if(p)p.textContent=text||'';
+}
+function ensureRunMapBounds(point,force=false){
+  if(!tracker.mapBounds||force||!pointInsideRunBounds(point,tracker.mapBounds,.10)){
+    tracker.mapBounds=expandedRunBounds(point);setRunBasemap(tracker.mapBounds,true);
+  }
+}
 function renderRunRoute(){
   const svg=$('runRouteSvg');if(!svg)return;
-  const pts=tracker.points||[];
-  if(!pts.length){svg.innerHTML='';return;}
-  const lats=pts.map(p=>p.lat),lons=pts.map(p=>p.lon),minLat=Math.min(...lats),maxLat=Math.max(...lats),minLon=Math.min(...lons),maxLon=Math.max(...lons);
-  const spanLat=Math.max(maxLat-minLat,0.00015),spanLon=Math.max(maxLon-minLon,0.00015),pad=24,w=600,h=420;
-  const xy=p=>[pad+((p.lon-minLon)/spanLon)*(w-pad*2),h-pad-((p.lat-minLat)/spanLat)*(h-pad*2)];
-  const coords=pts.map(p=>xy(p));const path=coords.map((p,i)=>`${i?'L':'M'} ${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join(' ');
-  const first=coords[0],last=coords[coords.length-1];
-  svg.setAttribute('viewBox',`0 0 ${w} ${h}`);
-  svg.innerHTML=`<defs><pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse"><path d="M 30 0 L 0 0 0 30" fill="none" stroke="#d8e6df" stroke-width="1"/></pattern></defs><rect width="100%" height="100%" fill="#eef6f2"/><rect width="100%" height="100%" fill="url(#grid)"/><path d="${path}" fill="none" stroke="#08664f" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${first[0]}" cy="${first[1]}" r="9" fill="#ffffff" stroke="#08664f" stroke-width="5"/><circle cx="${last[0]}" cy="${last[1]}" r="10" fill="#c8f16b" stroke="#08664f" stroke-width="5"/>`;
-  const f=$('runMapFallback');if(f)f.style.display=pts.length>=2?'none':'grid';
+  const raw=tracker.rawPoint;
+  if(!tracker.mapBounds){const base=raw||gpsLocation||ward();tracker.mapBounds=runMapBoundsAround(base.lat,base.lon);setRunBasemap(tracker.mapBounds,true);}
+  const bounds=tracker.mapBounds,w=600,h=420;
+  const x=lon=>((lon-bounds.left)/(bounds.right-bounds.left))*w;
+  const y=lat=>h-((lat-bounds.bottom)/(bounds.top-bounds.bottom))*h;
+  const pathFor=pts=>pts.map((p,i)=>`${i?'L':'M'} ${x(p.lon).toFixed(1)} ${y(p.lat).toFixed(1)}`).join(' ');
+  const accepted=tracker.points||[],rawPts=tracker.rawPoints||[];
+  let markup='';
+  const planned=tracker.plannedRoute?.points||[];
+  if(planned.length>=2)markup+=`<path d="${pathFor(planned)}" fill="none" stroke="#246bce" stroke-opacity=".85" stroke-width="6" stroke-dasharray="10 7" stroke-linecap="round" stroke-linejoin="round"/>`;
+  if(rawPts.length>=2)markup+=`<path d="${pathFor(rawPts)}" fill="none" stroke="#4b8f7e" stroke-opacity=".35" stroke-width="4" stroke-dasharray="7 8" stroke-linecap="round" stroke-linejoin="round"/>`;
+  if(accepted.length>=2)markup+=`<path d="${pathFor(accepted)}" fill="none" stroke="#08664f" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>`;
+  if(accepted.length){const first=accepted[0];markup+=`<circle cx="${x(first.lon).toFixed(1)}" cy="${y(first.lat).toFixed(1)}" r="8" fill="#fff" stroke="#08664f" stroke-width="5"/>`;}
+  if(raw){
+    const centerLat=(bounds.top+bounds.bottom)/2;
+    const metersPerPxX=((bounds.right-bounds.left)*111320*Math.max(.35,Math.cos(centerLat*Math.PI/180)))/w;
+    const metersPerPxY=((bounds.top-bounds.bottom)*111320)/h;
+    const radius=clamp(Number(raw.accuracy||0)/Math.max(1,(metersPerPxX+metersPerPxY)/2),6,75);
+    const cx=x(raw.lon),cy=y(raw.lat);
+    markup+=`<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${radius.toFixed(1)}" fill="#3275dc" fill-opacity=".10" stroke="#3275dc" stroke-opacity=".38" stroke-width="2"/>`;
+    markup+=`<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="10" fill="#3275dc" stroke="#fff" stroke-width="5"/>`;
+  }
+  svg.setAttribute('viewBox',`0 0 ${w} ${h}`);svg.innerHTML=markup;
 }
 function updateRunMap(point,accepted=true){
-  if(accepted)renderRunRoute();
+  if(point){
+    tracker.rawPoint=point;tracker.lastFixAt=Date.now();
+    if(Number(point.accuracy||999)<=220){
+      const prev=tracker.rawPoints[tracker.rawPoints.length-1];
+      if(!prev||Date.now()-Number(prev._seenAt||0)>2500||haversine(prev.lat,prev.lon,point.lat,point.lon)*1000>4){
+        tracker.rawPoints.push({...point,_seenAt:Date.now()});if(tracker.rawPoints.length>80)tracker.rawPoints.shift();
+      }
+    }
+    ensureRunMapBounds(point);
+  }
+  renderRunRoute();
 }
-function resetRunMap(){const svg=$('runRouteSvg');if(svg)svg.innerHTML='';const f=$('runMapFallback');if(f)f.style.display='grid';}
+function resetRunMap(){
+  const svg=$('runRouteSvg');if(svg)svg.innerHTML='';
+  tracker.rawPoint=null;tracker.rawPoints=[];tracker.mapSrc='';
+  const base=gpsLocation||ward();tracker.mapBounds=tracker.plannedRoute?.points?.length?routeBounds(tracker.plannedRoute.points):runMapBoundsAround(base.lat,base.lon);setRunBasemap(tracker.mapBounds,true);renderRunRoute();
+  setRunMapHint(tracker.plannedRoute?`Cung gợi ý ${tracker.plannedRoute.distanceKm.toFixed(2)} km đã sẵn sàng · bấm “Bắt đầu chạy”.`:'Bản đồ đã sẵn sàng · bấm “Bắt đầu chạy” để định vị và vẽ lộ trình.',true);
+}
 
 async function requestWakeLock(){
   if(!('wakeLock' in navigator)||document.visibilityState!=='visible')return;
@@ -1318,10 +1529,24 @@ async function releaseWakeLock(){try{await tracker.wakeLock?.release();}catch{}t
 
 function startTrackerWatch(){
   if(!navigator.geolocation)return;
-  if(tracker.watchId!==null)navigator.geolocation.clearWatch(tracker.watchId);
-  tracker.watchId=navigator.geolocation.watchPosition(handleTrackPosition,handleTrackError,{enableHighAccuracy:true,maximumAge:3000,timeout:7000});
+  stopTrackerWatch();
+  tracker.lastFixAt=Date.now();
+  tracker.watchId=navigator.geolocation.watchPosition(handleTrackPosition,handleTrackError,{enableHighAccuracy:true,maximumAge:1500,timeout:20000});
+  tracker.recoveryTimer=setInterval(async()=>{
+    if(tracker.status!=='running'||tracker.recoveryBusy)return;
+    if(Date.now()-tracker.lastFixAt<12000)return;
+    tracker.recoveryBusy=true;
+    try{
+      const fallback=await geoPosition({enableHighAccuracy:false,timeout:5000,maximumAge:10000},6200);
+      if(tracker.status==='running')handleTrackPosition(fallback);
+    }catch{}finally{tracker.recoveryBusy=false;}
+  },8000);
 }
-function stopTrackerWatch(){if(tracker.watchId!==null&&navigator.geolocation){navigator.geolocation.clearWatch(tracker.watchId);tracker.watchId=null;}}
+function stopTrackerWatch(){
+  if(tracker.watchId!==null&&navigator.geolocation){navigator.geolocation.clearWatch(tracker.watchId);tracker.watchId=null;}
+  if(tracker.recoveryTimer){clearInterval(tracker.recoveryTimer);tracker.recoveryTimer=null;}
+  tracker.recoveryBusy=false;
+}
 
 function trackerAlert(tone,title,text,icon='◎'){
   const box=$('trackerAlert');box.className=`tracker-alert ${tone||''}`;box.innerHTML=`<span>${icon}</span><p><b>${escapeHTML(title)}</b> ${escapeHTML(text)}</p>`;
@@ -1342,14 +1567,30 @@ async function refreshTrackerEnvironment(point){
 function handleTrackPosition(position){
   if(tracker.status!=='running')return;
   const c=position.coords;const point={lat:c.latitude,lon:c.longitude,accuracy:Number(c.accuracy||999),timestamp:position.timestamp||Date.now()};
+  tracker.lastFixAt=Date.now();
   setSystemStatus('gps',point.accuracy<=80?'ok':'warn',`±${round(point.accuracy)} m`);
-  const near=nearestWard(point.lat,point.lon);$('trackerLocation').textContent=near.distance<25?near.item.name:'Vị trí hiện tại';$('trackerAccuracy').textContent=`Độ chính xác ±${round(point.accuracy)} m`;updateGpsBars(point.accuracy);updateRunMap(point,false);
+  const near=nearestWard(point.lat,point.lon);
+  $('trackerLocation').textContent=near.distance<25?near.item.name:'Vị trí hiện tại';
+  $('trackerAccuracy').textContent=`Độ chính xác ±${round(point.accuracy)} m`;
+  updateGpsBars(point.accuracy);
 
-  if(point.accuracy>80){tracker.currentSpeed=0;updateTrackerMetrics();trackerAlert('caution','Tín hiệu GPS yếu.',`Sai số hiện tại khoảng ±${round(point.accuracy)} m. AIRUN chưa cộng điểm này vào quãng đường.`,'⌖');return;}
+  // Luôn vẽ vị trí lên bản đồ, kể cả tín hiệu còn yếu. Chỉ phép tính quãng đường mới lọc điểm xấu.
+  updateRunMap(point,false);
 
-  if(!tracker.lastPoint){tracker.lastPoint=point;tracker.points.push(point);updateRunMap(point,true);updateTrackerMetrics();refreshTrackerEnvironment(point);return;}
+  if(point.accuracy>80){
+    tracker.currentSpeed=0;updateTrackerMetrics();
+    setRunMapHint(`Đã định vị ±${round(point.accuracy)} m · bản đồ vẫn theo dõi, nhưng AIRUN chờ sai số ≤80 m trước khi cộng quãng đường.`,true);
+    trackerAlert('caution','Đã có vị trí, nhưng GPS còn yếu.',`Sai số khoảng ±${round(point.accuracy)} m. Bản đồ vẫn cập nhật; quãng đường chưa được cộng để tránh sai số.`,'⌖');
+    return;
+  }
 
-  const dt=Math.max(.1,(point.timestamp-tracker.lastPoint.timestamp)/1000);const segmentKm=haversine(tracker.lastPoint.lat,tracker.lastPoint.lon,point.lat,point.lon);const segmentM=segmentKm*1000;
+  setRunMapHint(`GPS ±${round(point.accuracy)} m · đang ghi lộ trình chính xác.`,tracker.points.length<2);
+  if(!tracker.lastPoint){
+    tracker.lastPoint=point;tracker.points.push(point);updateRunMap(point,true);updateTrackerMetrics();refreshTrackerEnvironment(point);return;
+  }
+
+  const dt=Math.max(.1,(point.timestamp-tracker.lastPoint.timestamp)/1000);
+  const segmentKm=haversine(tracker.lastPoint.lat,tracker.lastPoint.lon,point.lat,point.lon),segmentM=segmentKm*1000;
   const noiseThreshold=Math.max(3,Math.min(12,(point.accuracy+tracker.lastPoint.accuracy)*.14));
   if(segmentM<noiseThreshold){tracker.currentSpeed=Number.isFinite(c.speed)&&c.speed>=0?c.speed*3.6:0;updateTrackerMetrics();return;}
 
@@ -1357,18 +1598,25 @@ function handleTrackPosition(position){
   if(segmentM>350||segmentSpeed>32){trackerAlert('caution','Đã bỏ một điểm GPS bất thường.',`Bước nhảy ${round(segmentM)} m không được cộng vào quãng đường.`,'⌖');return;}
 
   tracker.distanceKm+=segmentKm;tracker.lastPoint=point;tracker.points.push(point);
-  const rawSpeed=Number.isFinite(c.speed)&&c.speed>=0?c.speed*3.6:segmentSpeed;tracker.speedSamples.push(clamp(rawSpeed,0,32));if(tracker.speedSamples.length>5)tracker.speedSamples.shift();tracker.currentSpeed=tracker.speedSamples.reduce((a,b)=>a+b,0)/tracker.speedSamples.length;
+  const rawSpeed=Number.isFinite(c.speed)&&c.speed>=0?c.speed*3.6:segmentSpeed;
+  tracker.speedSamples.push(clamp(rawSpeed,0,32));if(tracker.speedSamples.length>5)tracker.speedSamples.shift();
+  tracker.currentSpeed=tracker.speedSamples.reduce((a,b)=>a+b,0)/tracker.speedSamples.length;
   updateRunMap(point,true);updateTrackerMetrics();refreshTrackerEnvironment(point);
+  if(tracker.points.length>=2)setRunMapHint('',false);
 }
 
 function handleTrackError(error){
-  if(error.code===1){setSystemStatus('gps','error','Bị chặn');trackerAlert('bad','Không có quyền GPS.','Hãy cho phép vị trí trong trình duyệt rồi bắt đầu lại.','!');abortTracker();}
-  else if(error.code===2){setSystemStatus('gps','warn','Chưa có vị trí');trackerAlert('caution','Chưa xác định được vị trí.','Di chuyển ra nơi thoáng hơn và giữ AIRUN đang mở.','⌖');}
-  else{setSystemStatus('gps','warn','Đang chờ tín hiệu');trackerAlert('caution','GPS phản hồi chậm.','AIRUN vẫn đang chờ vị trí mới.','◷');}
+  if(error.code===1){
+    setSystemStatus('gps','error','Bị chặn');trackerAlert('bad','Không có quyền GPS.','Hãy cho phép vị trí trong trình duyệt rồi bắt đầu lại.','!');abortTracker();
+  }else if(error.code===2){
+    setSystemStatus('gps','warn','Đang tìm lại vị trí');trackerAlert('caution','Tạm mất tín hiệu GPS.','AIRUN vẫn giữ bản đồ và đang tự tìm lại vị trí. Hãy giữ trang mở và ra nơi thoáng hơn.','⌖');
+  }else{
+    setSystemStatus('gps','warn','Chờ điểm GPS mới');trackerAlert('caution','GPS chưa có điểm mới.','AIRUN vẫn tiếp tục theo dõi và sẽ tự thử một vị trí dự phòng nếu tín hiệu chính xác cao bị đứng.','◷');
+  }
 }
 
 function resetTrackerData(){
-  tracker.startedAt=0;tracker.pausedMs=0;tracker.pauseStarted=0;tracker.distanceKm=0;tracker.points=[];tracker.lastPoint=null;tracker.speedSamples=[];tracker.currentSpeed=0;tracker.envLastAt=0;tracker.envPoint=null;tracker.lastEnvResult=null;resetRunMap();
+  tracker.startedAt=0;tracker.pausedMs=0;tracker.pauseStarted=0;tracker.distanceKm=0;tracker.points=[];tracker.rawPoints=[];tracker.rawPoint=null;tracker.lastPoint=null;tracker.speedSamples=[];tracker.currentSpeed=0;tracker.envLastAt=0;tracker.envPoint=null;tracker.lastEnvResult=null;tracker.lastFixAt=0;resetRunMap();
   $('trackerLocation').textContent='Đang chờ GPS…';$('trackerAccuracy').textContent='Độ chính xác —';updateGpsBars(NaN);$('trackerAqi').textContent='—';$('trackerTemp').textContent='—';$('trackerWind').textContent='—';$('trackerAdvice').textContent='Chưa có';$('routePointCount').textContent='0';updateTrackerMetrics();
 }
 
@@ -1394,7 +1642,7 @@ async function startRun(){
     const acc=Number(first.coords.accuracy||999);
     setSystemStatus('gps',acc>80?'warn':'ok',`±${round(acc)} m`);
     if(acc>80){
-      trackerAlert('caution','GPS đã kết nối nhưng còn yếu.',`Độ chính xác hiện tại khoảng ±${round(acc)} m. AIRUN đang chờ tín hiệu tốt hơn trước khi cộng quãng đường.`,'⌖');
+      trackerAlert('caution','GPS đã kết nối nhưng còn yếu.',`Độ chính xác hiện tại khoảng ±${round(acc)} m. Vị trí vẫn hiện trên bản đồ; AIRUN chờ tín hiệu tốt hơn trước khi cộng quãng đường.`,'⌖');
     }else{
       trackerAlert('good','GPS đã kết nối.',`Độ chính xác khoảng ±${round(acc)} m. AIRUN đang ghi lộ trình.`,'✓');
     }
@@ -1503,7 +1751,7 @@ function initPWA(){const button=$('installBtn');if(button)button.hidden=true;}
 
 async function runDiagnostics(){
   const button=$('diagnosticBtn');setBusy(button,true,'Đang kiểm tra…');
-  setSystemStatus('js','ok','V6.0 Live API đang chạy');updateConnection();
+  setSystemStatus('js','ok','V6.2 Plan → Route → Run');updateConnection();
   try{
     const permission=await geolocationPermissionState();
     setSystemStatus('gps',permission==='denied'?'error':permission==='granted'?'ok':'warn',permission==='denied'?'Bị chặn':permission==='granted'?'Đã cấp quyền':'Chưa cấp quyền');
@@ -1526,6 +1774,10 @@ function bindEvents(){
   on('compareBtn','click',()=>runAsyncTask('So sánh khu vực',compareAreas));on('gpsBtn','click',()=>runAsyncTask('GPS',()=>useGPS({scroll:false})));on('heroGps','click',()=>runAsyncTask('GPS',()=>useGPS({scroll:false})));on('plannerGpsBtn','click',()=>runAsyncTask('GPS',()=>useGPS({scroll:true})));
   on('clearGpsPlan','click',()=>runAsyncTask('Bỏ GPS',()=>selectWard(selectedKey,{analyze:true,force:true})));on('wardSearch','input',event=>renderWardControls(event.target.value));
   on('paceDistance','input',calculatePace);on('paceMinutes','input',calculatePace);on('savePlanBtn','click',saveJournal);on('exportBtn','click',exportJournal);
+  document.querySelectorAll('[data-route-km]').forEach(button=>button.addEventListener('click',()=>{routePlanner.usePlan=false;routePlanner.targetKm=Number(button.dataset.routeKm);syncRoutePlanCard();}));
+  on('routeUsePlan','click',()=>{routePlanner.usePlan=true;routePlanner.targetKm=planEstimate().distance;syncRoutePlanCard();});
+  on('generateRouteBtn','click',()=>runAsyncTask('Tạo cung chạy',()=>generateSuggestedRoute()));on('regenerateRouteBtn','click',()=>runAsyncTask('Tạo cung khác',()=>generateSuggestedRoute({regenerate:true})));on('useSuggestedRouteBtn','click',useSuggestedRoute);
+  on('routeFromPlanBtn','click',()=>{routePlanner.usePlan=true;routePlanner.targetKm=planEstimate().distance;syncRoutePlanCard();$('mapSection').scrollIntoView({behavior:'smooth'});setTimeout(()=>runAsyncTask('Tạo cung chạy',()=>generateSuggestedRoute()),450);});
   on('clearJournalBtn','click',()=>{if(journalRows().length&&confirm('Xóa toàn bộ nhật ký trên thiết bị này?')){localSet(STORAGE.journal,[]);renderJournal();showToast('Đã xóa nhật ký.');}});
   on('startRunBtn','click',startRun);on('pauseRunBtn','click',pauseOrResumeRun);on('finishRunBtn','click',finishRun);
   on('menuBtn','click',()=>{const nav=$('mainNav');if(!nav)return;const open=nav.classList.toggle('open');$('menuBtn')?.setAttribute('aria-expanded',String(open));});
@@ -1541,8 +1793,8 @@ let airunInitialized=false;
 async function init(){
   if(airunInitialized)return;airunInitialized=true;
   if(await clearLegacyServiceWorkerControl()) return;
-  if(typeof window!=='undefined')window.__AIRUN_APP_READY='v60';
-  setSystemStatus('js','ok','V6.0 Live API đang chạy');
+  if(typeof window!=='undefined')window.__AIRUN_APP_READY='v61';
+  setSystemStatus('js','ok','V6.2 Plan → Route → Run');
   safeCall('khu vực',()=>{$('area').innerHTML=WARDS.map(item=>`<option value="${item.key}">${escapeHTML(item.name)}</option>`).join('');});
   safeCall('khôi phục cài đặt',restorePlanSettings);
   safeCall('chọn khu vực',()=>{$('area').value=selectedKey;});
@@ -1551,6 +1803,7 @@ async function init(){
   safeCall('nhật ký',renderJournal);
   safeCall('pace',calculatePace);
   safeCall('ước tính kế hoạch',updatePlanEstimate);
+  safeCall('cung chạy',()=>{syncRoutePlanCard();syncRouteOrigin();});
   safeCall('trạng thái mạng',updateConnection);
   safeCall('nút bấm',bindEvents);
   safeCall('hộp thoại',initDialogs);
@@ -1580,14 +1833,14 @@ if(typeof module!=='undefined'&&module.exports){module.exports={WARDS,aqiInfo,uv
   <script>
   (()=>{
     setTimeout(()=>{
-      if(window.__AIRUN_APP_READY==='v60')return;
+      if(window.__AIRUN_APP_READY==='v61')return;
       const connection=document.getElementById('connectionText');
       const chip=document.getElementById('jsStatusChip');
       const label=document.getElementById('jsStatus');
       const button=document.getElementById('diagnosticBtn');
       if(connection)connection.textContent='JavaScript chính chưa khởi động · GPS/API chưa thể hoạt động';
       if(chip)chip.dataset.state='error';
-      if(label)label.textContent='AIRUN V6.0 chưa khởi động';
+      if(label)label.textContent='AIRUN V6.2 chưa khởi động';
       if(button){
         button.textContent='Sửa cache & tải lại';
         button.onclick=async()=>{
@@ -1596,7 +1849,7 @@ if(typeof module!=='undefined'&&module.exports){module.exports={WARDS,aqiInfo,uv
             if('serviceWorker' in navigator){const regs=await navigator.serviceWorker.getRegistrations();await Promise.all(regs.map(reg=>reg.unregister()));}
             if('caches' in window){const keys=await caches.keys();await Promise.all(keys.map(key=>caches.delete(key)));}
           }catch{}
-          const url=new URL(location.href);url.searchParams.set('airunV60Repair',Date.now());location.replace(url.toString());
+          const url=new URL(location.href);url.searchParams.set('airunV61Repair',Date.now());location.replace(url.toString());
         };
       }
     },2500);
