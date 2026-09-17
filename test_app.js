@@ -1,6 +1,6 @@
 'use strict';
 const assert=require('node:assert/strict');
-const {WARDS,aqiInfo,uvInfo,analyzeSnapshot,fallbackData,haversine,escapeHTML,formatPace,formatDuration,gpsLevel}=require('./app.js');
+const {WARDS,aqiInfo,uvInfo,analyzeSnapshot,fallbackData,haversine,escapeHTML,formatPace,formatDuration,gpsLevel,parsePace,planEstimate}=require('./app.js');
 assert.equal(WARDS.length,23);
 assert.equal(new Set(WARDS.map(x=>x.key)).size,23);
 assert.ok(WARDS.every(x=>Number.isFinite(x.lat)&&Number.isFinite(x.lon)));
@@ -22,4 +22,8 @@ assert.equal(escapeHTML('<script>'),'&lt;script&gt;');
 assert.equal(formatPace(7),'7:00');
 assert.equal(formatDuration(3661),'01:01:01');
 assert.equal(gpsLevel(9),4);assert.equal(gpsLevel(90),0);
-console.log('AIRUN V5 tests: OK');
+assert.equal(parsePace('6:30'),6.5);
+assert.equal(parsePace('6.5'),6.5);
+assert.equal(parsePace('6:75'),null);
+const est=planEstimate({duration:60,pace:6,intensity:'Vừa'});assert.equal(est.distance,10);assert.equal(est.speed,10);
+console.log('AIRUN V5.4 tests: OK');

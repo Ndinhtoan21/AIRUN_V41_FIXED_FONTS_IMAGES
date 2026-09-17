@@ -14,8 +14,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&display=swap&subset=vietnamese" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=53">
-  <script defer src="app.js?v=53"></script>
+  <link rel="stylesheet" href="style.css?v=54">
+  <script defer src="app.js?v=54"></script>
 </head>
 <body>
   <noscript><div class="noscript-banner">AIRUN cần JavaScript để GPS và dữ liệu trực tiếp hoạt động. Hãy bật JavaScript rồi tải lại trang.</div></noscript>
@@ -203,6 +203,18 @@
             <div><label for="time">Giờ bắt đầu</label><input id="time" name="time" type="time" value="17:30"></div>
             <div><label for="duration">Thời lượng</label><select id="duration" name="duration"><option value="20">20 phút</option><option value="30" selected>30 phút</option><option value="45">45 phút</option><option value="60">60 phút</option><option value="90">90 phút</option></select></div>
           </div>
+          <div class="field-pair planning-pair">
+            <div>
+              <label for="planPace">Pace dự kiến</label>
+              <div class="pace-field"><input id="planPace" name="planPace" type="text" inputmode="decimal" value="7:00" placeholder="6:30" autocomplete="off"><span>/km</span></div>
+            </div>
+            <div class="plan-estimate" aria-live="polite">
+              <small>QUÃNG ĐƯỜNG DỰ KIẾN</small>
+              <strong><span id="estimatedDistance">4.29</span> km</strong>
+              <em id="estimatedSpeed">≈ 8.6 km/h</em>
+            </div>
+          </div>
+          <p class="pace-help" id="paceHelp">Nhập pace dạng 6:30. AIRUN sẽ tính quãng đường ngay, không cần GPS hay API.</p>
           <fieldset>
             <legend>Cường độ</legend>
             <div class="segment" id="intensityGroup">
@@ -221,6 +233,11 @@
           <div class="decision-panel neutral" id="decisionPanel">
             <div class="decision-copy"><span class="decision-icon" id="decisionIcon" aria-hidden="true">◌</span><div><small>AIRUN GỢI Ý</small><h2 id="decisionTitle">Đang đọc dữ liệu</h2><p id="decisionText">AIRUN sẽ giải thích các yếu tố quan trọng trước khi bạn chạy.</p></div></div>
             <div class="score-ring" id="scoreRing" style="--score:0%"><strong id="scoreValue">—</strong><small>/10</small><span>thuận lợi</span></div>
+          </div>
+          <div class="plan-summary" id="planSummary" aria-live="polite">
+            <div><small>KẾ HOẠCH</small><strong id="planSummaryDistance">4.29 km</strong><span id="planSummaryPace">pace 7:00/km</span></div>
+            <div><small>THỜI LƯỢNG</small><strong id="planSummaryDuration">30 phút</strong><span id="planSummarySpeed">≈ 8.6 km/h</span></div>
+            <div><small>NGUỒN MÔI TRƯỜNG</small><strong id="planSummarySource">Dự phòng</strong><span id="planSummaryForecast">Đang đồng bộ forecast…</span></div>
           </div>
           <div class="metric-grid">
             <div><span class="metric-icon air">AQ</span><small>AQI Mỹ</small><strong id="metricAqi">—</strong><em id="metricAqiLabel">Chưa có</em></div>

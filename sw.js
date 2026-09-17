@@ -1,6 +1,6 @@
-const CACHE='airun-v53-core';
+const CACHE='airun-v54-core';
 const CORE=[
-  './','./index.html','./style.css?v=53','./app.js?v=53','./manifest.webmanifest',
+  './','./index.html','./style.css?v=54','./app.js?v=54','./manifest.webmanifest',
   './assets/icon.svg','./assets/danang-runner-hero.svg','./assets/route-riverside.svg','./assets/route-coast.svg'
 ];
 

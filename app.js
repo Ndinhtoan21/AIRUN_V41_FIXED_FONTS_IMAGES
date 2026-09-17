@@ -142,17 +142,38 @@ function savePersistentCache(data){
   localSet(STORAGE.cache, trimmed);
 }
 
-async function fetchJSON(url, timeout = 4200){
-  const controller = new AbortController(); const timer = setTimeout(() => controller.abort(), timeout);
-  try{
-    const response = await fetch(url,{signal:controller.signal,headers:{Accept:'application/json'}});
-    if(!response.ok) throw new Error(`HTTP ${response.status}`);
-    return await response.json();
-  } finally { clearTimeout(timer); }
+async function fetchJSON(url, timeout = 7000, retries = 0, onRetry = null){
+  let lastError = null;
+  for(let attempt=0; attempt<=retries; attempt++){
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeout);
+    try{
+      const response = await fetch(url,{signal:controller.signal,cache:'no-store',headers:{Accept:'application/json'}});
+      if(!response.ok) throw new Error(`HTTP ${response.status}`);
+      const data = await response.json();
+      if(!data || data.error) throw new Error(data?.reason || 'API trả về dữ liệu không hợp lệ');
+      return data;
+    }catch(error){
+      lastError = error;
+      if(attempt < retries){
+        if(onRetry) onRetry(attempt+1,error);
+        await new Promise(resolve=>setTimeout(resolve,350 + attempt*500));
+      }
+    }finally{ clearTimeout(timer); }
+  }
+  throw lastError || new Error('Không thể kết nối API');
 }
 
 function nearestWard(lat,lon){
   return [...WARDS].map(item=>({item,distance:haversine(lat,lon,item.lat,item.lon)})).sort((a,b)=>a.distance-b.distance)[0];
+}
+
+function apiErrorLabel(error){
+  if(error?.name==='AbortError') return 'Timeout';
+  const text=String(error?.message||'');
+  if(/HTTP\s+\d+/.test(text)) return text;
+  if(typeof navigator!=='undefined' && !navigator.onLine) return 'Ngoại tuyến';
+  return 'Không phản hồi';
 }
 
 async function fetchEnvironmentAt(lat, lon, options = {}){
@@ -173,76 +194,130 @@ async function fetchEnvironmentAt(lat, lon, options = {}){
     const stale = getStaleCache(cacheId); return stale ? {...stale,source:'cached'} : fallbackData(nearest.item,location);
   }
 
-  const point = `latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lon)}&timezone=Asia%2FHo_Chi_Minh&forecast_hours=36`;
-  const weatherUrl = `https://api.open-meteo.com/v1/forecast?${point}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&hourly=temperature_2m,apparent_temperature,relative_humidity_2m,precipitation_probability,weather_code,wind_speed_10m,uv_index`;
-  const airUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?${point}&current=us_aqi,pm2_5,pm10&hourly=us_aqi,pm2_5,pm10`;
+  const base = `latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lon)}&timezone=auto`;
+  // Current requests are intentionally tiny, so hero numbers can appear before the hourly forecast.
+  const weatherCurrentUrl = `https://api.open-meteo.com/v1/forecast?${base}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m,uv_index&forecast_days=1`;
+  const airCurrentUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?${base}&current=us_aqi,pm2_5,pm10&forecast_days=1`;
+  const weatherForecastUrl = `https://api.open-meteo.com/v1/forecast?${base}&forecast_hours=30&hourly=temperature_2m,apparent_temperature,relative_humidity_2m,precipitation_probability,weather_code,wind_speed_10m,uv_index`;
+  const airForecastUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?${base}&forecast_hours=30&hourly=us_aqi,pm2_5,pm10`;
 
   const stale = getStaleCache(cacheId);
   const backup = stale ? {...stale,source:'cached',location} : fallbackData(nearest.item,location);
   const hourlyMap = new Map((backup.hourly||[]).map(row=>[row.time,{...row}]));
   let current = {...backup.current};
-  let weatherOk=false, airOk=false;
+  let weatherOk=false, airOk=false, weatherForecastOk=false, airForecastOk=false;
+  let weatherMs=null, airMs=null;
 
   const buildResult=()=>({
-    cacheId,key,source:weatherOk&&airOk?'live':(weatherOk||airOk?'partial':backup.source),updated:Date.now(),location,
-    current:{...current},hourly:[...hourlyMap.values()].sort((a,b)=>a.time.localeCompare(b.time)),liveParts:{weather:weatherOk,air:airOk}
+    cacheId,key,
+    source:weatherOk&&airOk?'live':(weatherOk||airOk?'partial':backup.source),
+    forecastSource:weatherForecastOk&&airForecastOk?'live':(weatherForecastOk||airForecastOk?'partial':backup.source),
+    updated:Date.now(),location,current:{...current},
+    hourly:[...hourlyMap.values()].sort((a,b)=>a.time.localeCompare(b.time)),
+    liveParts:{weather:weatherOk,air:airOk,weatherForecast:weatherForecastOk,airForecast:airForecastOk},
+    latency:{weather:weatherMs,air:airMs}
   });
   const publish=part=>{
     const result=buildResult();
     if(onProgress){try{onProgress(result,part);}catch(error){console.warn('AIRUN progress render:',error);}}
     return result;
   };
-  const applyWeather=w=>{
-    const wc=w.current||{},times=w.hourly?.time||[];
+  const applyWeatherCurrent=w=>{
+    const wc=w.current||{};
+    current={...current,
+      temp:Number.isFinite(wc.temperature_2m)?wc.temperature_2m:current.temp,
+      feels:Number.isFinite(wc.apparent_temperature)?wc.apparent_temperature:current.feels,
+      humidity:Number.isFinite(wc.relative_humidity_2m)?wc.relative_humidity_2m:current.humidity,
+      wind:Number.isFinite(wc.wind_speed_10m)?wc.wind_speed_10m:current.wind,
+      code:Number.isFinite(wc.weather_code)?wc.weather_code:current.code,
+      rain:Number.isFinite(wc.precipitation)?(wc.precipitation>0?100:0):current.rain,
+      uv:Number.isFinite(wc.uv_index)?wc.uv_index:current.uv
+    };
+  };
+  const applyAirCurrent=a=>{
+    const ac=a.current||{};
+    current={...current,
+      aqi:Number.isFinite(ac.us_aqi)?ac.us_aqi:current.aqi,
+      pm:Number.isFinite(ac.pm2_5)?ac.pm2_5:current.pm,
+      pm10:Number.isFinite(ac.pm10)?ac.pm10:current.pm10
+    };
+  };
+  const applyWeatherForecast=w=>{
+    const h=w.hourly||{},times=h.time||[];
     times.forEach((time,index)=>{
       const old=hourlyMap.get(time)||{time};
-      hourlyMap.set(time,{...old,time,temp:w.hourly.temperature_2m?.[index],feels:w.hourly.apparent_temperature?.[index],humidity:w.hourly.relative_humidity_2m?.[index],rain:w.hourly.precipitation_probability?.[index],wind:w.hourly.wind_speed_10m?.[index],uv:w.hourly.uv_index?.[index],code:w.hourly.weather_code?.[index]});
+      hourlyMap.set(time,{...old,time,
+        temp:h.temperature_2m?.[index],feels:h.apparent_temperature?.[index],humidity:h.relative_humidity_2m?.[index],
+        rain:h.precipitation_probability?.[index],wind:h.wind_speed_10m?.[index],uv:h.uv_index?.[index],code:h.weather_code?.[index]
+      });
     });
-    const currentHour=String(wc.time||vnIso()).slice(0,13)+':00',currentHourly=hourlyMap.get(currentHour)||{};
-    current={...current,temp:wc.temperature_2m,feels:wc.apparent_temperature,humidity:wc.relative_humidity_2m,wind:wc.wind_speed_10m,code:wc.weather_code,rain:Number.isFinite(currentHourly.rain)?currentHourly.rain:(wc.precipitation>0?100:0),uv:Number.isFinite(currentHourly.uv)?currentHourly.uv:current.uv};
   };
-  const applyAir=a=>{
-    const ac=a.current||{},times=a.hourly?.time||[];
+  const applyAirForecast=a=>{
+    const h=a.hourly||{},times=h.time||[];
     times.forEach((time,index)=>{
       const old=hourlyMap.get(time)||{time};
-      hourlyMap.set(time,{...old,time,aqi:a.hourly.us_aqi?.[index],pm:a.hourly.pm2_5?.[index],pm10:a.hourly.pm10?.[index]});
+      hourlyMap.set(time,{...old,time,aqi:h.us_aqi?.[index],pm:h.pm2_5?.[index],pm10:h.pm10?.[index]});
     });
-    current={...current,aqi:ac.us_aqi,pm:ac.pm2_5,pm10:ac.pm10};
   };
 
-  setSystemStatus('weather','loading','Đang kết nối…');
-  setSystemStatus('air','loading','Đang kết nối…');
-  setApiUpdateText('Đang gọi dữ liệu trực tiếp…');
+  setSystemStatus('weather','loading','Đang lấy hiện tại…');
+  setSystemStatus('air','loading','Đang lấy hiện tại…');
+  setApiUpdateText('Đang lấy số liệu hiện tại; dự báo theo giờ tải ở nền…');
 
-  const weatherTask=(async()=>{
+  const weatherCurrentTask=(async()=>{
     const started=performance.now();
     try{
-      const w=await fetchJSON(weatherUrl,4200);applyWeather(w);weatherOk=true;
-      const ms=Math.max(1,Math.round(performance.now()-started));setSystemStatus('weather','ok',`${ms} ms`);setApiUpdateText(`Weather API đã về trong ${ms} ms · đang chờ Air API…`);publish('weather');return true;
-    }catch(error){console.warn('AIRUN Weather API:',error);setSystemStatus('weather','error',error?.name==='AbortError'?'Quá 4,2 giây':'Không phản hồi');return false;}
+      const w=await fetchJSON(weatherCurrentUrl,6500,1,()=>setSystemStatus('weather','loading','Đang thử lại…'));
+      applyWeatherCurrent(w);weatherOk=true;weatherMs=Math.max(1,Math.round(performance.now()-started));
+      setSystemStatus('weather','ok',`${weatherMs} ms`);publish('weather-current');return true;
+    }catch(error){console.warn('AIRUN Weather current:',error);setSystemStatus('weather','error',apiErrorLabel(error));return false;}
   })();
-  const airTask=(async()=>{
+  const airCurrentTask=(async()=>{
     const started=performance.now();
     try{
-      const a=await fetchJSON(airUrl,4200);applyAir(a);airOk=true;
-      const ms=Math.max(1,Math.round(performance.now()-started));setSystemStatus('air','ok',`${ms} ms`);setApiUpdateText(`Air API đã về trong ${ms} ms · đang hoàn tất…`);publish('air');return true;
-    }catch(error){console.warn('AIRUN Air API:',error);setSystemStatus('air','error',error?.name==='AbortError'?'Quá 4,2 giây':'Không phản hồi');return false;}
+      const a=await fetchJSON(airCurrentUrl,6500,1,()=>setSystemStatus('air','loading','Đang thử lại…'));
+      applyAirCurrent(a);airOk=true;airMs=Math.max(1,Math.round(performance.now()-started));
+      setSystemStatus('air','ok',`${airMs} ms`);publish('air-current');return true;
+    }catch(error){console.warn('AIRUN Air current:',error);setSystemStatus('air','error',apiErrorLabel(error));return false;}
   })();
 
-  await Promise.all([weatherTask,airTask]);
-  if(!weatherOk&&!airOk){
-    setApiUpdateText('API chưa phản hồi · đang dùng dữ liệu dự phòng/cache');
-    return backup;
+  // Forecast is independent. It must never block current numbers or planner interaction.
+  const weatherForecastTask=(async()=>{
+    try{const w=await fetchJSON(weatherForecastUrl,8500,1);applyWeatherForecast(w);weatherForecastOk=true;publish('weather-forecast');return true;}
+    catch(error){console.warn('AIRUN Weather forecast:',error);return false;}
+  })();
+  const airForecastTask=(async()=>{
+    try{const a=await fetchJSON(airForecastUrl,8500,1);applyAirForecast(a);airForecastOk=true;publish('air-forecast');return true;}
+    catch(error){console.warn('AIRUN Air forecast:',error);return false;}
+  })();
+
+  // Return live current data as soon as the two small current calls settle.
+  await Promise.allSettled([weatherCurrentTask,airCurrentTask]);
+  let currentResult=buildResult();
+  if(weatherOk||airOk){
+    memoryCache.set(cacheId,currentResult);savePersistentCache(currentResult);
+    const nowText=new Date().toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    setApiUpdateText(`${weatherOk&&airOk?'Đã nhận Weather + Air trực tiếp':'Đã nhận một phần dữ liệu trực tiếp'} · ${nowText} · đang tải dự báo`);
+    publish('current-ready');
+  }else{
+    setApiUpdateText('Weather/Air chưa phản hồi · planner vẫn dùng dữ liệu dự phòng tức thời');
   }
+
+  // Give forecast a short background window. If it is slower, the UI is already usable.
+  await Promise.race([
+    Promise.allSettled([weatherForecastTask,airForecastTask]),
+    new Promise(resolve=>setTimeout(resolve,2200))
+  ]);
   const result=buildResult();
-  if(!Number.isFinite(result.current.temp) || !Number.isFinite(result.current.aqi)){
-    setApiUpdateText('Dữ liệu API thiếu trường cần thiết · dùng dự phòng');
-    return backup;
+  if(weatherOk||airOk||weatherForecastOk||airForecastOk){
+    memoryCache.set(cacheId,result);savePersistentCache(result);
+    if(weatherForecastOk||airForecastOk){
+      const nowText=new Date().toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+      setApiUpdateText(`${weatherOk&&airOk?'Dữ liệu hiện tại trực tiếp':'Dữ liệu hiện tại một phần'} · forecast ${weatherForecastOk&&airForecastOk?'đã sẵn sàng':'một phần'} · ${nowText}`);
+    }
+    return result;
   }
-  memoryCache.set(cacheId,result);savePersistentCache(result);
-  const nowText=new Date().toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-  setApiUpdateText(`${result.source==='live'?'Đã nhận đủ dữ liệu trực tiếp':'Đã nhận dữ liệu trực tiếp một phần'} · ${nowText}`);
-  return result;
+  return backup;
 }
 function fetchEnvironment(key, force = false, onProgress = null){
   const item = ward(key);
@@ -320,8 +395,42 @@ function analyzeSnapshot(snapshot, plan){
   return {score,tone,title,text,icon,reasons:reasons.slice(0,6)};
 }
 
+function parsePace(value){
+  const raw=String(value||'').trim().replace(',', '.');
+  if(!raw)return null;
+  if(raw.includes(':')){
+    const [m,s='0']=raw.split(':');
+    const minutes=Number(m),seconds=Number(s);
+    if(!Number.isFinite(minutes)||!Number.isFinite(seconds)||minutes<=0||seconds<0||seconds>=60)return null;
+    return minutes+seconds/60;
+  }
+  const numeric=Number(raw);
+  return Number.isFinite(numeric)&&numeric>0&&numeric<30?numeric:null;
+}
+function defaultPaceForIntensity(level=intensity){return level==='Cao'?5.25:level==='Vừa'?6.25:7;}
+function planEstimate(plan=currentPlan()){
+  const pace=Number(plan.pace)||defaultPaceForIntensity(plan.intensity);
+  const distance=pace>0?Number(plan.duration)/pace:0;
+  const speed=pace>0?60/pace:0;
+  return {pace,distance,speed};
+}
 function currentPlan(){
-  return {key:selectedKey,time:$('time').value,duration:Number($('duration').value),intensity,sensitive:$('sensitive').checked};
+  const pace=parsePace($('planPace')?.value)||defaultPaceForIntensity(intensity);
+  return {key:selectedKey,time:$('time').value,duration:Number($('duration').value),intensity,sensitive:$('sensitive').checked,pace};
+}
+function updatePlanEstimate(){
+  const input=$('planPace'),help=$('paceHelp');
+  const parsed=parsePace(input?.value);
+  const valid=Number.isFinite(parsed);
+  const plan=currentPlan(),estimate=planEstimate(plan);
+  if($('estimatedDistance'))$('estimatedDistance').textContent=estimate.distance.toFixed(2);
+  if($('estimatedSpeed'))$('estimatedSpeed').textContent=`≈ ${estimate.speed.toFixed(1)} km/h`;
+  if(help){help.classList.toggle('error',!valid);help.textContent=valid?'Quãng đường được tính ngay trên máy, không cần GPS hay API.':'Pace chưa hợp lệ. Hãy nhập dạng 6:30 hoặc 6.5.';}
+  if($('planSummaryDistance'))$('planSummaryDistance').textContent=`${estimate.distance.toFixed(2)} km`;
+  if($('planSummaryPace'))$('planSummaryPace').textContent=`pace ${formatPace(estimate.pace)}/km`;
+  if($('planSummaryDuration'))$('planSummaryDuration').textContent=`${plan.duration} phút`;
+  if($('planSummarySpeed'))$('planSummarySpeed').textContent=`≈ ${estimate.speed.toFixed(1)} km/h`;
+  return estimate;
 }
 
 function bestTimeFor(data, plan){
@@ -397,6 +506,12 @@ function renderResult(data,snapshot,result){
   $('metricTemp').textContent=`${round(snapshot.temp)}°`;$('metricFeels').textContent=`Cảm giác ${round(snapshot.feels)}°`;$('metricWind').textContent=round(snapshot.wind,1);
   $('metricRain').textContent=`${round(snapshot.rain)}%`;$('metricHumidity').textContent=`Độ ẩm ${round(snapshot.humidity)}%`;
   $('metricUv').textContent=round(snapshot.uv,1);$('metricUvLabel').textContent=uv.label;
+  const estimate=updatePlanEstimate();
+  if($('planSummarySource'))$('planSummarySource').textContent=sourceLabel(data.source);
+  if($('planSummaryForecast')){
+    const fs=data.forecastSource||data.source;
+    $('planSummaryForecast').textContent=fs==='live'?'Forecast trực tiếp đã sẵn sàng':fs==='partial'?'Forecast trực tiếp một phần':fs==='cached'?'Forecast từ cache':'Forecast dự phòng';
+  }
   $('reasonList').innerHTML=result.reasons.map(reason=>`<li>${escapeHTML(reason)}</li>`).join('');
   if(best){$('bestTime').textContent=`${best.row.time.slice(11,16)} · ${best.result.score}/10`;$('bestTimeReason').textContent='Trong các khung giờ chạy phổ biến, đây là thời điểm có điểm thuận lợi cao nhất trong dự báo hiện có.';}
   else{$('bestTime').textContent='Chưa có dự báo giờ';$('bestTimeReason').textContent='Hãy thử cập nhật lại dữ liệu.';}
@@ -454,19 +569,34 @@ async function selectWard(key,{scroll=false,force=false,analyze=true}={}){
 }
 
 async function analyzePlan(showLoading=true){
-  const button=$('analyzeBtn');if(showLoading)setBusy(button,true,'Đang phân tích…');
+  const button=$('analyzeBtn');
+  if(showLoading)setBusy(button,true,'Đang tính ngay…');
+  // Planner must respond instantly, even if external APIs are slow or unavailable.
+  const plan=currentPlan();
+  const quick=gpsLocation?quickEnvironmentForGps(gpsLocation):quickEnvironmentForWard(selectedKey);
   try{
-    const plan=currentPlan(); const data=await getEnvironmentForActive(false); const snapshot=snapshotFor(data,plan.time),result=analyzeSnapshot(snapshot,plan);
+    const quickSnapshot=snapshotFor(quick,plan.time),quickResult=analyzeSnapshot(quickSnapshot,plan);
+    activeData=quick;activeSnapshot=quickSnapshot;activeResult=quickResult;
+    renderHero(quick);renderResult(quick,quickSnapshot,quickResult);updatePlanEstimate();savePlanSettings();
+    if(showLoading){setBusy(button,false);showToast(`Đã tính ${planEstimate(plan).distance.toFixed(2)} km dự kiến · đang đồng bộ dữ liệu trực tiếp…`);}
+  }catch(error){console.warn('AIRUN instant planner:',error);if(showLoading)setBusy(button,false);}
+
+  // Upgrade the result when live current/forecast data arrives; this does not block the UI.
+  try{
+    const data=await getEnvironmentForActive(false,(partial)=>{
+      const snapshot=snapshotFor(partial,plan.time),result=analyzeSnapshot(snapshot,plan);
+      activeData=partial;activeSnapshot=snapshot;activeResult=result;renderHero(partial);renderResult(partial,snapshot,result);
+    });
+    const snapshot=snapshotFor(data,plan.time),result=analyzeSnapshot(snapshot,plan);
     activeData=data;activeSnapshot=snapshot;activeResult=result;renderHero(data);renderResult(data,snapshot,result);savePlanSettings();
-    if(showLoading)showToast(`${result.title} · điểm thuận lợi ${result.score}/10`);
-  }catch(error){console.warn(error);showToast('Chưa thể phân tích. Hãy thử cập nhật lại dữ liệu.');}
-  finally{if(showLoading)setBusy(button,false);}
+  }catch(error){console.warn('AIRUN planner live upgrade:',error);}
 }
 
-function savePlanSettings(){localSet(STORAGE.plan,{key:selectedKey,time:$('time').value,duration:$('duration').value,intensity,sensitive:$('sensitive').checked});}
+function savePlanSettings(){localSet(STORAGE.plan,{key:selectedKey,time:$('time').value,duration:$('duration').value,intensity,sensitive:$('sensitive').checked,pace:$('planPace')?.value||''});}
 function restorePlanSettings(){
   const plan=localGet(STORAGE.plan,localGet('airun-v50-plan',localGet('airun-v40-plan',{})));
   if(plan.key&&WARDS.some(x=>x.key===plan.key))selectedKey=plan.key;if(plan.time)$('time').value=plan.time;if(plan.duration)$('duration').value=String(plan.duration);
+  if(plan.pace&&$('planPace'))$('planPace').value=String(plan.pace);
   if(['Nhẹ','Vừa','Cao'].includes(plan.intensity))intensity=plan.intensity;$('sensitive').checked=Boolean(plan.sensitive);
   document.querySelectorAll('[data-intensity]').forEach(button=>button.classList.toggle('active',button.dataset.intensity===intensity));
 }
@@ -615,7 +745,7 @@ async function useGPS({scroll=true}={}){
       const near=nearestWard(latitude,longitude);selectedKey=near.item.key;$('area').value=selectedKey;
       const close=near.distance<=25;const label=close?`${near.item.name} · GPS`:'Vị trí GPS hiện tại';
       gpsLocation={lat:latitude,lon:longitude,accuracy,label,cacheId:`gps:${latitude.toFixed(3)},${longitude.toFixed(3)}`};
-      localSet('airun-v53-last-gps',{lat:latitude,lon:longitude,accuracy,label,at:Date.now()});
+      localSet('airun-v54-last-gps',{lat:latitude,lon:longitude,accuracy,label,at:Date.now()});
       setSystemStatus('gps','ok',`±${round(accuracy)} m`);
       setGpsPlanUi();updateMapSide();showUserMarker(latitude,longitude,accuracy);
       const quick=quickEnvironmentForGps(gpsLocation);renderEnvironmentInstant(quick,{updating:refreshEnvironment});
@@ -854,7 +984,8 @@ function saveJournal(){
   if(!activeResult||!activeSnapshot){showToast('Hãy phân tích kế hoạch trước khi lưu.');return;}
   if(!selectedDecision){showToast('Hãy chọn quyết định của bạn trước khi lưu.');return;}
   const rows=journalRows(),plan=currentPlan(),label=activeData?.location?.label||ward().name;
-  rows.unshift({id:Date.now(),type:'plan',at:new Date().toISOString(),area:label,time:plan.time,duration:plan.duration,intensity:plan.intensity,sensitive:plan.sensitive,decision:selectedDecision,score:activeResult.score,aqi:round(activeSnapshot.aqi),temp:round(activeSnapshot.temp),note:$('note').value.trim(),source:activeData.source});
+  const estimate=planEstimate(plan);
+  rows.unshift({id:Date.now(),type:'plan',at:new Date().toISOString(),area:label,time:plan.time,duration:plan.duration,pace:formatPace(estimate.pace),distance:round(estimate.distance,2),intensity:plan.intensity,sensitive:plan.sensitive,decision:selectedDecision,score:activeResult.score,aqi:round(activeSnapshot.aqi),temp:round(activeSnapshot.temp),note:$('note').value.trim(),source:activeData.source});
   localSet(STORAGE.journal,rows.slice(0,50));$('note').value='';renderJournal();showToast('Đã lưu kế hoạch vào nhật ký trên thiết bị.');
 }
 
@@ -863,7 +994,7 @@ function renderJournal(){
   $('journalList').innerHTML=rows.length?rows.map(row=>{
     const date=new Date(row.at);const isRun=row.type==='run';
     const title=isRun?`🏃 Buổi chạy GPS · ${escapeHTML(row.area)}`:`${escapeHTML(row.area)} · ${escapeHTML(row.decision||'Kế hoạch')}`;
-    const desc=isRun?`${row.distance??0} km · ${formatDuration(row.durationSec||0)}${row.pace?` · pace ${escapeHTML(row.pace)}/km`:''}`:`${escapeHTML(row.time||'')} · ${row.duration||0} phút · ${escapeHTML(row.intensity||'')} · AQI ${row.aqi??'—'}${row.note?` · ${escapeHTML(row.note)}`:''}`;
+    const desc=isRun?`${row.distance??0} km · ${formatDuration(row.durationSec||0)}${row.pace?` · pace ${escapeHTML(row.pace)}/km`:''}`:`${escapeHTML(row.time||'')} · ${row.duration||0} phút · ${row.distance??'—'} km${row.pace?` · pace ${escapeHTML(row.pace)}/km`:''} · ${escapeHTML(row.intensity||'')} · AQI ${row.aqi??'—'}${row.note?` · ${escapeHTML(row.note)}`:''}`;
     const metric=isRun?`${row.distance??0} km`:`${row.score??'—'}/10`;const metricLabel=isRun?'quãng đường':'thuận lợi';
     return `<article class="journal-item"><div class="journal-date"><b>${date.toLocaleDateString('vi-VN',{day:'2-digit'})}</b><span>${date.toLocaleDateString('vi-VN',{month:'2-digit',year:'numeric'})}</span></div><div class="journal-main"><b>${title}</b><p>${desc}</p></div><div class="journal-score"><b>${metric}</b><span>${metricLabel}</span></div><button class="journal-delete" type="button" data-delete="${row.id}" aria-label="Xóa mục này">×</button></article>`;
   }).join(''):'<div class="empty-state">Chưa có dữ liệu được lưu.</div>';
@@ -890,13 +1021,13 @@ function initPWA(){
   window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();installPrompt=event;const button=$('installBtn');if(button)button.hidden=false;});
   on('installBtn','click',async()=>{if(!installPrompt)return;installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;$('installBtn').hidden=true;});
   if('serviceWorker' in navigator&&location.protocol.startsWith('http')){
-    navigator.serviceWorker.register('sw.js?v=53').then(registration=>registration.update()).catch(error=>console.warn('AIRUN service worker:',error));
+    navigator.serviceWorker.register('sw.js?v=54').then(registration=>registration.update()).catch(error=>console.warn('AIRUN service worker:',error));
   }
 }
 
 async function runDiagnostics(){
   const button=$('diagnosticBtn');setBusy(button,true,'Đang kiểm tra…');
-  setSystemStatus('js','ok','V5.3 đang chạy');updateConnection();
+  setSystemStatus('js','ok','V5.4 đang chạy');updateConnection();
   try{
     const permission=await geolocationPermissionState();
     setSystemStatus('gps',permission==='denied'?'error':permission==='granted'?'ok':'warn',permission==='denied'?'Bị chặn':permission==='granted'?'Đã cấp quyền':'Chưa cấp quyền');
@@ -911,8 +1042,8 @@ async function runDiagnostics(){
 function bindEvents(){
   on('planForm','submit',event=>{event.preventDefault();analyzePlan(true);});
   on('area','change',event=>selectWard(event.target.value,{analyze:true,force:true}));
-  on('time','change',()=>analyzePlan(false));on('duration','change',()=>analyzePlan(false));on('sensitive','change',()=>analyzePlan(false));
-  document.querySelectorAll('[data-intensity]').forEach(button=>button.addEventListener('click',()=>{intensity=button.dataset.intensity;document.querySelectorAll('[data-intensity]').forEach(node=>node.classList.toggle('active',node===button));analyzePlan(false);}));
+  on('time','change',()=>analyzePlan(false));on('duration','change',()=>{updatePlanEstimate();analyzePlan(false);});on('planPace','input',()=>{updatePlanEstimate();savePlanSettings();});on('planPace','change',()=>analyzePlan(false));on('sensitive','change',()=>analyzePlan(false));
+  document.querySelectorAll('[data-intensity]').forEach(button=>button.addEventListener('click',()=>{intensity=button.dataset.intensity;document.querySelectorAll('[data-intensity]').forEach(node=>node.classList.toggle('active',node===button));updatePlanEstimate();analyzePlan(false);}));
   document.querySelectorAll('[data-decision]').forEach(button=>button.addEventListener('click',()=>{selectedDecision=button.dataset.decision;document.querySelectorAll('[data-decision]').forEach(node=>node.classList.toggle('active',node===button));if(selectedDecision==='Đổi giờ')$('time')?.focus();if(selectedDecision==='Đổi khu vực')$('area')?.focus();}));
   on('refreshBtn','click',async()=>{const button=$('refreshBtn');setBusy(button,true,'Đang cập nhật…');try{const data=await getEnvironmentForActive(true,(partial)=>renderEnvironmentData(partial));renderEnvironmentData(data);showToast(data.source==='live'?'Đã nhận dữ liệu trực tiếp.':'Đã cập nhật bằng nguồn dữ liệu sẵn có.');}finally{setBusy(button,false);}});
   on('diagnosticBtn','click',runDiagnostics);
@@ -933,8 +1064,8 @@ function bindEvents(){
 let airunInitialized=false;
 async function init(){
   if(airunInitialized)return;airunInitialized=true;
-  if(typeof window!=='undefined')window.__AIRUN_APP_READY='v53';
-  setSystemStatus('js','ok','V5.3 đang chạy');
+  if(typeof window!=='undefined')window.__AIRUN_APP_READY='v54';
+  setSystemStatus('js','ok','V5.4 đang chạy');
   safeCall('khu vực',()=>{$('area').innerHTML=WARDS.map(item=>`<option value="${item.key}">${escapeHTML(item.name)}</option>`).join('');});
   safeCall('khôi phục cài đặt',restorePlanSettings);
   safeCall('chọn khu vực',()=>{$('area').value=selectedKey;});
@@ -942,13 +1073,14 @@ async function init(){
   safeCall('bản đồ bên',updateMapSide);
   safeCall('nhật ký',renderJournal);
   safeCall('pace',calculatePace);
+  safeCall('ước tính kế hoạch',updatePlanEstimate);
   safeCall('trạng thái mạng',updateConnection);
   safeCall('nút bấm',bindEvents);
   safeCall('hộp thoại',initDialogs);
   safeCall('PWA',initPWA);
   safeCall('tracker',updateTrackerMetrics);
 
-  const lastGps=localGet('airun-v53-last-gps',null);
+  const lastGps=localGet('airun-v54-last-gps',null);
   if(lastGps&&Date.now()-Number(lastGps.at||0)<60*60*1000)setSystemStatus('gps','warn',`Gần nhất ±${round(lastGps.accuracy||0)} m`);
   else setSystemStatus('gps','idle','Chưa yêu cầu');
 
@@ -965,4 +1097,4 @@ if(hasDom()){
   else void init();
 }
 
-if(typeof module!=='undefined'&&module.exports){module.exports={WARDS,aqiInfo,uvInfo,analyzeSnapshot,fallbackData,haversine,weatherText,escapeHTML,clamp,round,formatPace,formatDuration,gpsLevel};}
+if(typeof module!=='undefined'&&module.exports){module.exports={WARDS,aqiInfo,uvInfo,analyzeSnapshot,fallbackData,haversine,weatherText,escapeHTML,clamp,round,formatPace,formatDuration,gpsLevel,parsePace,planEstimate,defaultPaceForIntensity};}

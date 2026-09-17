@@ -1,32 +1,21 @@
-# AIRUN Đà Nẵng V5.3 — GPS + Live Environment
+# AIRUN Đà Nẵng V5.4
 
-AIRUN là Static Site/PWA chạy trực tiếp trong trình duyệt, không cần backend và không cần API key cho Open-Meteo.
+AIRUN là web app hỗ trợ chạy bộ: GPS tracker, thời tiết, AQI, lập kế hoạch theo giờ và ước tính quãng đường.
 
-## V5.3 tập trung vào độ ổn định
-- GPS theo tọa độ thiết bị bằng Web Geolocation API.
-- Running Tracker bằng `watchPosition()`.
-- Quãng đường, thời gian, pace, tốc độ và độ chính xác GPS.
-- Weather API và Air Quality API cập nhật độc lập, theo từng phần.
-- Bảng trạng thái realtime: App / Weather API / Air API / GPS.
-- Watchdog phát hiện trường hợp `app.js` không chạy.
-- Service Worker V5.3 không còn trả HTML thay cho JS/CSS.
-- Dữ liệu dự phòng luôn hiện ngay; dữ liệu live sẽ thay thế khi API phản hồi.
-- Leaflet + OpenStreetMap cho bản đồ và lộ trình chạy.
+## V5.4
+- Weather/Air current được tải trước để số liệu xuất hiện nhanh.
+- Forecast theo giờ tải ở nền.
+- Planner hoạt động ngay cả khi API đang chậm.
+- Pace dự kiến -> tự tính quãng đường và tốc độ.
+- GPS tracker vẫn hoạt động độc lập với Weather/Air API.
 
 ## Render
-- Service: Static Site
-- Branch: main
-- Root Directory: để trống
-- Build Command: `echo "No build required"`
-- Publish Directory: `.`
-- Environment Variables: không cần
+Dự án vẫn là Static Site. Copy đè toàn bộ file V5.4 vào repo hiện tại, commit và push `main`.
 
-## Kiểm tra sau khi deploy
-1. Mở website.
-2. Quan sát 4 trạng thái dưới bảng số liệu.
-3. `Ứng dụng` phải hiện `V5.3 đang chạy`.
-4. Weather API / Air API sẽ hiện thời gian phản hồi, ví dụ `412 ms`.
-5. Bấm `Dùng vị trí hiện tại`; GPS sẽ đổi trạng thái ngay.
-6. Nếu `Ứng dụng` báo `app.js chưa chạy`, bấm `Sửa cache & tải lại`.
+Sau deploy, kiểm tra 4 trạng thái trong Hero:
+- ỨNG DỤNG: `V5.4 đang chạy`
+- WEATHER API: thời gian phản hồi hoặc lỗi cụ thể
+- AIR API: thời gian phản hồi hoặc lỗi cụ thể
+- GPS: trạng thái quyền/vị trí
 
-GPS web cần HTTPS và quyền Location. Trên điện thoại, độ chính xác tốt hơn laptop và ổn định nhất khi AIRUN ở foreground.
+Nếu trình duyệt giữ bản cũ, dùng nút sửa cache hoặc xóa Site Data của AIRUN rồi tải lại.
