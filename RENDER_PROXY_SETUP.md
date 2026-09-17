@@ -1,6 +1,6 @@
-# AIRUN V5.6 — CẤU HÌNH RENDER SAME-ORIGIN API PROXY
+# AIRUN V5.7 — CẤU HÌNH RENDER SAME-ORIGIN API PROXY
 
-AIRUN V5.6 KHÔNG gọi Open-Meteo trực tiếp từ trình duyệt nữa.
+AIRUN V5.7 KHÔNG gọi Open-Meteo trực tiếp từ trình duyệt nữa.
 Bạn cần tạo đúng 2 Rewrite Rules trên Static Site `airun-da-nang`.
 
 ## Rule 1 — Weather
@@ -25,7 +25,7 @@ Sau đó mở lại:
 - `https://airun-da-nang.onrender.com`
 
 Ô trạng thái phải chuyển thành:
-- ỨNG DỤNG: `V5.6 Proxy đang chạy`
+- ỨNG DỤNG: `V5.7 Proxy đang chạy`
 - WEATHER API: `xxx ms`
 - AIR API: `xxx ms`
 
