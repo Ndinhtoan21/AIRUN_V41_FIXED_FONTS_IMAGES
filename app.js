@@ -446,11 +446,84 @@ function haversine(lat1,lon1,lat2,lon2){
   return 6371*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
 }
 
-function requestGPSPosition(){
+function geoError(code, message=''){
+  const error = new Error(message || 'Geolocation error');
+  error.code = code;
+  return error;
+}
+
+async function geolocationPermissionState(){
+  if(!navigator.permissions?.query) return 'unknown';
+  try{
+    const status = await navigator.permissions.query({name:'geolocation'});
+    return status.state || 'unknown';
+  }catch{return 'unknown';}
+}
+
+async function gpsReadiness(){
+  if(!window.isSecureContext && location.hostname!=='localhost'){
+    return {ok:false,reason:'insecure',permission:'unknown'};
+  }
+  if(!navigator.geolocation){
+    return {ok:false,reason:'unsupported',permission:'unknown'};
+  }
+  const permission = await geolocationPermissionState();
+  if(permission==='denied') return {ok:false,reason:'denied',permission};
+  return {ok:true,reason:'ready',permission};
+}
+
+function geoPosition(options, hardTimeoutMs){
   return new Promise((resolve,reject)=>{
-    if(!navigator.geolocation){reject(new Error('unsupported'));return;}
-    navigator.geolocation.getCurrentPosition(resolve,reject,{enableHighAccuracy:true,timeout:10000,maximumAge:15000});
+    if(!navigator.geolocation){reject(geoError('unsupported','Geolocation unsupported'));return;}
+    let settled=false;
+    const timer=setTimeout(()=>{
+      if(settled)return;settled=true;reject(geoError(3,'AIRUN GPS hard timeout'));
+    },hardTimeoutMs);
+    navigator.geolocation.getCurrentPosition(position=>{
+      if(settled)return;settled=true;clearTimeout(timer);resolve(position);
+    },error=>{
+      if(settled)return;settled=true;clearTimeout(timer);reject(error);
+    },options);
   });
+}
+
+async function requestGPSPosition(onStage = ()=>{}, {maximumAge=120000}={}){
+  const readiness=await gpsReadiness();
+  if(!readiness.ok) throw geoError(readiness.reason==='denied'?1:readiness.reason,readiness.reason);
+
+  onStage('Đang lấy vị trí nhanh…');
+  try{
+    // A coarse/cached fix is usually much faster on laptops and indoors.
+    const fast=await geoPosition({enableHighAccuracy:false,timeout:4500,maximumAge},5500);
+    fast.__airunFix='fast';
+    return fast;
+  }catch(firstError){
+    if(firstError?.code===1) throw firstError;
+    onStage('Chưa có vị trí nhanh · đang thử GPS chính xác…');
+    const precise=await geoPosition({enableHighAccuracy:true,timeout:9000,maximumAge:0},10500);
+    precise.__airunFix='precise';
+    return precise;
+  }
+}
+
+async function refineGPSPosition(previous, onStage = ()=>{}){
+  try{
+    onStage('Đang tăng độ chính xác GPS…');
+    const precise=await geoPosition({enableHighAccuracy:true,timeout:10000,maximumAge:0},11500);
+    const oldAcc=Number(previous?.coords?.accuracy ?? Infinity);
+    const newAcc=Number(precise?.coords?.accuracy ?? Infinity);
+    return newAcc < oldAcc ? precise : null;
+  }catch{return null;}
+}
+
+function gpsHelpMessage(error){
+  const code=error?.code;
+  if(code===1 || code==='denied') return 'Quyền vị trí đang bị chặn. Hãy cho phép Location cho AIRUN trong trình duyệt rồi thử lại.';
+  if(code==='insecure') return 'GPS web chỉ hoạt động trên HTTPS. Hãy mở AIRUN bằng địa chỉ https://…onrender.com.';
+  if(code==='unsupported') return 'Trình duyệt/thiết bị này không cung cấp Geolocation.';
+  if(code===2) return 'Thiết bị chưa xác định được vị trí. Hãy bật Location Services của máy và thử ngoài trời hoặc gần cửa sổ.';
+  if(code===3) return 'Thiết bị chưa trả về vị trí trong thời gian chờ. Hãy kiểm tra Location Services, quyền trình duyệt hoặc thử trên điện thoại.';
+  return 'AIRUN chưa lấy được vị trí. Hãy kiểm tra quyền Location và dịch vụ vị trí của thiết bị.';
 }
 
 function showUserMarker(lat,lon,accuracy){
@@ -462,32 +535,59 @@ function showUserMarker(lat,lon,accuracy){
 
 async function useGPS({scroll=true}={}){
   if(!navigator.geolocation){showToast('Trình duyệt này không hỗ trợ GPS.');return null;}
-  showToast('Đang xác định vị trí GPS…');
-  $('liveBadge').textContent='ĐANG XÁC ĐỊNH GPS';$('liveBadge').className='source-badge loading';
+  const setStage=text=>{
+    $('liveBadge').textContent=text.toUpperCase();
+    $('liveBadge').className='source-badge loading';
+    $('heroLocationNote').textContent=text;
+  };
+  setStage('Đang kiểm tra GPS…');
   try{
-    const position=await requestGPSPosition();const {latitude,longitude,accuracy}=position.coords;const near=nearestWard(latitude,longitude);selectedKey=near.item.key;$('area').value=selectedKey;
-    const close=near.distance<=25;const label=close?`${near.item.name} · GPS`:'Vị trí GPS hiện tại';
-    gpsLocation={lat:latitude,lon:longitude,accuracy,label,cacheId:`gps:${latitude.toFixed(3)},${longitude.toFixed(3)}`};setGpsPlanUi();updateMapSide();showUserMarker(latitude,longitude,accuracy);
+    const position=await requestGPSPosition(setStage);
+    const applyPosition=async(pos,{refreshEnvironment=true}={})=>{
+      const {latitude,longitude,accuracy}=pos.coords;
+      const near=nearestWard(latitude,longitude);selectedKey=near.item.key;$('area').value=selectedKey;
+      const close=near.distance<=25;const label=close?`${near.item.name} · GPS`:'Vị trí GPS hiện tại';
+      gpsLocation={lat:latitude,lon:longitude,accuracy,label,cacheId:`gps:${latitude.toFixed(3)},${longitude.toFixed(3)}`};
+      setGpsPlanUi();updateMapSide();showUserMarker(latitude,longitude,accuracy);
+      const quick=quickEnvironmentForGps(gpsLocation);renderEnvironmentInstant(quick,{updating:refreshEnvironment});
+      $('heroLocationNote').textContent=`Đã nhận vị trí GPS ±${round(accuracy)} m${pos.__airunFix==='fast'?' · đang tăng độ chính xác…':''}`;
+      if(refreshEnvironment){
+        try{
+          const data=await fetchEnvironmentAt(latitude,longitude,{key:selectedKey,label,cacheId:gpsLocation.cacheId,accuracy,mode:'gps',force:true});
+          activeData=data;renderHero(data);
+          const plan=currentPlan(),snapshot=snapshotFor(data,plan.time),result=analyzeSnapshot(snapshot,plan);activeSnapshot=snapshot;activeResult=result;renderResult(data,snapshot,result);
+        }catch(apiError){
+          console.warn('AIRUN GPS environment update failed:',apiError);
+          renderEnvironmentInstant(quick);
+          $('heroLocationNote').textContent=`GPS ±${round(accuracy)} m đã sẵn sàng. Dữ liệu môi trường đang dùng bản dự phòng.`;
+        }
+      }
+      savePlanSettings();
+      return {near,label,accuracy};
+    };
 
-    // GPS is available immediately; show usable values before waiting for APIs.
-    const quick=quickEnvironmentForGps(gpsLocation);
-    renderEnvironmentInstant(quick,{updating:true});
+    const first=await applyPosition(position,{refreshEnvironment:true});
+    showToast(`GPS đã kết nối · độ chính xác khoảng ±${round(first.accuracy)} m.`);
 
-    try{
-      const data=await fetchEnvironmentAt(latitude,longitude,{key:selectedKey,label,cacheId:gpsLocation.cacheId,accuracy,mode:'gps',force:true});
-      activeData=data;renderHero(data);
-      const plan=currentPlan(),snapshot=snapshotFor(data,plan.time),result=analyzeSnapshot(snapshot,plan);activeSnapshot=snapshot;activeResult=result;renderResult(data,snapshot,result);
-    }catch(apiError){
-      console.warn('AIRUN GPS environment update failed:',apiError);
-      renderEnvironmentInstant(quick);
-      $('heroLocationNote').textContent=`GPS ±${round(accuracy)} m đã sẵn sàng. Open-Meteo đang phản hồi chậm nên AIRUN tạm dùng dữ liệu dự phòng.`;
+    // Improve the fix in the background without blocking the UI.
+    if(Number(position.coords.accuracy)>20){
+      void refineGPSPosition(position,setStage).then(async better=>{
+        if(!better)return;
+        const betterAcc=Number(better.coords.accuracy||999);
+        if(!gpsLocation || betterAcc+3 < Number(gpsLocation.accuracy||999)){
+          await applyPosition(better,{refreshEnvironment:false});
+          $('liveBadge').textContent='GPS ĐÃ KẾT NỐI';$('liveBadge').className='source-badge live';
+          $('heroLocationNote').textContent=`GPS đã cải thiện lên khoảng ±${round(betterAcc)} m · dữ liệu môi trường giữ nguyên theo vị trí gần nhất.`;
+        }
+      });
     }
-    savePlanSettings();
-    if(scroll)$('planner').scrollIntoView({behavior:'smooth'});showToast(`GPS đã sẵn sàng · độ chính xác khoảng ±${round(accuracy)} m.`);return position;
+
+    if(scroll)$('planner').scrollIntoView({behavior:'smooth'});
+    return position;
   }catch(error){
-    const code=error?.code;
     const data=quickEnvironmentForWard(selectedKey);renderEnvironmentInstant(data);
-    showToast(code===1?'Bạn chưa cấp quyền vị trí cho AIRUN.':code===3?'GPS mất quá lâu để phản hồi. Hãy thử ra gần cửa sổ hoặc ngoài trời.':'Chưa lấy được vị trí GPS.');return null;
+    $('liveBadge').textContent='GPS CHƯA KẾT NỐI';$('liveBadge').className='source-badge caution';
+    const help=gpsHelpMessage(error);$('heroLocationNote').textContent=help;showToast(help);return null;
   }
 }
 
@@ -600,9 +700,46 @@ function resetTrackerData(){
 
 async function startRun(){
   if(!navigator.geolocation){showToast('Thiết bị/trình duyệt này không hỗ trợ GPS.');return;}
-  resetTrackerData();tracker.startedAt=Date.now();trackerSetState('running');$('startRunBtn').disabled=true;$('pauseRunBtn').disabled=false;$('finishRunBtn').disabled=false;$('pauseRunBtn').textContent='Ⅱ Tạm dừng';
-  trackerAlert('','Đang khóa GPS…','Hãy đứng nơi thoáng trong vài giây để AIRUN nhận điểm đầu tiên.','⌖');startTrackerWatch();tracker.timer=setInterval(updateTrackerMetrics,1000);requestWakeLock();
-  showToast('AIRUN đã bắt đầu theo dõi GPS.');
+  const button=$('startRunBtn');
+  setBusy(button,true,'Đang kết nối GPS…');
+  trackerAlert('','Đang kiểm tra GPS…','AIRUN sẽ chỉ bắt đầu tính thời gian sau khi nhận được vị trí đầu tiên.','⌖');
+
+  try{
+    const readiness=await gpsReadiness();
+    if(!readiness.ok) throw geoError(readiness.reason==='denied'?1:readiness.reason,readiness.reason);
+
+    const first=await requestGPSPosition(stage=>trackerAlert('',stage,'Nếu đang ở trong nhà, vị trí có thể mất vài giây để xuất hiện.','⌖'),{maximumAge:5000});
+    resetTrackerData();
+    tracker.startedAt=Date.now();trackerSetState('running');
+    button.disabled=true;button.textContent='▶ Đang chạy';
+    $('pauseRunBtn').disabled=false;$('finishRunBtn').disabled=false;$('pauseRunBtn').textContent='Ⅱ Tạm dừng';
+
+    // Feed the first fix immediately so the UI never sits at “waiting GPS”.
+    handleTrackPosition(first);
+    const acc=Number(first.coords.accuracy||999);
+    if(acc>80){
+      trackerAlert('caution','GPS đã kết nối nhưng còn yếu.',`Độ chính xác hiện tại khoảng ±${round(acc)} m. AIRUN đang chờ tín hiệu tốt hơn trước khi cộng quãng đường.`,'⌖');
+    }else{
+      trackerAlert('good','GPS đã kết nối.',`Độ chính xác khoảng ±${round(acc)} m. AIRUN đang ghi lộ trình.`,'✓');
+    }
+
+    startTrackerWatch();tracker.timer=setInterval(updateTrackerMetrics,1000);requestWakeLock();
+    showToast(`GPS đã kết nối · ±${round(acc)} m.`);
+
+    // Ask for a better high-accuracy fix in the background if the first one is coarse.
+    if(acc>20){
+      void refineGPSPosition(first).then(better=>{
+        if(better && tracker.status==='running') handleTrackPosition(better);
+      });
+    }
+  }catch(error){
+    setBusy(button,false);
+    trackerSetState('idle');
+    const help=gpsHelpMessage(error);
+    trackerAlert('bad','Chưa kết nối được GPS.',help,'!');
+    showToast(help);
+    return;
+  }
 }
 
 async function pauseOrResumeRun(){

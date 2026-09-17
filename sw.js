@@ -1,5 +1,5 @@
-const CACHE='airun-v51-core';
-const CORE=['./','./index.html','./style.css?v=51','./app.js?v=51','./manifest.webmanifest','./assets/icon.svg','./assets/danang-runner-hero.svg','./assets/route-riverside.svg','./assets/route-coast.svg'];
+const CACHE='airun-v52-core';
+const CORE=['./','./index.html','./style.css?v=52','./app.js?v=52','./manifest.webmanifest','./assets/icon.svg','./assets/danang-runner-hero.svg','./assets/route-riverside.svg','./assets/route-coast.svg'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',event=>{
