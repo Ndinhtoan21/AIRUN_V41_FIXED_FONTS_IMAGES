@@ -14,8 +14,131 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&display=swap&subset=vietnamese" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=54">
-  <script defer src="app.js?v=54"></script>
+  <style id="airun-inline-style">
+:root{
+  --green:#08664f;--green-2:#0a7c60;--green-dark:#052f27;--lime:#c8f16b;--ink:#10251f;--muted:#60746c;
+  --paper:#f4f8f5;--card:#fff;--line:#dce7e1;--violet:#6d5bd0;--blue:#3275dc;--orange:#ef8a35;--red:#c84e4e;
+  --shadow:0 18px 55px rgba(15,48,38,.12);--soft-shadow:0 8px 26px rgba(15,48,38,.08);--max:1180px;
+  font-family:"Be Vietnam Pro","Segoe UI",Arial,sans-serif;color:var(--ink);background:var(--paper)
+}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:108px}body{margin:0;background:var(--paper);color:var(--ink);font-family:inherit;line-height:1.5}button,input,select,textarea{font:inherit}button,a{touch-action:manipulation}button{cursor:pointer}img{display:block;max-width:100%}a{color:inherit}.skip-link{position:fixed;left:12px;top:-80px;z-index:9999;background:#fff;padding:10px 14px;border-radius:10px;box-shadow:var(--shadow)}.skip-link:focus{top:12px}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.status-bar{height:34px;background:#052f27;color:#cfe5dc;font-size:10px;position:relative;z-index:110}.status-inner{height:100%;max-width:var(--max);padding:0 18px;margin:auto;display:flex;align-items:center;gap:18px}.status-inner>span:first-child{display:flex;align-items:center;gap:7px;color:#fff}.status-inner>span:nth-child(2){flex:1}.status-inner button{border:0;background:transparent;color:#cfe5dc;font-size:9px;text-decoration:underline}.pulse,.live-dot{width:8px;height:8px;border-radius:50%;background:#69dc93;box-shadow:0 0 0 0 rgba(105,220,147,.6);animation:pulse 1.8s infinite}.pulse.offline{background:#efa655;animation:none}.live-dot{display:inline-block;margin-right:6px;width:7px;height:7px}@keyframes pulse{70%{box-shadow:0 0 0 7px rgba(105,220,147,0)}100%{box-shadow:0 0 0 0 rgba(105,220,147,0)}}
+.nav{height:74px;background:rgba(255,255,255,.93);backdrop-filter:blur(16px);border-bottom:1px solid rgba(220,231,225,.9);display:flex;align-items:center;gap:24px;padding:0 max(22px,calc((100% - var(--max))/2));position:sticky;top:0;z-index:100}.brand{display:flex;align-items:center;gap:10px;text-decoration:none;min-width:235px}.brand-mark{width:42px;height:42px;border-radius:14px;background:linear-gradient(145deg,var(--green),#0a8968);display:grid;place-items:center;color:var(--lime);font-size:22px;font-weight:900;box-shadow:0 7px 20px rgba(8,102,79,.23)}.brand>span:last-child{display:grid;grid-template-columns:auto auto;column-gap:7px;align-items:baseline}.brand strong{font-size:22px;letter-spacing:-.04em}.brand small{font-size:8px;letter-spacing:.16em;color:var(--green);font-weight:800}.brand em{grid-column:1/-1;font-style:normal;font-size:7px;letter-spacing:.11em;color:var(--muted)}.nav nav{display:flex;gap:4px;align-items:center;margin-left:auto}.nav nav a{text-decoration:none;font-size:10px;font-weight:700;padding:8px 10px;border-radius:9px}.nav nav a:hover{background:#edf5f1}.menu-btn,.install-btn{border:0;border-radius:10px;padding:9px 12px;font-size:10px;font-weight:700}.menu-btn{display:none;background:#edf5f1}.install-btn{background:var(--green);color:#fff}
+.hero{position:relative;overflow:hidden;min-height:660px;background:radial-gradient(circle at 78% 28%,#147f65 0,#075b49 30%,#052f27 72%);color:#fff;display:grid;grid-template-columns:minmax(0,.88fr) minmax(500px,1.12fr);align-items:center;gap:64px;padding:70px max(24px,calc((100% - var(--max))/2)) 110px}.hero:after{content:"";position:absolute;inset:auto -15% -45% 20%;height:65%;background:radial-gradient(circle,rgba(201,242,107,.19),transparent 66%);pointer-events:none}.hero-glow{position:absolute;width:390px;height:390px;border-radius:50%;background:rgba(116,222,179,.09);filter:blur(2px);left:-170px;top:40px}.hero-content,.hero-visual{position:relative;z-index:2}.eyebrow{margin:0 0 10px;font-size:9px;font-weight:900;letter-spacing:.18em;color:var(--green);text-transform:uppercase}.eyebrow.light{color:#bce8d5}.hero h1{font-size:58px;line-height:1.04;letter-spacing:-.055em;margin:0;max-width:650px}.hero h1 span{color:var(--lime)}.hero-lead{font-size:14px;line-height:1.8;color:#d6e9e1;max-width:590px;margin:22px 0 27px}.hero-actions{display:flex;gap:10px;flex-wrap:wrap}.primary,.light-btn,.ghost-btn,.soft-btn,.save-btn,.location-action{border:0;border-radius:12px;padding:12px 16px;font-size:10px;font-weight:800;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:7px}.primary{background:var(--green);color:#fff}.light-btn{background:var(--lime);color:#183329}.ghost-btn{background:rgba(255,255,255,.09);color:#fff;border:1px solid rgba(255,255,255,.23)}.hero-trust{display:flex;gap:17px;flex-wrap:wrap;margin-top:20px;color:#c9ded5;font-size:9px}.hero-photo-card{position:relative;margin:0;border-radius:30px;overflow:hidden;box-shadow:0 35px 80px rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.14);transform:rotate(1.2deg)}.hero-photo-card img{width:100%;height:415px;object-fit:cover;filter:saturate(.92) contrast(1.02)}.hero-photo-card:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(3,35,28,.72))}.hero-photo-card figcaption{position:absolute;left:19px;bottom:18px;z-index:2;max-width:330px}.hero-photo-card figcaption span,.hero-photo-card figcaption b{display:block}.hero-photo-card figcaption span{font-size:8px;letter-spacing:.13em;color:#cbf0df}.hero-photo-card figcaption b{font-size:14px;margin-top:3px}.live-orbit{position:relative;z-index:3;margin:-73px 30px 0 -34px;padding:18px 20px;border-radius:23px;background:rgba(255,255,255,.96);color:var(--ink);box-shadow:0 24px 60px rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.7)}.orbit-top{display:flex;justify-content:space-between;gap:15px;font-size:8px;color:var(--muted);align-items:center}.source-badge{background:#e4f4ec;color:#087055;padding:5px 7px;border-radius:999px;font-size:7px;font-weight:900;letter-spacing:.08em}.source-badge.fallback,.source-badge.partial,.source-badge.cached,.source-badge.demo{background:#fff0d9;color:#9a5f16}.source-badge.loading{background:#edf0f0;color:#6a7873}.orbit-main{display:flex;gap:13px;align-items:center;padding:15px 0}.weather-symbol{width:62px;height:62px;border-radius:18px;background:#edf7f2;display:grid;place-items:center;font-size:29px}.orbit-main small,.orbit-main strong,.orbit-main p{display:block;margin:0}.orbit-main small{font-size:9px;font-weight:900;color:var(--green)}.orbit-main strong{font-size:38px;line-height:1.05;letter-spacing:-.05em}.orbit-main p{font-size:8px;color:var(--muted)}.orbit-metrics{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line);border-radius:14px;overflow:hidden}.orbit-metrics>div{padding:9px 10px;border-right:1px solid var(--line)}.orbit-metrics>div:last-child{border:0}.orbit-metrics small,.orbit-metrics b{display:block}.orbit-metrics small{font-size:7px;color:var(--muted)}.orbit-metrics b{font-size:16px}.orbit-metrics i{font-style:normal;font-size:6px;color:var(--muted)}.orbit-note{font-size:7px;color:var(--muted);margin:9px 0 0}
+.quick-strip{max-width:var(--max);margin:-42px auto 0;position:relative;z-index:4;background:#fff;border-radius:19px;box-shadow:var(--shadow);border:1px solid var(--line);padding:17px 20px;display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.quick-strip>div{padding:4px 13px;display:grid;grid-template-columns:auto 1fr;column-gap:9px}.quick-strip span{grid-row:1/3;color:var(--green);font-size:18px;font-weight:900}.quick-strip b{font-size:10px}.quick-strip small{font-size:8px;color:var(--muted)}
+.section-wrap{max-width:var(--max);margin:auto;padding:90px 20px 0}.section-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:24px}.section-heading h2{font-size:38px;line-height:1.14;letter-spacing:-.04em;margin:0}.section-heading p:not(.eyebrow){font-size:11px;color:var(--muted);max-width:640px;margin:8px 0 0}.card{background:#fff;border:1px solid var(--line);border-radius:21px;box-shadow:var(--soft-shadow)}.soft-btn{background:#edf5f1;color:var(--green);border:1px solid #d3e4dc}.soft-btn:hover,.location-action:hover{background:#e0efe8}
+.tracker-section{padding-top:105px}.tracker-state{display:inline-flex;align-items:center;gap:7px;padding:8px 11px;border-radius:999px;font-size:9px;font-weight:800;background:#eef2f0;color:#64736d}.tracker-state i{width:8px;height:8px;border-radius:50%;background:#9ba9a3}.tracker-state.running{background:#e5f7ee;color:#06724f}.tracker-state.running i{background:#2cc97b;animation:pulse 1.8s infinite}.tracker-state.paused{background:#fff2db;color:#9a641c}.tracker-state.paused i{background:#e4a13b}.tracker-shell{display:grid;grid-template-columns:.87fr 1.13fr;overflow:hidden;min-height:565px}.tracker-dashboard{padding:28px;background:linear-gradient(155deg,#fff,#f8fbf9)}.tracker-location-row{display:flex;justify-content:space-between;align-items:center;padding-bottom:18px;border-bottom:1px solid var(--line)}.tracker-location-row small,.tracker-location-row strong,.tracker-location-row span{display:block}.tracker-location-row small{font-size:7px;color:var(--muted);font-weight:800}.tracker-location-row strong{font-size:14px;margin-top:2px}.tracker-location-row span{font-size:8px;color:var(--muted);margin-top:2px}.gps-bars{display:flex;align-items:flex-end;gap:3px;height:25px}.gps-bars i{display:block;width:4px;border-radius:4px;background:#d4ddd9}.gps-bars i:nth-child(1){height:7px}.gps-bars i:nth-child(2){height:12px}.gps-bars i:nth-child(3){height:18px}.gps-bars i:nth-child(4){height:24px}.gps-bars.level-1 i:nth-child(1),.gps-bars.level-2 i:nth-child(-n+2),.gps-bars.level-3 i:nth-child(-n+3),.gps-bars.level-4 i{background:var(--green)}.tracker-distance{text-align:center;padding:30px 0 22px}.tracker-distance small{display:block;font-size:8px;letter-spacing:.18em;color:var(--muted);font-weight:900}.tracker-distance strong{font-size:72px;line-height:1;letter-spacing:-.07em}.tracker-distance span{font-size:14px;font-weight:700;color:var(--muted);margin-left:5px}.tracker-stats{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:15px;overflow:hidden}.tracker-stats>div{padding:12px;text-align:center;border-right:1px solid var(--line)}.tracker-stats>div:last-child{border:0}.tracker-stats small,.tracker-stats strong,.tracker-stats span{display:block}.tracker-stats small{font-size:7px;color:var(--muted);font-weight:800}.tracker-stats strong{font-size:19px;margin-top:3px}.tracker-stats span{font-size:6px;color:var(--muted)}.tracker-env{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}.tracker-env>div{padding:10px;border-radius:12px;background:#edf6f2}.tracker-env small,.tracker-env b{display:block}.tracker-env small{font-size:6px;color:var(--muted)}.tracker-env b{font-size:11px;margin-top:2px}.tracker-alert{display:flex;gap:10px;align-items:flex-start;margin-top:12px;padding:11px 12px;border-radius:13px;background:#f1f5f3;color:#465b53}.tracker-alert.good{background:#e9f8f0;color:#126646}.tracker-alert.caution{background:#fff2de;color:#865a1a}.tracker-alert.bad{background:#fdeaea;color:#8d3434}.tracker-alert span{font-size:19px;line-height:1}.tracker-alert p{font-size:8px;margin:0}.tracker-alert b{font-size:9px}.tracker-controls{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:8px;margin-top:14px}.tracker-controls button{border:0;border-radius:12px;padding:12px;font-size:9px;font-weight:900}.run-start{background:var(--green);color:#fff}.run-secondary{background:#edf5f1;color:var(--green)}.run-finish{background:#fdecec;color:#9d3939}.tracker-controls button:disabled{opacity:.42;cursor:not-allowed}.tracker-note{font-size:7px;color:var(--muted);line-height:1.6;margin:10px 0 0}.tracker-map-wrap{position:relative;background:#dfeae5;min-height:565px}.run-map{position:absolute;inset:0;z-index:2}.run-map-placeholder{position:absolute;inset:0;display:grid;place-items:center;align-content:center;text-align:center;color:#628077;padding:25px;background:radial-gradient(circle at 65% 30%,#eff8f4,#dfeae5)}.run-map-placeholder span{font-size:50px;color:var(--green)}.run-map-placeholder b{font-size:14px}.run-map-placeholder p{font-size:9px;max-width:320px}.map-float{position:absolute;left:14px;top:14px;z-index:4;background:rgba(255,255,255,.93);padding:8px 10px;border-radius:11px;box-shadow:var(--soft-shadow);font-size:8px}.run-summary{margin-top:13px;padding:17px 20px;display:flex;align-items:center;justify-content:space-between;gap:20px}.run-summary h3{margin:0;font-size:19px}.run-summary p:not(.eyebrow){margin:4px 0 0;color:var(--muted);font-size:9px}.summary-metrics{display:flex;gap:28px}.summary-metrics span{font-size:7px;color:var(--muted);text-align:center}.summary-metrics b{display:block;color:var(--ink);font-size:15px;margin-bottom:2px}
+.city-stories{padding-top:100px}.story-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.story-card{overflow:hidden}.story-card img{width:100%;height:260px;object-fit:cover}.story-card>div{padding:20px}.story-kicker{font-size:7px;color:var(--green);letter-spacing:.15em;font-weight:900}.story-card h3{font-size:20px;line-height:1.25;margin:6px 0}.story-card p{font-size:9px;color:var(--muted);margin:0;line-height:1.7}
+.planner-grid{display:grid;grid-template-columns:365px minmax(0,1fr);gap:15px;align-items:start}.form-card,.result-card{padding:21px}.card-title{display:flex;gap:10px;align-items:flex-start;margin-bottom:18px}.card-title h3{font-size:15px;margin:0}.card-title p{font-size:8px;color:var(--muted);margin:3px 0 0}.step-number{width:28px;height:28px;flex:none;border-radius:9px;background:#e6f4ed;color:var(--green);display:grid;place-items:center;font-size:10px;font-weight:900}.step-number.purple{background:#eeeafd;color:var(--violet)}label,legend{display:block;font-size:8px;font-weight:800;margin:12px 0 5px}select,input,textarea{width:100%;border:1px solid #dbe5e0;border-radius:10px;background:#fbfdfc;color:var(--ink);padding:10px 11px;min-height:41px;outline:none}select:focus,input:focus,textarea:focus{border-color:#7eb8a6;box-shadow:0 0 0 3px rgba(8,102,79,.08)}.field-pair{display:grid;grid-template-columns:1fr 1fr;gap:8px}fieldset{border:0;padding:0;margin:0}.segment{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;background:#edf3f0;padding:4px;border-radius:11px}.segment button{border:0;background:transparent;border-radius:8px;padding:8px;font-size:8px;font-weight:800;color:#667871}.segment button.active{background:#fff;color:var(--green);box-shadow:0 2px 8px rgba(20,60,48,.08)}.check-row{display:flex;gap:9px;align-items:flex-start;padding:10px;border:1px solid var(--line);border-radius:11px}.check-row input{width:17px;height:17px;min-height:0;accent-color:var(--green);margin-top:1px}.check-row b,.check-row small{display:block}.check-row b{font-size:9px}.check-row small{font-size:7px;color:var(--muted);margin-top:2px}.analyze-btn,.save-btn{width:100%;margin-top:12px}.form-note{font-size:7px;color:var(--muted);line-height:1.6;margin-bottom:0}.location-action{width:100%;background:#edf5f1;color:var(--green);border:1px dashed #a9cabe;margin-bottom:7px}.gps-plan-chip{font-size:8px;background:#e7f6ef;color:#17684e;padding:8px 9px;border-radius:9px;margin-bottom:7px}.gps-plan-chip button{float:right;border:0;background:transparent;color:#17684e;font-size:7px;text-decoration:underline}.result-title{align-items:center}.result-title>div{flex:1}.result-pill{font-size:7px;font-weight:900;padding:6px 8px;border-radius:999px;background:#eef2f0;color:#667670}.result-pill.good{background:#e3f6ec;color:#08714f}.result-pill.caution{background:#fff1da;color:#975d13}.result-pill.bad{background:#fde7e7;color:#963c3c}.decision-panel{position:relative;display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;border-radius:16px;padding:18px;background:#f1f5f3}.decision-panel.good{background:#e9f8f0}.decision-panel.caution{background:#fff3df}.decision-panel.bad{background:#fdeaea}.decision-copy{display:flex;gap:12px}.decision-icon{width:38px;height:38px;flex:none;border-radius:12px;background:#fff;display:grid;place-items:center;font-size:20px}.decision-copy small{font-size:7px;font-weight:900;color:var(--muted)}.decision-copy h2{font-size:23px;line-height:1.14;margin:2px 0 5px;letter-spacing:-.03em}.decision-copy p{font-size:8px;color:var(--muted);margin:0}.score-ring{--score:0%;width:92px;height:92px;border-radius:50%;background:conic-gradient(var(--green) var(--score),#dfe7e3 0);display:grid;place-items:center;position:relative}.score-ring:after{content:"";position:absolute;inset:8px;background:#fff;border-radius:50%}.score-ring>*{position:relative;z-index:2}.score-ring strong{font-size:24px;line-height:1}.score-ring small{font-size:7px;position:absolute;top:53px}.score-ring span{font-size:6px;position:absolute;top:66px;color:var(--muted)}.metric-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:7px;margin-top:10px}.metric-grid>div{border:1px solid var(--line);border-radius:12px;padding:10px}.metric-icon{width:27px;height:27px;border-radius:9px;background:#edf6f2;color:var(--green);display:grid;place-items:center;font-size:8px;font-weight:900;margin-bottom:7px}.metric-grid small,.metric-grid strong,.metric-grid em{display:block}.metric-grid small{font-size:6px;color:var(--muted)}.metric-grid strong{font-size:17px}.metric-grid em{font-size:6px;color:var(--muted);font-style:normal}.reason-box{margin-top:10px;border:1px solid var(--line);border-radius:14px;padding:13px}.reason-head{display:flex;gap:9px}.reason-head>span{color:var(--green)}.reason-head h3{font-size:10px;margin:0}.reason-head p{font-size:7px;color:var(--muted);margin:2px 0}.reason-box ul{margin:9px 0 0;padding-left:18px}.reason-box li{font-size:8px;color:#4d6159;margin:4px 0}.best-time{display:flex;gap:10px;align-items:flex-start;margin-top:10px;background:#102f28;color:#fff;border-radius:14px;padding:13px}.best-time-icon{font-size:21px;color:var(--lime)}.best-time small,.best-time strong,.best-time p{display:block}.best-time small{font-size:6px;color:#a9c8bd}.best-time strong{font-size:16px}.best-time p{font-size:7px;color:#c7ddd5;margin:3px 0 0}.decision-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:9px}.decision-actions button{border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px 5px;font-size:7px;font-weight:700}.decision-actions button.active{border-color:var(--green);background:#edf7f2;color:var(--green)}textarea{resize:vertical;margin-top:8px;font-size:9px}.save-btn{background:#102f28;color:#fff}
+.compare-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:9px}.compare-card{background:#fff;border:1px solid var(--line);border-radius:15px;padding:15px}.compare-card.best{border-color:#83bfa9;box-shadow:0 10px 30px rgba(8,102,79,.1)}.compare-rank{font-size:6px;color:var(--muted);font-weight:900;letter-spacing:.09em}.compare-card.best .compare-rank{color:var(--green)}.compare-card h3{font-size:15px;margin:5px 0 12px}.compare-score strong{font-size:30px}.compare-score span{font-size:7px;color:var(--muted)}.compare-stats{display:grid;gap:4px;margin:10px 0}.compare-stats span{font-size:7px;padding:5px;background:#f3f7f5;border-radius:7px}.compare-card button{width:100%;border:0;border-radius:9px;background:#edf5f1;color:var(--green);font-size:7px;font-weight:800;padding:8px}.source-line{font-size:7px;color:var(--muted);margin-top:10px}.empty-state{grid-column:1/-1;padding:28px;text-align:center;border:1px dashed #cad8d2;border-radius:14px;color:var(--muted);font-size:9px;background:rgba(255,255,255,.55)}
+.map-layout{display:grid;grid-template-columns:1.5fr .5fr;overflow:hidden;min-height:560px}.map-wrap{position:relative;min-height:560px;background:#e3ece8}.map-wrap #map{position:absolute;inset:0;z-index:2}.map-fallback{position:absolute;inset:0;z-index:3;background:#e7f0ec;padding:40px;display:grid;place-content:center;text-align:center}.map-fallback b{font-size:16px}.map-fallback p{font-size:9px;color:var(--muted)}.map-side{padding:22px;background:#fff}.map-side-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.map-side-head small{font-size:6px;color:var(--muted);font-weight:800}.map-side-head h3{font-size:22px;margin:2px 0}.map-side-head>span{font-size:8px;background:#edf6f2;color:var(--green);padding:6px 8px;border-radius:999px}.map-side>p{font-size:8px;color:var(--muted);line-height:1.6}.map-facts{display:grid;grid-template-columns:1fr 1fr;gap:5px}.map-facts span{background:#f2f7f4;border-radius:10px;padding:9px;font-size:6px;color:var(--muted)}.map-facts b{display:block;font-size:15px;color:var(--ink)}.ward-list{display:grid;grid-template-columns:1fr 1fr;gap:4px;max-height:245px;overflow:auto;margin-top:8px}.ward-list button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:7px;font-size:7px;text-align:left}.ward-list button.active{background:var(--green);color:#fff;border-color:var(--green)}.map-link{display:block;margin-top:10px;font-size:8px;color:var(--green);font-weight:800}.airun-marker{background:transparent}.airun-marker span{display:block;width:20px;height:20px;border:5px solid #fff;border-radius:50%;background:var(--green);box-shadow:0 2px 10px rgba(0,0,0,.23)}.airun-marker.selected span{background:var(--lime);border-color:var(--green);transform:scale(1.18)}
+.tools-grid{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:12px}.tool-card{padding:18px}.tool-icon{font-size:24px;margin-bottom:8px}.tool-card h3{font-size:15px;margin:0}.tool-card p{font-size:8px;color:var(--muted)}.kit-list{padding-left:18px}.kit-list li{font-size:8px;margin:6px 0}.pace-inputs{display:grid;grid-template-columns:1fr 1fr;gap:6px}.pace-inputs label{position:relative}.pace-inputs input{padding-right:35px}.pace-inputs label span{position:absolute;right:9px;bottom:13px;font-size:7px;color:var(--muted)}.pace-result{margin-top:10px;padding:12px;border-radius:12px;background:#102f28;color:#fff;display:flex;align-items:baseline;gap:7px}.pace-result small{font-size:6px;color:#a8cfc0;flex:1}.pace-result strong{font-size:25px}.pace-result span{font-size:7px;color:#b9d9cd}.safety-checks{display:grid;gap:7px}.safety-checks label{display:flex;gap:8px;align-items:flex-start;padding:8px;border:1px solid #e0e9e4;border-radius:9px;font-size:8px}.safety-checks input{width:16px;height:16px;min-height:0;accent-color:var(--green);margin:0}
+.journal-section{padding-bottom:90px}.journal-actions{display:flex;align-items:center;gap:8px}.text-btn{background:transparent;color:var(--muted);font-size:9px;border:0}.text-btn.danger{color:#a94743}.journal-list{display:grid;gap:8px}.journal-item{background:#fff;border:1px solid var(--line);border-radius:14px;padding:13px;display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;gap:12px;align-items:center}.journal-date{width:51px;border-radius:11px;background:#edf7f2;padding:7px;text-align:center}.journal-date b,.journal-date span{display:block}.journal-date b{font-size:16px}.journal-date span{font-size:7px;color:var(--muted)}.journal-main b{display:block;font-size:11px}.journal-main p{margin:3px 0 0;color:var(--muted);font-size:8px}.journal-score{text-align:right}.journal-score b{font-size:17px;display:block}.journal-score span{font-size:6px;color:var(--muted)}.journal-delete{border:0;background:transparent;color:#a94743;padding:5px;font-size:17px}
+.method-section{background:linear-gradient(120deg,#052f27,#0b7159);color:#fff;padding:58px max(24px,calc((100% - var(--max))/2));display:grid;grid-template-columns:.78fr 1.22fr;gap:58px;align-items:center}.method-section h2{font-size:35px;line-height:1.16;margin:0 0 12px;letter-spacing:-.035em}.method-section p:not(.eyebrow){color:#c7ded5;font-size:10px;line-height:1.8}.method-flow{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px}.method-flow span{border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);padding:9px 11px;border-radius:10px;font-size:8px;font-weight:800}.method-flow i{font-style:normal;color:var(--lime)}
+footer{background:#041f1a;color:#c7ddd5;padding:30px max(24px,calc((100% - var(--max))/2));display:grid;grid-template-columns:auto 1fr auto;gap:32px;align-items:center}.footer-brand{display:flex;align-items:center;gap:9px}.brand-mark.small{width:34px;height:34px;border-radius:10px;font-size:16px}.footer-brand b,.footer-brand small{display:block}.footer-brand b{font-size:11px;color:#fff}.footer-brand small{font-size:7px}footer>p{font-size:7px;margin:0;max-width:600px;line-height:1.7}.footer-links{display:flex;gap:10px;align-items:center}.footer-links a,.footer-links button{font-size:7px;color:#c7ddd5;background:transparent;border:0;text-decoration:underline;padding:0}.back-top{position:fixed;right:16px;bottom:16px;z-index:90;width:42px;height:42px;border:0;border-radius:50%;background:var(--green);color:#fff;box-shadow:var(--shadow);font-size:18px;opacity:0;pointer-events:none;transform:translateY(10px);transition:.2s}.back-top.show{opacity:1;pointer-events:auto;transform:none}.toast{position:fixed;left:50%;bottom:20px;z-index:9999;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#102f28;color:#fff;border-radius:12px;padding:10px 15px;box-shadow:var(--shadow);font-size:9px;transition:.25s;max-width:min(500px,calc(100% - 28px));text-align:center}.toast.show{opacity:1;transform:translate(-50%,0)}
+dialog{border:0;border-radius:20px;padding:25px;width:min(680px,calc(100% - 30px));box-shadow:0 28px 90px rgba(0,0,0,.28);color:var(--ink)}dialog::backdrop{background:rgba(2,31,24,.62);backdrop-filter:blur(5px)}dialog h2{font-size:28px;margin:0 0 15px}.dialog-close{position:absolute;right:13px;top:11px;border:0;background:#edf5f1;width:33px;height:33px;border-radius:50%;font-size:20px}.dialog-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.dialog-grid>div{padding:12px;border:1px solid var(--line);border-radius:11px;background:#f8fbf9}.dialog-grid b{font-size:10px}.dialog-grid p{font-size:8px;color:var(--muted);margin:3px 0 0;line-height:1.6}.dialog-note{font-size:8px;color:var(--muted);margin:12px 0}.dialog-note+.primary{width:100%}
+@media(max-width:1050px){.nav{padding:0 18px}.nav nav{position:absolute;top:69px;left:13px;right:13px;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:8px;display:none;flex-direction:column;align-items:stretch}.nav nav.open{display:flex}.nav nav a{padding:10px}.menu-btn{display:inline-flex;align-items:center;gap:6px}.install-btn{display:none!important}.brand{flex:1}.hero{grid-template-columns:1fr 1fr;gap:32px}.hero h1{font-size:50px}.hero-visual .live-orbit{margin:-60px 15px 0 -15px}.tracker-shell{grid-template-columns:1fr 1fr}.tracker-dashboard{padding:22px}.metric-grid{grid-template-columns:repeat(3,1fr)}.compare-grid{grid-template-columns:repeat(3,1fr)}.map-layout{grid-template-columns:1.2fr .8fr}.tools-grid{grid-template-columns:1fr 1fr}.safety-card{grid-column:1/-1}}
+@media(max-width:780px){html{scroll-padding-top:76px}.status-inner{padding:0 12px}.status-inner>span:nth-child(2){white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.status-inner button{display:none}.nav{height:65px;padding:0 12px}.brand-mark{width:36px;height:36px;border-radius:11px}.brand strong{font-size:19px}.brand em{display:none}.menu-btn span{display:none}.hero{min-height:auto;grid-template-columns:1fr;padding:48px 16px 74px}.hero h1{font-size:46px}.hero-visual{margin-top:8px}.hero-photo-card{transform:none;border-radius:23px}.hero-photo-card img{height:360px}.hero-visual .live-orbit{margin:-48px 9px 0 22px}.orbit-metrics{grid-template-columns:repeat(4,1fr)}.quick-strip{margin:-35px 11px 0;grid-template-columns:1fr 1fr;padding:12px}.section-wrap{padding-left:12px;padding-right:12px;padding-top:70px}.section-heading{align-items:flex-start}.section-heading h2{font-size:32px}.tracker-shell{grid-template-columns:1fr}.tracker-map-wrap{min-height:440px}.tracker-dashboard{order:1}.tracker-map-wrap{order:2}.tracker-distance strong{font-size:64px}.story-grid{grid-template-columns:1fr}.planner-grid{grid-template-columns:1fr}.metric-grid{grid-template-columns:repeat(6,minmax(105px,1fr));overflow-x:auto;padding-bottom:5px;scroll-snap-type:x mandatory}.metric-grid>div{scroll-snap-align:start}.compare-grid{grid-template-columns:repeat(5,minmax(180px,1fr));overflow-x:auto;padding-bottom:8px;scroll-snap-type:x mandatory}.compare-card{scroll-snap-align:start}.map-layout{grid-template-columns:1fr}.map-wrap{min-height:420px}.tools-grid{grid-template-columns:1fr}.safety-card{grid-column:auto}.method-section{grid-template-columns:1fr;gap:18px;padding:43px 18px}.method-flow{justify-content:flex-start}footer{grid-template-columns:1fr;gap:13px;padding:25px 18px}.footer-links{flex-wrap:wrap}.dialog-grid{grid-template-columns:1fr}.run-summary{align-items:flex-start;flex-direction:column}.summary-metrics{width:100%;justify-content:space-between}}
+@media(max-width:480px){.hero{padding-top:36px}.hero h1{font-size:38px}.hero-photo-card img{height:300px}.hero-visual .live-orbit{margin:-30px 0 0}.hero-actions{display:grid}.hero-actions>*{width:100%}.hero-trust{display:grid}.orbit-metrics{grid-template-columns:1fr 1fr}.orbit-metrics>div:nth-child(2){border-right:0}.orbit-metrics>div:nth-child(-n+2){border-bottom:1px solid var(--line)}.quick-strip{grid-template-columns:1fr}.quick-strip>div{border-bottom:1px solid var(--line);padding:7px}.quick-strip>div:last-child{border:0}.section-heading{display:block}.section-heading .soft-btn,.journal-actions,.tracker-state{margin-top:12px}.section-heading .soft-btn{width:100%}.tracker-dashboard{padding:17px}.tracker-distance{padding:24px 0 18px}.tracker-distance strong{font-size:57px}.tracker-stats{grid-template-columns:1fr 1fr}.tracker-stats>div:nth-child(2){border-right:0}.tracker-stats>div:last-child{grid-column:1/-1;border-top:1px solid var(--line)}.tracker-env{grid-template-columns:1fr 1fr}.tracker-controls{grid-template-columns:1fr 1fr}.run-start{grid-column:1/-1}.field-pair{grid-template-columns:1fr}.decision-panel{grid-template-columns:1fr}.score-ring{width:82px;height:82px}.decision-actions{grid-template-columns:1fr 1fr}.map-wrap,.tracker-map-wrap{min-height:350px}.pace-inputs{grid-template-columns:1fr}.journal-item{grid-template-columns:auto 1fr}.journal-score{grid-column:2}.journal-delete{position:absolute;right:21px}.journal-item{position:relative}.summary-metrics{gap:12px}.summary-metrics b{font-size:13px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* AIRUN V5.1 — mobile-first refinement and faster perceived loading */
+@media(max-width:780px){
+  body{overflow-x:hidden}
+  .status-bar{height:30px;font-size:9px}
+  .status-inner{gap:8px;padding:0 10px}
+  .status-inner>span:first-child b{font-size:9px}
+  .nav{height:60px;padding:0 10px;gap:9px}
+  .brand{min-width:0;gap:8px}
+  .brand-mark{width:34px;height:34px;border-radius:10px;font-size:18px}
+  .brand strong{font-size:18px}.brand small{font-size:7px}
+  .menu-btn{display:inline-flex;width:42px;height:42px;padding:0;align-items:center;justify-content:center;font-size:19px}
+  .nav nav{top:63px;left:10px;right:10px;padding:7px;border-radius:16px}
+  .nav nav a{font-size:14px;padding:12px 13px;border-radius:10px}
+
+  .hero{display:flex;flex-direction:column;align-items:stretch;gap:22px;padding:32px 14px 38px;background:radial-gradient(circle at 82% 18%,#138266 0,#075f4b 31%,#052f27 72%)}
+  .hero-content{order:1}.hero-visual{order:2;margin:0}
+  .hero .eyebrow{font-size:10px;margin-bottom:9px;letter-spacing:.12em}
+  .hero h1{font-size:clamp(36px,10vw,46px);line-height:1.03;letter-spacing:-.052em}
+  .hero-lead{font-size:14px;line-height:1.65;margin:16px 0 18px}
+  .hero-actions{display:grid;grid-template-columns:1fr;gap:9px}
+  .hero-actions>*{width:100%;min-height:48px;font-size:13px;border-radius:14px}
+  .hero-trust{display:flex;gap:7px;overflow-x:auto;flex-wrap:nowrap;margin-top:14px;padding-bottom:3px;scrollbar-width:none}
+  .hero-trust::-webkit-scrollbar{display:none}
+  .hero-trust span{white-space:nowrap;font-size:10px;padding:7px 9px;border:1px solid rgba(255,255,255,.12);border-radius:999px;background:rgba(255,255,255,.06)}
+  .hero-photo-card{transform:none;border-radius:20px;box-shadow:0 20px 45px rgba(0,0,0,.22)}
+  .hero-photo-card img{height:clamp(220px,61vw,300px);object-position:center 45%}
+  .hero-photo-card figcaption{left:14px;right:14px;bottom:13px;max-width:none}
+  .hero-photo-card figcaption span{font-size:9px}.hero-photo-card figcaption b{font-size:13px;line-height:1.35}
+  .hero-visual .live-orbit{margin:10px 0 0;padding:15px;border-radius:19px;box-shadow:0 14px 34px rgba(0,0,0,.17)}
+  .orbit-top{font-size:10px}.source-badge{font-size:8px;padding:5px 7px}
+  .orbit-main{padding:13px 0;gap:11px}.weather-symbol{width:52px;height:52px;border-radius:15px;font-size:24px}
+  .orbit-main small{font-size:10px}.orbit-main strong{font-size:34px}.orbit-main p{font-size:10px;line-height:1.4}
+  .orbit-metrics{grid-template-columns:1fr 1fr;border-radius:13px}
+  .orbit-metrics>div{padding:10px 11px}.orbit-metrics>div:nth-child(2){border-right:0}.orbit-metrics>div:nth-child(-n+2){border-bottom:1px solid var(--line)}
+  .orbit-metrics small{font-size:9px}.orbit-metrics b{font-size:18px}.orbit-metrics i{font-size:8px}
+  .orbit-note{font-size:10px;line-height:1.5;margin-top:10px}
+
+  .quick-strip{margin:12px 12px 0;padding:7px 12px;grid-template-columns:1fr;border-radius:17px;box-shadow:var(--soft-shadow)}
+  .quick-strip>div{padding:10px 4px;border-bottom:1px solid var(--line)}.quick-strip>div:last-child{border-bottom:0}
+  .quick-strip span{font-size:16px}.quick-strip b{font-size:12px}.quick-strip small{font-size:10px}
+
+  .section-wrap{padding:54px 12px 0}.section-heading{display:block;margin-bottom:17px}.section-heading h2{font-size:30px;line-height:1.12}.section-heading p:not(.eyebrow){font-size:13px;line-height:1.6}
+  .tracker-section{padding-top:60px}.tracker-shell{border-radius:18px}.tracker-dashboard{padding:17px}
+  .tracker-location-row small{font-size:9px}.tracker-location-row strong{font-size:15px}.tracker-location-row span{font-size:10px}
+  .tracker-distance{padding:24px 0 18px}.tracker-distance small{font-size:9px}.tracker-distance strong{font-size:58px}
+  .tracker-stats small{font-size:8px}.tracker-stats strong{font-size:18px}.tracker-stats span{font-size:8px}
+  .tracker-env{grid-template-columns:1fr 1fr}.tracker-env small{font-size:8px}.tracker-env b{font-size:14px}
+  .tracker-controls button{min-height:46px;font-size:12px}.tracker-map-wrap{min-height:300px}
+  .tracker-alert p,.tracker-alert small{font-size:10px;line-height:1.45}
+
+  .form-card,.result-card,.tool-card{padding:16px}.card-title h3{font-size:16px}.card-title p{font-size:11px;line-height:1.45}
+  label,legend{font-size:11px;margin-top:13px}select,input,textarea{min-height:46px;font-size:14px}
+  .segment button{min-height:42px;font-size:11px}.check-row b{font-size:11px}.check-row small{font-size:10px}.form-note{font-size:10px}
+  .location-action,.analyze-btn,.save-btn,.soft-btn{min-height:46px;font-size:12px}
+  .decision-copy small{font-size:9px}.decision-copy h2{font-size:25px}.decision-copy p{font-size:11px;line-height:1.45}
+  .metric-grid{grid-template-columns:1fr 1fr;overflow:visible;gap:8px}.metric-grid>div{min-width:0;padding:12px}.metric-grid small{font-size:9px}.metric-grid strong{font-size:20px}.metric-grid em{font-size:8px}
+  .reason-head h3{font-size:12px}.reason-head p,.reason-box li{font-size:10px;line-height:1.5}.best-time small{font-size:8px}.best-time strong{font-size:17px}.best-time p{font-size:10px}
+  .decision-actions button{min-height:42px;font-size:10px}
+
+  .compare-grid{grid-template-columns:repeat(5,minmax(82vw,1fr));gap:10px}.compare-card h3{font-size:17px}.compare-card button{min-height:43px;font-size:11px}
+  .map-layout{grid-template-columns:1fr}.map-wrap{min-height:310px}.map-side{padding:16px}.map-side p,.map-side a{font-size:11px}.ward-list button{min-height:40px;font-size:10px}
+  .tools-grid{grid-template-columns:1fr}.tool-card h3{font-size:16px}.tool-card p,.kit-list li,.safety-checks label{font-size:11px;line-height:1.5}
+  .journal-main b{font-size:12px}.journal-main p{font-size:10px}.journal-score span{font-size:8px}
+  .method-section{padding:38px 16px}.method-section h2{font-size:29px}.method-section p:not(.eyebrow){font-size:12px}.method-flow span{font-size:10px}
+  footer{padding:24px 16px}footer>p,.footer-links a,.footer-links button{font-size:9px}
+  dialog{padding:21px 17px;border-radius:18px}dialog h2{font-size:25px}.dialog-grid b{font-size:11px}.dialog-grid p,.dialog-note{font-size:10px}
+}
+
+@media(max-width:420px){
+  .hero{padding-left:12px;padding-right:12px}.hero h1{font-size:35px}.hero-lead{font-size:13px}
+  .hero-photo-card img{height:225px}.orbit-main strong{font-size:31px}
+  .section-heading h2{font-size:28px}.tracker-distance strong{font-size:52px}
+  .tracker-stats{grid-template-columns:1fr 1fr}.tracker-stats>div:last-child{grid-column:1/-1;border-top:1px solid var(--line)}
+  .tracker-controls{grid-template-columns:1fr 1fr}.run-start{grid-column:1/-1}
+  .summary-metrics{display:grid;grid-template-columns:1fr 1fr;width:100%}
+}
+
+/* AIRUN V5.3 — transparent connection diagnostics */
+.noscript-banner{position:sticky;top:0;z-index:9999;background:#7f1d1d;color:#fff;padding:10px 14px;text-align:center;font-weight:800;font-size:12px}
+.system-status{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-top:11px}
+.system-chip{display:flex;align-items:center;gap:7px;min-width:0;padding:8px 9px;border:1px solid var(--line);border-radius:11px;background:#f7faf8}
+.system-chip>i{width:8px;height:8px;flex:0 0 auto;border-radius:50%;background:#a8b5af}
+.system-chip span{min-width:0;display:block}.system-chip small,.system-chip b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.system-chip small{font-size:6px;letter-spacing:.07em;color:var(--muted);font-weight:900}.system-chip b{font-size:8px;margin-top:1px}
+.system-chip[data-state="loading"]>i{background:#e4a13b;animation:pulse 1.4s infinite}.system-chip[data-state="ok"]>i{background:#23b26f}.system-chip[data-state="warn"]>i{background:#e4a13b}.system-chip[data-state="error"]>i{background:#d44f4f}.system-chip[data-state="ok"]{background:#f1fbf6;border-color:#cfeadd}.system-chip[data-state="error"]{background:#fff5f5;border-color:#f0d0d0}.system-chip[data-state="warn"]{background:#fff9ee;border-color:#efdfbd}
+.system-actions{display:flex;align-items:center;gap:9px;margin-top:9px}.mini-action{border:1px solid #d4e3dc;background:#edf5f1;color:var(--green);border-radius:10px;padding:7px 9px;font-size:7px;font-weight:900}.mini-action:disabled{opacity:.6;cursor:wait}.system-actions span{font-size:7px;color:var(--muted);line-height:1.3}
+
+@media(max-width:780px){
+  .system-status{grid-template-columns:1fr 1fr;gap:7px}.system-chip{padding:9px 10px}.system-chip small{font-size:8px}.system-chip b{font-size:10px}.system-actions{align-items:flex-start;flex-direction:column}.mini-action{width:100%;min-height:42px;font-size:11px}.system-actions span{font-size:9px}
+}
+@media(max-width:420px){.system-status{grid-template-columns:1fr}.system-chip{min-height:46px}}
+
+/* AIRUN V5.4 planner estimate */
+.planning-pair{align-items:end}.pace-field{position:relative}.pace-field input{padding-right:48px}.pace-field span{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:8px;color:var(--muted);font-weight:800}.plan-estimate{min-height:69px;border-radius:12px;padding:10px 12px;background:linear-gradient(145deg,#0d392f,#075b49);color:#fff;display:flex;flex-direction:column;justify-content:center}.plan-estimate small,.plan-estimate strong,.plan-estimate em{display:block}.plan-estimate small{font-size:6px;letter-spacing:.08em;color:#b9d9ce;font-weight:900}.plan-estimate strong{font-size:18px;line-height:1.2;margin-top:2px}.plan-estimate em{font-size:7px;color:#d8ece4;font-style:normal;margin-top:1px}.pace-help{font-size:7px;color:var(--muted);margin:5px 0 0;line-height:1.5}.pace-help.error{color:#a54545}.plan-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:10px}.plan-summary>div{border:1px solid var(--line);border-radius:12px;padding:10px;background:#f9fbfa}.plan-summary small,.plan-summary strong,.plan-summary span{display:block}.plan-summary small{font-size:6px;color:var(--muted);font-weight:900;letter-spacing:.05em}.plan-summary strong{font-size:14px;margin-top:3px}.plan-summary span{font-size:7px;color:var(--muted);margin-top:2px}
+@media(max-width:780px){.plan-summary{grid-template-columns:1fr 1fr}.plan-summary>div:last-child{grid-column:1/-1}}
+@media(max-width:480px){.planning-pair{grid-template-columns:1fr}.plan-estimate{min-height:0}.plan-summary{grid-template-columns:1fr}.plan-summary>div:last-child{grid-column:auto}}
+
+  </style>
 </head>
 <body>
   <noscript><div class="noscript-banner">AIRUN cần JavaScript để GPS và dữ liệu trực tiếp hoạt động. Hãy bật JavaScript rồi tải lại trang.</div></noscript>
@@ -361,17 +484,1092 @@
     <button id="dialogOk" class="primary" type="button">Đã hiểu</button>
   </dialog>
 
+  <script id="airun-inline-app">
+'use strict';
+
+const $ = id => document.getElementById(id);
+const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+const round = (value, digits = 0) => Number(Number(value).toFixed(digits));
+const escapeHTML = value => String(value ?? '').replace(/[&<>'"]/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
+
+const WARDS = [
+  {key:'HaiChau',name:'Hải Châu',lat:16.0603,lon:108.2208,desc:'Trung tâm đô thị; gần sông Hàn, công viên và nhiều tuyến đường bằng phẳng.',mock:[64,18,29,33,72,9]},
+  {key:'HoaCuong',name:'Hòa Cường',lat:16.0367,lon:108.2165,desc:'Khu vực nội đô phía nam trung tâm, thuận tiện cho các vòng chạy ngắn.',mock:[61,17,29,33,73,8]},
+  {key:'ThanhKhe',name:'Thanh Khê',lat:16.0668,lon:108.1846,desc:'Khu dân cư đông; nên ưu tiên khung giờ ít xe và tuyến đường thông thoáng.',mock:[72,21,30,34,71,10]},
+  {key:'AnKhe',name:'An Khê',lat:16.0598,lon:108.1735,desc:'Khu vực phía tây trung tâm, có thể kết hợp các đoạn đường dân cư yên tĩnh.',mock:[70,20,30,34,70,9]},
+  {key:'AnHai',name:'An Hải',lat:16.0678,lon:108.2352,desc:'Phía đông sông Hàn, tiếp cận nhanh các tuyến ven sông và hướng ra biển.',mock:[58,16,29,32,74,11]},
+  {key:'SonTra',name:'Sơn Trà',lat:16.1063,lon:108.2770,desc:'Bán đảo và vùng ven biển; địa hình đa dạng, cần chú ý độ dốc và gió.',mock:[42,11,28,31,76,13]},
+  {key:'NguHanhSon',name:'Ngũ Hành Sơn',lat:16.0052,lon:108.2643,desc:'Dải ven biển phía nam, có nhiều đoạn chạy thoáng nhưng nắng và gió rõ hơn.',mock:[51,14,29,33,75,14]},
+  {key:'HoaKhanh',name:'Hòa Khánh',lat:16.0760,lon:108.1454,desc:'Khu đô thị và công nghiệp phía tây bắc; nên tránh giờ giao thông cao điểm.',mock:[79,24,30,35,69,8]},
+  {key:'LienChieu',name:'Liên Chiểu',lat:16.1044,lon:108.1323,desc:'Gần vịnh Đà Nẵng, có các đoạn ven biển và khu dân cư tương đối rộng.',mock:[68,19,29,33,73,12]},
+  {key:'HaiVan',name:'Hải Vân',lat:16.1561,lon:108.0875,desc:'Diện tích rộng, có địa hình đồi núi; chỉ chạy ở tuyến quen thuộc và an toàn.',mock:[47,12,27,30,80,16]},
+  {key:'CamLe',name:'Cẩm Lệ',lat:16.0142,lon:108.1977,desc:'Khu vực đô thị phía nam, phù hợp các vòng chạy vừa và ngắn.',mock:[66,19,30,34,72,8]},
+  {key:'HoaXuan',name:'Hòa Xuân',lat:15.9928,lon:108.2142,desc:'Khu đô thị mới, đường rộng; lưu ý nắng, gió và mật độ xe theo từng giờ.',mock:[62,17,29,33,74,10]},
+  {key:'TamKy',name:'Tam Kỳ',lat:15.5686,lon:108.4835,desc:'Khu vực đô thị phía nam thành phố, có nhiều tuyến tương đối bằng phẳng.',mock:[55,15,29,33,77,9]},
+  {key:'QuangPhu',name:'Quảng Phú',lat:15.5920,lon:108.4700,desc:'Khu vực phía bắc Tam Kỳ, nên chọn tuyến sáng rõ và ít phương tiện.',mock:[57,16,29,33,76,8]},
+  {key:'HuongTra',name:'Hương Trà',lat:15.5949,lon:108.5040,desc:'Khu vực chuyển tiếp đô thị - ven biển, phù hợp chạy nhẹ khi thời tiết ổn định.',mock:[49,13,28,32,78,11]},
+  {key:'BanThach',name:'Bàn Thạch',lat:15.5604,lon:108.4972,desc:'Khu vực đô thị Tam Kỳ, nên ưu tiên công viên và các tuyến ít giao cắt.',mock:[53,14,29,33,77,9]},
+  {key:'DienBan',name:'Điện Bàn',lat:15.8904,lon:108.2319,desc:'Khu vực đô thị hóa nhanh; chọn cung đường quen và quan sát giao thông.',mock:[63,18,29,34,74,10]},
+  {key:'DienBanDong',name:'Điện Bàn Đông',lat:15.8863,lon:108.3037,desc:'Gần biển và sông, không gian thoáng; gió có thể mạnh vào một số thời điểm.',mock:[48,13,28,32,78,15]},
+  {key:'AnThang',name:'An Thắng',lat:15.8956,lon:108.2209,desc:'Khu vực trung tâm Điện Bàn, phù hợp vòng chạy ngắn trong khu dân cư.',mock:[60,17,29,33,75,9]},
+  {key:'DienBanBac',name:'Điện Bàn Bắc',lat:15.9441,lon:108.2218,desc:'Địa bàn rộng và phân tán; cần kiểm tra mặt đường, ánh sáng và thời tiết.',mock:[59,16,29,33,75,10]},
+  {key:'HoiAn',name:'Hội An',lat:15.8794,lon:108.3350,desc:'Khu vực di sản và ven sông; nên chạy sớm, tránh giờ đông khách.',mock:[46,12,28,32,80,8]},
+  {key:'HoiAnDong',name:'Hội An Đông',lat:15.8898,lon:108.3655,desc:'Hướng ra biển, không gian thoáng; chú ý gió và độ ẩm cao.',mock:[43,11,28,32,81,14]},
+  {key:'HoiAnTay',name:'Hội An Tây',lat:15.8748,lon:108.2946,desc:'Khu vực phía tây Hội An, phù hợp chạy nhẹ trên tuyến quen thuộc.',mock:[52,14,29,33,79,8]}
+];
+
+const WEATHER_TEXT = {
+  0:['Trời quang','☀'],1:['Ít mây','🌤'],2:['Có mây','⛅'],3:['Nhiều mây','☁'],
+  45:['Có sương mù','≋'],48:['Sương mù đóng băng','≋'],51:['Mưa phùn nhẹ','🌦'],53:['Mưa phùn','🌦'],55:['Mưa phùn dày','🌧'],
+  61:['Mưa nhẹ','🌦'],63:['Mưa vừa','🌧'],65:['Mưa lớn','🌧'],80:['Mưa rào nhẹ','🌦'],81:['Mưa rào','🌧'],82:['Mưa rào lớn','⛈'],
+  95:['Có dông','⛈'],96:['Dông kèm mưa đá','⛈'],99:['Dông mạnh','⛈']
+};
+
+const STORAGE = {
+  plan:'airun-v51-plan', journal:'airun-v51-journal', cache:'airun-v51-live-cache', migrated:'airun-v51-migrated'
+};
+
+const memoryCache = new Map();
+const markers = new Map();
+let map = null;
+let runMap = null;
+let userLocationMarker = null;
+let runMarker = null;
+let runPolyline = null;
+let selectedKey = 'HaiChau';
+let intensity = 'Nhẹ';
+let gpsLocation = null;
+let activeData = null;
+let activeSnapshot = null;
+let activeResult = null;
+let selectedDecision = '';
+let toastTimer = null;
+let installPrompt = null;
+
+const tracker = {
+  status:'idle', watchId:null, startedAt:0, pausedMs:0, pauseStarted:0, timer:null,
+  distanceKm:0, points:[], lastPoint:null, speedSamples:[], currentSpeed:0,
+  wakeLock:null, envLastAt:0, envPoint:null, lastEnvResult:null
+};
+
+function ward(key = selectedKey){ return WARDS.find(item => item.key === key) || WARDS[0]; }
+function safeJSON(raw, fallback){ try{return JSON.parse(raw)}catch{return fallback} }
+function localGet(key, fallback){ try{return safeJSON(localStorage.getItem(key), fallback)}catch{return fallback} }
+function localSet(key, value){ try{localStorage.setItem(key, JSON.stringify(value));return true}catch{return false} }
+function hasDom(){ return typeof document !== 'undefined'; }
+
+const SYSTEM_STATUS_IDS={
+  js:['jsStatusChip','jsStatus'],weather:['weatherStatusChip','weatherApiStatus'],air:['airStatusChip','airApiStatus'],gps:['gpsStatusChip','gpsStatusText']
+};
+function setSystemStatus(kind,state,text){
+  if(!hasDom())return;
+  const ids=SYSTEM_STATUS_IDS[kind];if(!ids)return;
+  const chip=$(ids[0]),label=$(ids[1]);
+  if(chip)chip.dataset.state=state||'idle';
+  if(label)label.textContent=text||'';
+}
+function setApiUpdateText(text){const node=hasDom()?$('apiLastUpdate'):null;if(node)node.textContent=text;}
+function safeCall(name,fn){try{return fn();}catch(error){console.error(`AIRUN ${name}:`,error);setSystemStatus('js','error',`Lỗi: ${name}`);return null;}}
+function on(id,event,handler,options){const node=$(id);if(!node){console.warn(`AIRUN missing #${id}`);return false;}node.addEventListener(event,handler,options);return true;}
+
+if(typeof window!=='undefined'){
+  window.addEventListener('error',event=>{console.error('AIRUN global error:',event.error||event.message);setSystemStatus('js','error','Lỗi JavaScript');});
+  window.addEventListener('unhandledrejection',event=>{console.error('AIRUN rejected promise:',event.reason);setSystemStatus('js','error','Lỗi tác vụ nền');});
+}
+
+function showToast(message){
+  const node = $('toast'); if(!node) return;
+  node.textContent = message; node.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => node.classList.remove('show'), 3200);
+}
+
+function setBusy(button, busy, busyText = 'Đang tải…'){
+  if(!button) return;
+  if(busy){button.dataset.label = button.textContent;button.textContent = busyText;button.disabled = true;}
+  else{button.textContent = button.dataset.label || button.textContent;button.disabled = false;}
+}
+
+function updateConnection(){
+  const online = navigator.onLine;
+  $('connectionText').textContent = online ? 'Đang trực tuyến · dữ liệu có thể cập nhật trực tiếp' : 'Đang ngoại tuyến · dùng dữ liệu đã lưu/dự phòng';
+  document.querySelector('.pulse')?.classList.toggle('offline', !online);
+}
+
+function vnIso(date = new Date()){
+  const parts = new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Ho_Chi_Minh',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(date);
+  return parts.replace(' ','T');
+}
+
+function fallbackData(item, location = null){
+  const [aqi,pm,temp,feels,humidity,wind] = item.mock;
+  const now = new Date(); const hourly = [];
+  for(let i=0;i<48;i++){
+    const date = new Date(now.getTime() + i*3600000);
+    const hour = Number(new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Ho_Chi_Minh',hour:'2-digit',hourCycle:'h23'}).format(date));
+    const cool = hour < 8 || hour >= 18 ? -2 : hour >= 11 && hour <= 15 ? 2 : 0;
+    const aqiShift = (hour>=7&&hour<=9)||(hour>=16&&hour<=19) ? 8 : -3;
+    const uv = hour>=10&&hour<=14 ? 7 : hour>=8&&hour<=16 ? 3 : 0;
+    hourly.push({time:vnIso(date).slice(0,13)+':00',temp:temp+cool,feels:feels+cool,humidity,rain:hour===15?35:12,wind:wind+(hour>=14?3:0),uv,code:hour===15?2:1,aqi:Math.max(18,aqi+aqiShift),pm:Math.max(5,pm+aqiShift*.18),pm10:Math.max(8,pm*1.55)});
+  }
+  return {
+    cacheId:`demo:${item.key}`,key:item.key,source:'demo',updated:Date.now(),
+    location:location || {lat:item.lat,lon:item.lon,label:item.name,accuracy:null,mode:'ward'},
+    current:{temp,feels,humidity,wind,rain:12,uv:3,code:1,aqi,pm,pm10:round(pm*1.55,1)},hourly
+  };
+}
+
+function getPersistentCache(cacheId, maxAge = 45*60*1000){
+  const all = localGet(STORAGE.cache, {}); const row = all[cacheId];
+  return row && Date.now()-row.updated < maxAge ? row : null;
+}
+function getStaleCache(cacheId){ return getPersistentCache(cacheId, 6*60*60*1000); }
+function savePersistentCache(data){
+  const all = localGet(STORAGE.cache, {}); all[data.cacheId] = data;
+  const trimmed = Object.fromEntries(Object.entries(all).sort((a,b)=>b[1].updated-a[1].updated).slice(0,14));
+  localSet(STORAGE.cache, trimmed);
+}
+
+async function fetchJSON(url, timeout = 7000, retries = 0, onRetry = null){
+  let lastError = null;
+  for(let attempt=0; attempt<=retries; attempt++){
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeout);
+    try{
+      const response = await fetch(url,{signal:controller.signal,cache:'no-store',headers:{Accept:'application/json'}});
+      if(!response.ok) throw new Error(`HTTP ${response.status}`);
+      const data = await response.json();
+      if(!data || data.error) throw new Error(data?.reason || 'API trả về dữ liệu không hợp lệ');
+      return data;
+    }catch(error){
+      lastError = error;
+      if(attempt < retries){
+        if(onRetry) onRetry(attempt+1,error);
+        await new Promise(resolve=>setTimeout(resolve,350 + attempt*500));
+      }
+    }finally{ clearTimeout(timer); }
+  }
+  throw lastError || new Error('Không thể kết nối API');
+}
+
+function nearestWard(lat,lon){
+  return [...WARDS].map(item=>({item,distance:haversine(lat,lon,item.lat,item.lon)})).sort((a,b)=>a.distance-b.distance)[0];
+}
+
+function apiErrorLabel(error){
+  if(error?.name==='AbortError') return 'Timeout';
+  const text=String(error?.message||'');
+  if(/HTTP\s+\d+/.test(text)) return text;
+  if(typeof navigator!=='undefined' && !navigator.onLine) return 'Ngoại tuyến';
+  return 'Không phản hồi';
+}
+
+async function fetchEnvironmentAt(lat, lon, options = {}){
+  const nearest = nearestWard(lat,lon);
+  const key = options.key || nearest.item.key;
+  const label = options.label || nearest.item.name;
+  const cacheId = options.cacheId || `geo:${lat.toFixed(3)},${lon.toFixed(3)}`;
+  const force = Boolean(options.force);
+  const location = {lat,lon,label,accuracy:options.accuracy ?? null,mode:options.mode || 'ward'};
+  const onProgress = typeof options.onProgress==='function' ? options.onProgress : null;
+
+  const mem = memoryCache.get(cacheId);
+  if(!force && mem && Date.now()-mem.updated < 90*1000) return mem;
+  const stored = !force && getPersistentCache(cacheId,5*60*1000);
+  if(stored){memoryCache.set(cacheId,stored);return stored;}
+  if(typeof navigator !== 'undefined' && !navigator.onLine){
+    setSystemStatus('weather','warn','Ngoại tuyến');setSystemStatus('air','warn','Ngoại tuyến');
+    const stale = getStaleCache(cacheId); return stale ? {...stale,source:'cached'} : fallbackData(nearest.item,location);
+  }
+
+  const tz=encodeURIComponent('Asia/Ho_Chi_Minh');
+  const base = `latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lon)}&timezone=${tz}&forecast_hours=36`;
+  // V5.5: only TWO external requests. Each returns current + hourly data together.
+  const weatherUrl = `https://api.open-meteo.com/v1/forecast?${base}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&hourly=temperature_2m,apparent_temperature,relative_humidity_2m,precipitation_probability,weather_code,wind_speed_10m,uv_index`;
+  const airUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?${base}&current=us_aqi,pm2_5,pm10,uv_index&hourly=us_aqi,pm2_5,pm10,uv_index`;
+
+  const stale = getStaleCache(cacheId);
+  const backup = stale ? {...stale,source:'cached',location} : fallbackData(nearest.item,location);
+  const hourlyMap = new Map((backup.hourly||[]).map(row=>[row.time,{...row}]));
+  let current = {...backup.current};
+  let weatherOk=false, airOk=false;
+  let weatherMs=null, airMs=null;
+
+  const buildResult=()=>({
+    cacheId,key,
+    source:weatherOk&&airOk?'live':(weatherOk||airOk?'partial':backup.source),
+    forecastSource:weatherOk&&airOk?'live':(weatherOk||airOk?'partial':backup.source),
+    updated:Date.now(),location,current:{...current},
+    hourly:[...hourlyMap.values()].sort((a,b)=>a.time.localeCompare(b.time)),
+    liveParts:{weather:weatherOk,air:airOk,weatherForecast:weatherOk,airForecast:airOk},
+    latency:{weather:weatherMs,air:airMs}
+  });
+  const publish=part=>{
+    const result=buildResult();
+    if(onProgress){try{onProgress(result,part);}catch(error){console.warn('AIRUN progress render:',error);}}
+    return result;
+  };
+
+  setSystemStatus('weather','loading','Đang kết nối…');
+  setSystemStatus('air','loading','Đang kết nối…');
+  setApiUpdateText('Đang kết nối 2 nguồn dữ liệu trực tiếp…');
+
+  const weatherTask=(async()=>{
+    const started=performance.now();
+    try{
+      const w=await fetchJSON(weatherUrl,5200,1,()=>setSystemStatus('weather','loading','Đang thử lại…'));
+      const wc=w.current||{};
+      current={...current,
+        temp:Number.isFinite(wc.temperature_2m)?wc.temperature_2m:current.temp,
+        feels:Number.isFinite(wc.apparent_temperature)?wc.apparent_temperature:current.feels,
+        humidity:Number.isFinite(wc.relative_humidity_2m)?wc.relative_humidity_2m:current.humidity,
+        wind:Number.isFinite(wc.wind_speed_10m)?wc.wind_speed_10m:current.wind,
+        code:Number.isFinite(wc.weather_code)?wc.weather_code:current.code,
+        rain:Number.isFinite(wc.precipitation)?(wc.precipitation>0?100:0):current.rain
+      };
+      const h=w.hourly||{},times=h.time||[];
+      times.forEach((time,index)=>{
+        const old=hourlyMap.get(time)||{time};
+        hourlyMap.set(time,{...old,time,
+          temp:h.temperature_2m?.[index],feels:h.apparent_temperature?.[index],humidity:h.relative_humidity_2m?.[index],
+          rain:h.precipitation_probability?.[index],wind:h.wind_speed_10m?.[index],uv:h.uv_index?.[index],code:h.weather_code?.[index]
+        });
+      });
+      // Use the nearest hourly UV value as current UV if available.
+      const nowHour=vnIso().slice(0,13)+':00';
+      const uvNow=hourlyMap.get(nowHour)?.uv;
+      if(Number.isFinite(uvNow))current.uv=uvNow;
+      weatherOk=true;weatherMs=Math.max(1,Math.round(performance.now()-started));
+      setSystemStatus('weather','ok',`${weatherMs} ms`);publish('weather');return true;
+    }catch(error){console.warn('AIRUN Weather:',error);setSystemStatus('weather','error',apiErrorLabel(error));return false;}
+  })();
+
+  const airTask=(async()=>{
+    const started=performance.now();
+    try{
+      const a=await fetchJSON(airUrl,5200,1,()=>setSystemStatus('air','loading','Đang thử lại…'));
+      const ac=a.current||{};
+      current={...current,
+        aqi:Number.isFinite(ac.us_aqi)?ac.us_aqi:current.aqi,
+        pm:Number.isFinite(ac.pm2_5)?ac.pm2_5:current.pm,
+        pm10:Number.isFinite(ac.pm10)?ac.pm10:current.pm10,
+        uv:Number.isFinite(ac.uv_index)?ac.uv_index:current.uv
+      };
+      const h=a.hourly||{},times=h.time||[];
+      times.forEach((time,index)=>{
+        const old=hourlyMap.get(time)||{time};
+        hourlyMap.set(time,{...old,time,aqi:h.us_aqi?.[index],pm:h.pm2_5?.[index],pm10:h.pm10?.[index],uv:Number.isFinite(h.uv_index?.[index])?h.uv_index?.[index]:old.uv});
+      });
+      airOk=true;airMs=Math.max(1,Math.round(performance.now()-started));
+      setSystemStatus('air','ok',`${airMs} ms`);publish('air');return true;
+    }catch(error){console.warn('AIRUN Air:',error);setSystemStatus('air','error',apiErrorLabel(error));return false;}
+  })();
+
+  await Promise.allSettled([weatherTask,airTask]);
+  const result=buildResult();
+  if(weatherOk||airOk){
+    memoryCache.set(cacheId,result);savePersistentCache(result);
+    const nowText=new Date().toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    setApiUpdateText(`${weatherOk&&airOk?'Weather + Air trực tiếp':'Đã nhận một phần dữ liệu trực tiếp'} · ${nowText}`);
+    publish('ready');
+    return result;
+  }
+  setApiUpdateText('Không kết nối được Open-Meteo · đang dùng dữ liệu dự phòng');
+  return backup;
+}
+
+function fetchEnvironment(key, force = false, onProgress = null){
+  const item = ward(key);
+  return fetchEnvironmentAt(item.lat,item.lon,{key:item.key,label:item.name,cacheId:`ward:${item.key}`,mode:'ward',force,onProgress});
+}
+
+function targetIso(timeValue){
+  const now = vnIso(); const date = now.slice(0,10); const hour = String(Number((timeValue || '17:30').slice(0,2))).padStart(2,'0');
+  let target = `${date}T${hour}:00`;
+  if(target < now.slice(0,13)+':00') target = `${vnIso(new Date(Date.now()+86400000)).slice(0,10)}T${hour}:00`;
+  return target;
+}
+
+function snapshotFor(data, timeValue){
+  const target = targetIso(timeValue); const row = data.hourly?.find(item=>item.time === target);
+  return row ? {...data.current,...row} : {...data.current,time:vnIso()};
+}
+
+function aqiInfo(aqi){
+  if(aqi <= 50) return {label:'Tốt',tone:'good'};
+  if(aqi <= 100) return {label:'Trung bình',tone:'caution'};
+  if(aqi <= 150) return {label:'Kém cho nhóm nhạy cảm',tone:'caution'};
+  if(aqi <= 200) return {label:'Có hại',tone:'bad'};
+  if(aqi <= 300) return {label:'Rất có hại',tone:'bad'};
+  return {label:'Nguy hiểm',tone:'bad'};
+}
+
+function uvInfo(uv){
+  const value=Number(uv||0);
+  if(value<3) return {label:'Thấp',tone:'good'};
+  if(value<6) return {label:'Trung bình',tone:'caution'};
+  if(value<8) return {label:'Cao',tone:'caution'};
+  if(value<11) return {label:'Rất cao',tone:'bad'};
+  return {label:'Cực cao',tone:'bad'};
+}
+
+function analyzeSnapshot(snapshot, plan){
+  let score = 10; const reasons = [];
+  const aqi=Number(snapshot.aqi??0),pm=Number(snapshot.pm??0),feels=Number(snapshot.feels??snapshot.temp??25),wind=Number(snapshot.wind??0),rain=Number(snapshot.rain??0),uv=Number(snapshot.uv??0);
+
+  if(aqi<=50) reasons.push(`AQI Mỹ ${round(aqi)} ở mức tốt, ít cản trở hoạt động ngoài trời.`);
+  else if(aqi<=100){score-=(aqi-50)/28;reasons.push(`AQI Mỹ ${round(aqi)} ở mức trung bình; nên chú ý cảm giác hô hấp.`);}
+  else if(aqi<=150){score-=3+(aqi-100)/35;reasons.push(`AQI Mỹ ${round(aqi)} không thuận lợi cho nhóm nhạy cảm.`);}
+  else{score-=6+Math.min(2,(aqi-150)/50);reasons.push(`AQI Mỹ ${round(aqi)} ở mức có hại; nên tránh chạy ngoài trời cường độ cao.`);}
+
+  if(pm>35.5){score-=1.5;reasons.push(`PM2.5 ${round(pm,1)} µg/m³ khá cao; cân nhắc đổi giờ hoặc chạy trong nhà.`);}
+  else if(pm>9){score-=Math.min(1,(pm-9)/30);reasons.push(`PM2.5 ${round(pm,1)} µg/m³ cần được theo dõi, nhất là khi chạy lâu.`);}
+  else reasons.push(`PM2.5 ${round(pm,1)} µg/m³ đang thấp trong dữ liệu hiện có.`);
+
+  if(feels>34){score-=2.2+(feels-34)*.18;reasons.push(`Nhiệt cảm nhận ${round(feels)}°C làm tăng nguy cơ quá nóng và mất nước.`);}
+  else if(feels>30){score-=(feels-30)*.32;reasons.push(`Cảm giác ${round(feels)}°C khá nóng; nên giảm cường độ và mang thêm nước.`);}
+  else if(feels<14){score-=Math.min(1.5,(14-feels)*.15);reasons.push(`Cảm giác ${round(feels)}°C khá mát; cần khởi động kỹ.`);}
+  else reasons.push(`Nhiệt cảm nhận ${round(feels)}°C tương đối phù hợp cho vận động.`);
+
+  if(rain>=70){score-=2.4;reasons.push(`Khả năng mưa ${round(rain)}%; nên có phương án trong nhà hoặc hoãn chạy.`);}
+  else if(rain>=40){score-=1;reasons.push(`Khả năng mưa ${round(rain)}%; nên kiểm tra bầu trời trước khi xuất phát.`);}
+  if(wind>=35){score-=1.8;reasons.push(`Gió khoảng ${round(wind)} km/h có thể làm buổi chạy kém an toàn.`);}
+  else if(wind>=22){score-=.7;reasons.push(`Gió khoảng ${round(wind)} km/h; lưu ý ở cầu và ven biển.`);}
+
+  if(uv>=8){score-=1.4;reasons.push(`UV ${round(uv,1)} rất cao; ưu tiên đổi giờ hoặc tăng bảo vệ nắng.`);}
+  else if(uv>=6){score-=.8;reasons.push(`UV ${round(uv,1)} cao; nên dùng mũ và chống nắng nếu chạy ban ngày.`);}
+  else if(uv>=3){score-=.25;reasons.push(`UV ${round(uv,1)} ở mức trung bình.`);}
+
+  if(plan.intensity==='Cao'){
+    if(aqi>50){score-=1;reasons.push('Cường độ cao làm lượng không khí hít vào tăng, nên tiêu chuẩn không khí cần nghiêm ngặt hơn.');}
+    if(feels>29) score-=.7;
+  } else if(plan.intensity==='Vừa'&&(aqi>100||feels>32)) score-=.45;
+  if(plan.duration>=60&&feels>30){score-=.7;reasons.push(`Thời lượng ${plan.duration} phút trong điều kiện nóng cần bổ sung nước và nghỉ hợp lý.`);}
+  if(plan.sensitive&&aqi>50){score-=aqi>100?2.2:1;reasons.push('Bạn đã chọn nhóm nhạy cảm nên AIRUN áp dụng ngưỡng thận trọng hơn.');}
+
+  score=round(clamp(score,0,10),1);
+  let tone='good',title='Có thể cân nhắc chạy',text='Điều kiện khá thuận lợi. Hãy khởi động và quan sát thực tế trước khi xuất phát.',icon='✓';
+  if(score<5||aqi>150){tone='bad';title='Nên đổi kế hoạch';text='Ưu tiên chạy trong nhà, đổi giờ hoặc chọn thời điểm khác để giảm rủi ro.';icon='!';}
+  else if(score<7.5){tone='caution';title='Nên điều chỉnh';text='Cân nhắc chạy nhẹ hơn, ngắn hơn hoặc chuyển sang khung giờ thuận lợi hơn.';icon='◷';}
+  return {score,tone,title,text,icon,reasons:reasons.slice(0,6)};
+}
+
+function parsePace(value){
+  const raw=String(value||'').trim().replace(',', '.');
+  if(!raw)return null;
+  if(raw.includes(':')){
+    const [m,s='0']=raw.split(':');
+    const minutes=Number(m),seconds=Number(s);
+    if(!Number.isFinite(minutes)||!Number.isFinite(seconds)||minutes<=0||seconds<0||seconds>=60)return null;
+    return minutes+seconds/60;
+  }
+  const numeric=Number(raw);
+  return Number.isFinite(numeric)&&numeric>0&&numeric<30?numeric:null;
+}
+function defaultPaceForIntensity(level=intensity){return level==='Cao'?5.25:level==='Vừa'?6.25:7;}
+function planEstimate(plan=currentPlan()){
+  const pace=Number(plan.pace)||defaultPaceForIntensity(plan.intensity);
+  const distance=pace>0?Number(plan.duration)/pace:0;
+  const speed=pace>0?60/pace:0;
+  return {pace,distance,speed};
+}
+function currentPlan(){
+  const pace=parsePace($('planPace')?.value)||defaultPaceForIntensity(intensity);
+  return {key:selectedKey,time:$('time').value,duration:Number($('duration').value),intensity,sensitive:$('sensitive').checked,pace};
+}
+function updatePlanEstimate(){
+  const input=$('planPace'),help=$('paceHelp');
+  const parsed=parsePace(input?.value);
+  const valid=Number.isFinite(parsed);
+  const plan=currentPlan(),estimate=planEstimate(plan);
+  if($('estimatedDistance'))$('estimatedDistance').textContent=estimate.distance.toFixed(2);
+  if($('estimatedSpeed'))$('estimatedSpeed').textContent=`≈ ${estimate.speed.toFixed(1)} km/h`;
+  if(help){help.classList.toggle('error',!valid);help.textContent=valid?'Quãng đường được tính ngay trên máy, không cần GPS hay API.':'Pace chưa hợp lệ. Hãy nhập dạng 6:30 hoặc 6.5.';}
+  if($('planSummaryDistance'))$('planSummaryDistance').textContent=`${estimate.distance.toFixed(2)} km`;
+  if($('planSummaryPace'))$('planSummaryPace').textContent=`pace ${formatPace(estimate.pace)}/km`;
+  if($('planSummaryDuration'))$('planSummaryDuration').textContent=`${plan.duration} phút`;
+  if($('planSummarySpeed'))$('planSummarySpeed').textContent=`≈ ${estimate.speed.toFixed(1)} km/h`;
+  return estimate;
+}
+
+function bestTimeFor(data, plan){
+  const candidates=(data.hourly||[]).filter(row=>{const hour=Number(row.time.slice(11,13));return (hour>=5&&hour<=9)||(hour>=16&&hour<=21);}).slice(0,24);
+  if(!candidates.length) return null;
+  return candidates.map(row=>({row,result:analyzeSnapshot({...data.current,...row},plan)})).sort((a,b)=>b.result.score-a.result.score)[0];
+}
+
+function weatherText(code){ return WEATHER_TEXT[code] || ['Thời tiết thay đổi','◌']; }
+function sourceLabel(source){
+  return source==='live'?'Dữ liệu trực tiếp':source==='partial'?'Dữ liệu trực tiếp một phần':source==='cached'?'Dữ liệu đã lưu gần đây':'Dữ liệu dự phòng';
+}
+
+function quickEnvironmentForWard(key = selectedKey){
+  const item=ward(key);
+  const fresh=getPersistentCache(`ward:${item.key}`,45*60*1000);
+  const stale=getStaleCache(`ward:${item.key}`);
+  return fresh || (stale ? {...stale,source:'cached'} : fallbackData(item));
+}
+
+function quickEnvironmentForGps(location){
+  const near=nearestWard(location.lat,location.lon).item;
+  const cached=getStaleCache(location.cacheId);
+  if(cached)return {...cached,source:'cached',location:{lat:location.lat,lon:location.lon,label:location.label,accuracy:location.accuracy,mode:'gps'}};
+  return fallbackData(near,{lat:location.lat,lon:location.lon,label:location.label,accuracy:location.accuracy,mode:'gps'});
+}
+
+function renderEnvironmentInstant(data,{updating=false}={}){
+  activeData=data;
+  renderHero(data);
+  try{
+    const plan=currentPlan(),snapshot=snapshotFor(data,plan.time),result=analyzeSnapshot(snapshot,plan);
+    activeSnapshot=snapshot;activeResult=result;renderResult(data,snapshot,result);
+  }catch(error){console.warn('AIRUN quick render:',error);}
+  if(updating){
+    $('liveBadge').textContent='ĐANG CẬP NHẬT';
+    $('liveBadge').className='source-badge loading';
+    $('heroLocationNote').textContent=(data.location?.mode==='gps')
+      ? `Đã có vị trí GPS ±${round(data.location.accuracy||0)} m · đang đồng bộ thời tiết và AQI trực tiếp.`
+      : 'AIRUN đang hiển thị dữ liệu gần nhất/dự phòng trong khi đồng bộ Open-Meteo.';
+  }
+}
+
+function renderEnvironmentData(data,{note=null}={}){
+  activeData=data;renderHero(data);
+  try{
+    const plan=currentPlan(),snapshot=snapshotFor(data,plan.time),result=analyzeSnapshot(snapshot,plan);
+    activeSnapshot=snapshot;activeResult=result;renderResult(data,snapshot,result);
+  }catch(error){console.warn('AIRUN environment render:',error);}
+  if(note)$('heroLocationNote').textContent=note;
+}
+
+function renderHero(data){
+  const current=data.current,weather=weatherText(current.code),label=data.location?.label||ward(data.key).name;
+  $('heroArea').textContent=label;$('heroTemp').textContent=round(current.temp);$('heroWeather').textContent=weather[0];$('weatherSymbol').textContent=weather[1];
+  $('heroAqi').textContent=round(current.aqi);$('heroPm').textContent=round(current.pm,1);$('heroWind').textContent=round(current.wind,1);$('heroUv').textContent=round(current.uv,1);
+  $('heroUpdated').textContent=new Date(data.updated).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});
+  $('liveBadge').textContent=sourceLabel(data.source).toUpperCase();$('liveBadge').className=`source-badge ${data.source==='live'?'':data.source}`;
+  if(data.location?.mode==='gps') $('heroLocationNote').textContent=`GPS ±${round(data.location.accuracy||0)} m · dữ liệu được lấy theo tọa độ hiện tại của thiết bị.`;
+  else if(data.source==='demo') $('heroLocationNote').textContent='Đang dùng dữ liệu dự phòng tức thời. AIRUN sẽ tự thay bằng dữ liệu trực tiếp khi Open-Meteo phản hồi.';
+  else if(data.source==='cached') $('heroLocationNote').textContent='Đang dùng dữ liệu đã lưu gần đây trong lúc chờ cập nhật mới.';
+  else $('heroLocationNote').textContent='Đang dùng tọa độ đại diện của khu vực. Bấm “Dùng vị trí hiện tại” để chính xác hơn.';
+}
+
+function renderResult(data,snapshot,result){
+  const info=aqiInfo(snapshot.aqi),uv=uvInfo(snapshot.uv),best=bestTimeFor(data,currentPlan());
+  const label=data.location?.label||ward(data.key).name;
+  $('resultSource').textContent=`${sourceLabel(data.source)} · ${label} · ${snapshot.time?.slice(11,16)||'hiện tại'}`;
+  $('resultStatusPill').textContent=result.title;$('resultStatusPill').className=`result-pill ${result.tone}`;
+  $('decisionPanel').className=`decision-panel ${result.tone}`;$('decisionIcon').textContent=result.icon;$('decisionTitle').textContent=result.title;$('decisionText').textContent=result.text;
+  $('scoreValue').textContent=result.score;$('scoreRing').style.setProperty('--score',`${result.score*10}%`);
+  $('metricAqi').textContent=round(snapshot.aqi);$('metricAqiLabel').textContent=info.label;$('metricPm').textContent=round(snapshot.pm,1);
+  $('metricTemp').textContent=`${round(snapshot.temp)}°`;$('metricFeels').textContent=`Cảm giác ${round(snapshot.feels)}°`;$('metricWind').textContent=round(snapshot.wind,1);
+  $('metricRain').textContent=`${round(snapshot.rain)}%`;$('metricHumidity').textContent=`Độ ẩm ${round(snapshot.humidity)}%`;
+  $('metricUv').textContent=round(snapshot.uv,1);$('metricUvLabel').textContent=uv.label;
+  const estimate=updatePlanEstimate();
+  if($('planSummarySource'))$('planSummarySource').textContent=sourceLabel(data.source);
+  if($('planSummaryForecast')){
+    const fs=data.forecastSource||data.source;
+    $('planSummaryForecast').textContent=fs==='live'?'Forecast trực tiếp đã sẵn sàng':fs==='partial'?'Forecast trực tiếp một phần':fs==='cached'?'Forecast từ cache':'Forecast dự phòng';
+  }
+  $('reasonList').innerHTML=result.reasons.map(reason=>`<li>${escapeHTML(reason)}</li>`).join('');
+  if(best){$('bestTime').textContent=`${best.row.time.slice(11,16)} · ${best.result.score}/10`;$('bestTimeReason').textContent='Trong các khung giờ chạy phổ biến, đây là thời điểm có điểm thuận lợi cao nhất trong dự báo hiện có.';}
+  else{$('bestTime').textContent='Chưa có dự báo giờ';$('bestTimeReason').textContent='Hãy thử cập nhật lại dữ liệu.';}
+  $('mapAreaAqi').textContent=`AQI ${round(snapshot.aqi)}`;$('mapAreaTemp').textContent=`${round(snapshot.temp)}°C`;$('mapAreaScore').textContent=`${result.score}/10`;
+  renderKit(snapshot,currentPlan());
+}
+
+function renderKit(snapshot,plan){
+  const items=['Giày chạy và trang phục thoáng','Điện thoại đủ pin hoặc thẻ liên hệ khẩn cấp'];
+  const water=Math.max(250,Math.round((plan.duration*(snapshot.feels>31?10:7))/50)*50); items.push(`Khoảng ${water} ml nước cho kế hoạch ${plan.duration} phút`);
+  if(snapshot.rain>=40) items.push('Áo mưa mỏng hoặc phương án chạy trong nhà');
+  if(snapshot.feels>=31||snapshot.uv>=6) items.push('Mũ và kem chống nắng; ưu tiên bóng râm nếu chạy ban ngày');
+  if(snapshot.aqi>100) items.push('Ưu tiên đổi giờ; tránh chạy cường độ cao khi chất lượng không khí kém');
+  if(Number(plan.time.slice(0,2))>=18||Number(plan.time.slice(0,2))<6) items.push('Phụ kiện phản quang hoặc đèn nhỏ');
+  $('kitList').innerHTML=items.map(item=>`<li>${escapeHTML(item)}</li>`).join('');
+}
+
+async function getEnvironmentForActive(force=false,onProgress=null){
+  if(gpsLocation){
+    return fetchEnvironmentAt(gpsLocation.lat,gpsLocation.lon,{key:selectedKey,label:gpsLocation.label,cacheId:gpsLocation.cacheId,accuracy:gpsLocation.accuracy,mode:'gps',force,onProgress});
+  }
+  return fetchEnvironment(selectedKey,force,onProgress);
+}
+
+function setGpsPlanUi(){
+  const chip=$('gpsPlanChip');
+  if(gpsLocation){chip.hidden=false;$('gpsPlanLabel').textContent=`${gpsLocation.label} · ±${round(gpsLocation.accuracy)} m`;}
+  else chip.hidden=true;
+}
+
+function updateMapSide(){
+  const item=ward();$('mapAreaName').textContent=gpsLocation?`${item.name} · GPS`:item.name;$('mapAreaDescription').textContent=gpsLocation?'Đang phân tích theo tọa độ GPS chính xác của thiết bị; khu vực này chỉ là tên gần nhất.':item.desc;
+  const lat=gpsLocation?.lat??item.lat,lon=gpsLocation?.lon??item.lon;$('openOsm').href=`https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=15/${lat}/${lon}`;
+  document.querySelectorAll('[data-ward]').forEach(button=>button.classList.toggle('active',button.dataset.ward===selectedKey));
+  markers.forEach((marker,key)=>{const icon=marker.getElement();if(icon)icon.classList.toggle('selected',key===selectedKey);});
+}
+
+async function selectWard(key,{scroll=false,force=false,analyze=true}={}){
+  gpsLocation=null;setGpsPlanUi();selectedKey=ward(key).key;$('area').value=selectedKey;savePlanSettings();updateMapSide();
+  if(map){const item=ward();map.flyTo([item.lat,item.lon],Math.max(map.getZoom(),11),{duration:.7});markers.get(selectedKey)?.openPopup();}
+
+  // Never leave the dashboard blank while an external API is slow.
+  const quick=quickEnvironmentForWard(selectedKey);
+  renderEnvironmentInstant(quick,{updating:true});
+
+  try{
+    const data=await fetchEnvironment(selectedKey,force,(partial)=>renderEnvironmentData(partial));
+    if(analyze)renderEnvironmentData(data);else{activeData=data;renderHero(data);}
+  }catch(error){
+    console.warn('AIRUN live update failed:',error);
+    renderEnvironmentInstant(quick);
+    $('heroLocationNote').textContent='Open-Meteo đang phản hồi chậm hoặc mạng không ổn định. AIRUN vẫn hoạt động với dữ liệu dự phòng; GPS chạy bộ không bị ảnh hưởng.';
+  }
+  if(scroll)$('planner').scrollIntoView({behavior:'smooth'});
+}
+
+async function analyzePlan(showLoading=true){
+  const button=$('analyzeBtn');
+  if(showLoading)setBusy(button,true,'Đang tính ngay…');
+  // Planner must respond instantly, even if external APIs are slow or unavailable.
+  const plan=currentPlan();
+  const quick=gpsLocation?quickEnvironmentForGps(gpsLocation):quickEnvironmentForWard(selectedKey);
+  try{
+    const quickSnapshot=snapshotFor(quick,plan.time),quickResult=analyzeSnapshot(quickSnapshot,plan);
+    activeData=quick;activeSnapshot=quickSnapshot;activeResult=quickResult;
+    renderHero(quick);renderResult(quick,quickSnapshot,quickResult);updatePlanEstimate();savePlanSettings();
+    if(showLoading){setBusy(button,false);showToast(`Đã tính ${planEstimate(plan).distance.toFixed(2)} km dự kiến · đang đồng bộ dữ liệu trực tiếp…`);}
+  }catch(error){console.warn('AIRUN instant planner:',error);if(showLoading)setBusy(button,false);}
+
+  // Upgrade the result when live current/forecast data arrives; this does not block the UI.
+  try{
+    const data=await getEnvironmentForActive(false,(partial)=>{
+      const snapshot=snapshotFor(partial,plan.time),result=analyzeSnapshot(snapshot,plan);
+      activeData=partial;activeSnapshot=snapshot;activeResult=result;renderHero(partial);renderResult(partial,snapshot,result);
+    });
+    const snapshot=snapshotFor(data,plan.time),result=analyzeSnapshot(snapshot,plan);
+    activeData=data;activeSnapshot=snapshot;activeResult=result;renderHero(data);renderResult(data,snapshot,result);savePlanSettings();
+  }catch(error){console.warn('AIRUN planner live upgrade:',error);}
+}
+
+function savePlanSettings(){localSet(STORAGE.plan,{key:selectedKey,time:$('time').value,duration:$('duration').value,intensity,sensitive:$('sensitive').checked,pace:$('planPace')?.value||''});}
+function restorePlanSettings(){
+  const plan=localGet(STORAGE.plan,localGet('airun-v50-plan',localGet('airun-v40-plan',{})));
+  if(plan.key&&WARDS.some(x=>x.key===plan.key))selectedKey=plan.key;if(plan.time)$('time').value=plan.time;if(plan.duration)$('duration').value=String(plan.duration);
+  if(plan.pace&&$('planPace'))$('planPace').value=String(plan.pace);
+  if(['Nhẹ','Vừa','Cao'].includes(plan.intensity))intensity=plan.intensity;$('sensitive').checked=Boolean(plan.sensitive);
+  document.querySelectorAll('[data-intensity]').forEach(button=>button.classList.toggle('active',button.dataset.intensity===intensity));
+}
+
+function renderWardControls(filter=''){
+  const normalized=filter.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+  const items=WARDS.filter(item=>item.name.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().includes(normalized));
+  $('wardList').innerHTML=items.map(item=>`<button type="button" data-ward="${item.key}" class="${item.key===selectedKey?'active':''}">${escapeHTML(item.name)}</button>`).join('')||'<div class="empty-state">Không tìm thấy.</div>';
+  $('wardList').querySelectorAll('[data-ward]').forEach(button=>button.addEventListener('click',()=>selectWard(button.dataset.ward,{analyze:true})));
+}
+
+function loadLeaflet(){
+  if(window.L)return Promise.resolve();
+  const css=document.createElement('link');css.rel='stylesheet';css.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';css.crossOrigin='anonymous';document.head.append(css);
+  return new Promise((resolve,reject)=>{const script=document.createElement('script'),timer=setTimeout(()=>reject(new Error('Leaflet timeout')),9000);script.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';script.crossOrigin='anonymous';script.async=true;script.onload=()=>{clearTimeout(timer);resolve();};script.onerror=()=>{clearTimeout(timer);reject(new Error('Leaflet unavailable'));};document.head.append(script);});
+}
+
+function initMaps(){
+  if(!window.L){$('mapFallback').hidden=false;return;}
+  try{
+    map=L.map('map',{scrollWheelZoom:false,zoomControl:true}).setView([15.95,108.25],9);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'&copy; OpenStreetMap contributors'}).addTo(map);
+    WARDS.forEach(item=>{const icon=L.divIcon({className:`airun-marker ${item.key===selectedKey?'selected':''}`,html:'<span></span>',iconSize:[29,29],iconAnchor:[14,14]});const marker=L.marker([item.lat,item.lon],{icon,title:item.name}).addTo(map).bindPopup(`<b>${escapeHTML(item.name)}</b><br>${escapeHTML(item.desc)}`);marker.on('click',()=>selectWard(item.key,{analyze:true}));markers.set(item.key,marker);});
+  }catch{$('mapFallback').hidden=false;}
+  try{
+    runMap=L.map('runMap',{scrollWheelZoom:false,zoomControl:true}).setView([16.06,108.22],13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap contributors'}).addTo(runMap);
+    $('runMapFallback').style.display='none';
+  }catch{runMap=null;}
+}
+
+function haversine(lat1,lon1,lat2,lon2){
+  const rad=value=>value*Math.PI/180,dLat=rad(lat2-lat1),dLon=rad(lon2-lon1);
+  const a=Math.sin(dLat/2)**2+Math.cos(rad(lat1))*Math.cos(rad(lat2))*Math.sin(dLon/2)**2;
+  return 6371*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+function geoError(code, message=''){
+  const error = new Error(message || 'Geolocation error');
+  error.code = code;
+  return error;
+}
+
+async function geolocationPermissionState(){
+  if(!navigator.permissions?.query) return 'unknown';
+  try{
+    const status = await navigator.permissions.query({name:'geolocation'});
+    return status.state || 'unknown';
+  }catch{return 'unknown';}
+}
+
+async function gpsReadiness(){
+  if(!window.isSecureContext && location.hostname!=='localhost'){
+    return {ok:false,reason:'insecure',permission:'unknown'};
+  }
+  if(!navigator.geolocation){
+    return {ok:false,reason:'unsupported',permission:'unknown'};
+  }
+  const permission = await geolocationPermissionState();
+  if(permission==='denied') return {ok:false,reason:'denied',permission};
+  return {ok:true,reason:'ready',permission};
+}
+
+function geoPosition(options, hardTimeoutMs){
+  return new Promise((resolve,reject)=>{
+    if(!navigator.geolocation){reject(geoError('unsupported','Geolocation unsupported'));return;}
+    let settled=false;
+    const timer=setTimeout(()=>{
+      if(settled)return;settled=true;reject(geoError(3,'AIRUN GPS hard timeout'));
+    },hardTimeoutMs);
+    navigator.geolocation.getCurrentPosition(position=>{
+      if(settled)return;settled=true;clearTimeout(timer);resolve(position);
+    },error=>{
+      if(settled)return;settled=true;clearTimeout(timer);reject(error);
+    },options);
+  });
+}
+
+async function requestGPSPosition(onStage = ()=>{}, {maximumAge=300000}={}){
+  const readiness=await gpsReadiness();
+  if(!readiness.ok) throw geoError(readiness.reason==='denied'?1:readiness.reason,readiness.reason);
+
+  onStage(readiness.permission==='prompt'?'Hãy cho phép quyền vị trí…':'Đang tìm vị trí…');
+  setSystemStatus('gps','loading',readiness.permission==='prompt'?'Chờ cấp quyền':'Đang định vị');
+
+  const fast=geoPosition({enableHighAccuracy:false,timeout:2600,maximumAge},3200).then(position=>{position.__airunFix='fast';return position;});
+  const precise=geoPosition({enableHighAccuracy:true,timeout:5600,maximumAge:0},6500).then(position=>{position.__airunFix='precise';return position;});
+  try{
+    const first=await Promise.any([fast,precise]);
+    setSystemStatus('gps','ok',`±${round(Number(first.coords?.accuracy||0))} m`);
+    return first;
+  }catch(group){
+    const errors=Array.isArray(group?.errors)?group.errors:[];
+    const denied=errors.find(error=>error?.code===1);
+    const unavailable=errors.find(error=>error?.code===2);
+    const error=denied||unavailable||errors[errors.length-1]||geoError(3,'GPS timeout');
+    setSystemStatus('gps','error',error?.code===1?'Bị chặn':error?.code===2?'Không có vị trí':'Quá thời gian');
+    throw error;
+  }
+}
+async function refineGPSPosition(previous, onStage = ()=>{}){
+  try{
+    onStage('Đang tăng độ chính xác GPS…');
+    const precise=await geoPosition({enableHighAccuracy:true,timeout:6500,maximumAge:0},7200);
+    const oldAcc=Number(previous?.coords?.accuracy ?? Infinity);
+    const newAcc=Number(precise?.coords?.accuracy ?? Infinity);
+    return newAcc < oldAcc ? precise : null;
+  }catch{return null;}
+}
+
+function gpsHelpMessage(error){
+  const code=error?.code;
+  if(code===1 || code==='denied') return 'Quyền vị trí đang bị chặn. Hãy cho phép Location cho AIRUN trong trình duyệt rồi thử lại.';
+  if(code==='insecure') return 'GPS web chỉ hoạt động trên HTTPS. Hãy mở AIRUN bằng địa chỉ https://…onrender.com.';
+  if(code==='unsupported') return 'Trình duyệt/thiết bị này không cung cấp Geolocation.';
+  if(code===2) return 'Thiết bị chưa xác định được vị trí. Hãy bật Location Services của máy và thử ngoài trời hoặc gần cửa sổ.';
+  if(code===3) return 'Thiết bị chưa trả về vị trí trong thời gian chờ. Hãy kiểm tra Location Services, quyền trình duyệt hoặc thử trên điện thoại.';
+  return 'AIRUN chưa lấy được vị trí. Hãy kiểm tra quyền Location và dịch vụ vị trí của thiết bị.';
+}
+
+function showUserMarker(lat,lon,accuracy){
+  if(!map||!window.L)return;
+  if(userLocationMarker)userLocationMarker.remove();
+  userLocationMarker=L.circleMarker([lat,lon],{radius:8,color:'#3275dc',fillColor:'#fff',fillOpacity:1,weight:4}).addTo(map).bindPopup(`Vị trí GPS · ±${round(accuracy)} m`).openPopup();
+  map.flyTo([lat,lon],14,{duration:.8});
+}
+
+async function useGPS({scroll=true}={}){
+  const gpsButtons=['heroGps','gpsBtn','plannerGpsBtn'].map(id=>$(id)).filter(Boolean);
+  gpsButtons.forEach(button=>setBusy(button,true,'Đang kết nối GPS…'));
+  if(!navigator.geolocation){
+    setSystemStatus('gps','error','Không hỗ trợ');showToast('Trình duyệt này không hỗ trợ GPS.');
+    gpsButtons.forEach(button=>setBusy(button,false));return null;
+  }
+  const setStage=text=>{
+    $('liveBadge').textContent=text.toUpperCase();
+    $('liveBadge').className='source-badge loading';
+    $('heroLocationNote').textContent=text;
+  };
+  setStage('Đã nhận lệnh · đang kiểm tra GPS…');
+  setSystemStatus('gps','loading','Đang kiểm tra');
+  try{
+    const position=await requestGPSPosition(setStage);
+    const applyPosition=async(pos,{refreshEnvironment=true}={})=>{
+      const {latitude,longitude,accuracy}=pos.coords;
+      const near=nearestWard(latitude,longitude);selectedKey=near.item.key;$('area').value=selectedKey;
+      const close=near.distance<=25;const label=close?`${near.item.name} · GPS`:'Vị trí GPS hiện tại';
+      gpsLocation={lat:latitude,lon:longitude,accuracy,label,cacheId:`gps:${latitude.toFixed(3)},${longitude.toFixed(3)}`};
+      localSet('airun-v54-last-gps',{lat:latitude,lon:longitude,accuracy,label,at:Date.now()});
+      setSystemStatus('gps','ok',`±${round(accuracy)} m`);
+      setGpsPlanUi();updateMapSide();showUserMarker(latitude,longitude,accuracy);
+      const quick=quickEnvironmentForGps(gpsLocation);renderEnvironmentInstant(quick,{updating:refreshEnvironment});
+      $('heroLocationNote').textContent=`GPS đã kết nối ±${round(accuracy)} m${pos.__airunFix==='fast'?' · đang cải thiện độ chính xác ở nền':''}.`;
+      if(refreshEnvironment){
+        try{
+          const data=await fetchEnvironmentAt(latitude,longitude,{key:selectedKey,label,cacheId:gpsLocation.cacheId,accuracy,mode:'gps',force:true,onProgress:(partial)=>renderEnvironmentData(partial,{note:`GPS ±${round(accuracy)} m · dữ liệu trực tiếp đang về từng phần.`})});
+          renderEnvironmentData(data,{note:`GPS ±${round(accuracy)} m · ${sourceLabel(data.source)} theo tọa độ hiện tại.`});
+        }catch(apiError){
+          console.warn('AIRUN GPS environment update failed:',apiError);
+          renderEnvironmentInstant(quick);
+          $('heroLocationNote').textContent=`GPS ±${round(accuracy)} m đã sẵn sàng. Dữ liệu môi trường đang dùng bản dự phòng.`;
+        }
+      }
+      savePlanSettings();
+      return {near,label,accuracy};
+    };
+
+    const first=await applyPosition(position,{refreshEnvironment:true});
+    showToast(`GPS đã kết nối · độ chính xác khoảng ±${round(first.accuracy)} m.`);
+
+    if(Number(position.coords.accuracy)>20){
+      void refineGPSPosition(position,text=>setSystemStatus('gps','loading','Đang tăng chính xác')).then(async better=>{
+        if(!better){setSystemStatus('gps','ok',`±${round(first.accuracy)} m`);return;}
+        const betterAcc=Number(better.coords.accuracy||999);
+        if(!gpsLocation || betterAcc+3 < Number(gpsLocation.accuracy||999)){
+          await applyPosition(better,{refreshEnvironment:false});
+          $('liveBadge').textContent='GPS ĐÃ KẾT NỐI';$('liveBadge').className='source-badge live';
+          $('heroLocationNote').textContent=`GPS đã cải thiện lên khoảng ±${round(betterAcc)} m.`;
+        }
+      });
+    }
+
+    if(scroll)$('planner').scrollIntoView({behavior:'smooth'});
+    return position;
+  }catch(error){
+    const data=quickEnvironmentForWard(selectedKey);renderEnvironmentInstant(data);
+    $('liveBadge').textContent='GPS CHƯA KẾT NỐI';$('liveBadge').className='source-badge caution';
+    const help=gpsHelpMessage(error);$('heroLocationNote').textContent=help;showToast(help);
+    setSystemStatus('gps','error',error?.code===1?'Bị chặn':error?.code===2?'Không có vị trí':'Không kết nối');
+    return null;
+  }finally{
+    gpsButtons.forEach(button=>setBusy(button,false));
+  }
+}
+async function compareAreas(){
+  const button=$('compareBtn');setBusy(button,true,'Đang so sánh…');$('compareGrid').innerHTML='<div class="empty-state">Đang tải dữ liệu cho 5 khu vực…</div>';
+  const keys=[selectedKey,'SonTra','NguHanhSon','HoaXuan','HoiAn'].filter((key,index,array)=>array.indexOf(key)===index).slice(0,5);while(keys.length<5){const extra=WARDS.find(item=>!keys.includes(item.key));keys.push(extra.key);}
+  try{
+    const plan=currentPlan();const rows=await Promise.all(keys.map(async key=>{const data=await fetchEnvironment(key);const snap=snapshotFor(data,plan.time);return {key,data,snap,result:analyzeSnapshot(snap,plan)};}));rows.sort((a,b)=>b.result.score-a.result.score);
+    $('compareGrid').innerHTML=rows.map((row,index)=>`<article class="compare-card ${index===0?'best':''}"><span class="compare-rank">${index===0?'ĐIỂM CAO NHẤT TRONG 5 KHU VỰC':`VỊ TRÍ ${index+1}/5`}</span><h3>${escapeHTML(ward(row.key).name)}</h3><div class="compare-score"><strong>${row.result.score}</strong><span>/10 thuận lợi</span></div><div class="compare-stats"><span>AQI ${round(row.snap.aqi)}</span><span>${round(row.snap.temp)}°C</span><span>PM2.5 ${round(row.snap.pm,1)}</span><span>UV ${round(row.snap.uv,1)}</span></div><button type="button" data-compare-key="${row.key}">Chọn khu vực này</button></article>`).join('');
+    $('compareGrid').querySelectorAll('[data-compare-key]').forEach(node=>node.addEventListener('click',()=>selectWard(node.dataset.compareKey,{scroll:true,analyze:true})));
+  }catch{$('compareGrid').innerHTML='<div class="empty-state">Chưa thể so sánh lúc này. Hãy kiểm tra mạng và thử lại.</div>';}
+  finally{setBusy(button,false);}
+}
+
+function calculatePace(){
+  const distance=Number($('paceDistance').value),minutes=Number($('paceMinutes').value);if(distance<=0||minutes<=0){$('paceResult').textContent='—';return;}
+  $('paceResult').textContent=formatPace(minutes/distance);
+}
+
+function formatDuration(seconds){
+  const s=Math.max(0,Math.floor(seconds)),h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+}
+function formatPace(minutesPerKm){
+  if(!Number.isFinite(minutesPerKm)||minutesPerKm<=0||minutesPerKm>99)return '—';
+  let whole=Math.floor(minutesPerKm),seconds=Math.round((minutesPerKm-whole)*60);if(seconds===60){whole+=1;seconds=0;}return `${whole}:${String(seconds).padStart(2,'0')}`;
+}
+
+function trackerElapsedSeconds(){
+  if(!tracker.startedAt)return 0;const now=tracker.status==='paused'?tracker.pauseStarted:Date.now();return Math.max(0,(now-tracker.startedAt-tracker.pausedMs)/1000);
+}
+function gpsLevel(accuracy){if(!Number.isFinite(accuracy))return 0;if(accuracy<=10)return 4;if(accuracy<=20)return 3;if(accuracy<=40)return 2;if(accuracy<=70)return 1;return 0;}
+function updateGpsBars(accuracy){$('gpsBars').className=`gps-bars level-${gpsLevel(accuracy)}`;}
+function trackerSetState(status){
+  tracker.status=status;const node=$('trackerStatus');node.className=`tracker-state ${status}`;
+  node.innerHTML=status==='running'?'<i></i> Đang ghi GPS':status==='paused'?'<i></i> Đang tạm dừng':status==='finished'?'<i></i> Đã kết thúc':'<i></i> Chưa bắt đầu';
+}
+function updateTrackerMetrics(){
+  $('trackerDistance').textContent=tracker.distanceKm.toFixed(2);const seconds=trackerElapsedSeconds();$('trackerTime').textContent=formatDuration(seconds);
+  $('trackerPace').textContent=tracker.distanceKm>=.05?formatPace((seconds/60)/tracker.distanceKm):'—';$('trackerSpeed').textContent=round(tracker.currentSpeed,1).toFixed(1);$('routePointCount').textContent=tracker.points.length;
+}
+function updateRunMap(point,accepted=true){
+  if(!runMap||!window.L)return;
+  const latlng=[point.lat,point.lon];
+  if(!runMarker)runMarker=L.circleMarker(latlng,{radius:7,color:'#075b49',fillColor:'#c8f16b',fillOpacity:1,weight:4}).addTo(runMap);else runMarker.setLatLng(latlng);
+  if(accepted){if(!runPolyline)runPolyline=L.polyline([latlng],{color:'#075b49',weight:6,opacity:.9,lineCap:'round'}).addTo(runMap);else runPolyline.addLatLng(latlng);}
+  if(tracker.points.length<=2)runMap.setView(latlng,16);else runMap.panTo(latlng,{animate:true,duration:.35});
+}
+function resetRunMap(){if(runPolyline){runPolyline.remove();runPolyline=null;}if(runMarker){runMarker.remove();runMarker=null;}if(runMap)runMap.setView([16.06,108.22],13);}
+
+async function requestWakeLock(){
+  if(!('wakeLock' in navigator)||document.visibilityState!=='visible')return;
+  try{tracker.wakeLock=await navigator.wakeLock.request('screen');tracker.wakeLock.addEventListener('release',()=>{tracker.wakeLock=null;});}catch{}
+}
+async function releaseWakeLock(){try{await tracker.wakeLock?.release();}catch{}tracker.wakeLock=null;}
+
+function startTrackerWatch(){
+  if(!navigator.geolocation)return;
+  if(tracker.watchId!==null)navigator.geolocation.clearWatch(tracker.watchId);
+  tracker.watchId=navigator.geolocation.watchPosition(handleTrackPosition,handleTrackError,{enableHighAccuracy:true,maximumAge:3000,timeout:7000});
+}
+function stopTrackerWatch(){if(tracker.watchId!==null&&navigator.geolocation){navigator.geolocation.clearWatch(tracker.watchId);tracker.watchId=null;}}
+
+function trackerAlert(tone,title,text,icon='◎'){
+  const box=$('trackerAlert');box.className=`tracker-alert ${tone||''}`;box.innerHTML=`<span>${icon}</span><p><b>${escapeHTML(title)}</b> ${escapeHTML(text)}</p>`;
+}
+
+async function refreshTrackerEnvironment(point){
+  if(Date.now()-tracker.envLastAt<8*60*1000&&tracker.envPoint&&haversine(point.lat,point.lon,tracker.envPoint.lat,tracker.envPoint.lon)<1.5)return;
+  tracker.envLastAt=Date.now();tracker.envPoint=point;
+  try{
+    const near=nearestWard(point.lat,point.lon);const label=`${near.item.name} · GPS`;
+    const data=await fetchEnvironmentAt(point.lat,point.lon,{key:near.item.key,label,cacheId:`track:${point.lat.toFixed(3)},${point.lon.toFixed(3)}`,accuracy:point.accuracy,mode:'gps',force:true});
+    const plan={...currentPlan(),time:vnIso().slice(11,16)};const result=analyzeSnapshot(data.current,plan);tracker.lastEnvResult=result;
+    $('trackerAqi').textContent=round(data.current.aqi);$('trackerTemp').textContent=`${round(data.current.temp)}°C`;$('trackerWind').textContent=`${round(data.current.wind)} km/h`;$('trackerAdvice').textContent=`${result.score}/10`;
+    trackerAlert(result.tone,result.title,`${result.text} · ${sourceLabel(data.source)}.`,result.icon);
+  }catch{trackerAlert('caution','GPS vẫn đang ghi.','Chưa cập nhật được dữ liệu môi trường; quãng đường và pace vẫn tiếp tục hoạt động.','◷');}
+}
+
+function handleTrackPosition(position){
+  if(tracker.status!=='running')return;
+  const c=position.coords;const point={lat:c.latitude,lon:c.longitude,accuracy:Number(c.accuracy||999),timestamp:position.timestamp||Date.now()};
+  setSystemStatus('gps',point.accuracy<=80?'ok':'warn',`±${round(point.accuracy)} m`);
+  const near=nearestWard(point.lat,point.lon);$('trackerLocation').textContent=near.distance<25?near.item.name:'Vị trí hiện tại';$('trackerAccuracy').textContent=`Độ chính xác ±${round(point.accuracy)} m`;updateGpsBars(point.accuracy);updateRunMap(point,false);
+
+  if(point.accuracy>80){tracker.currentSpeed=0;updateTrackerMetrics();trackerAlert('caution','Tín hiệu GPS yếu.',`Sai số hiện tại khoảng ±${round(point.accuracy)} m. AIRUN chưa cộng điểm này vào quãng đường.`,'⌖');return;}
+
+  if(!tracker.lastPoint){tracker.lastPoint=point;tracker.points.push(point);updateRunMap(point,true);updateTrackerMetrics();refreshTrackerEnvironment(point);return;}
+
+  const dt=Math.max(.1,(point.timestamp-tracker.lastPoint.timestamp)/1000);const segmentKm=haversine(tracker.lastPoint.lat,tracker.lastPoint.lon,point.lat,point.lon);const segmentM=segmentKm*1000;
+  const noiseThreshold=Math.max(3,Math.min(12,(point.accuracy+tracker.lastPoint.accuracy)*.14));
+  if(segmentM<noiseThreshold){tracker.currentSpeed=Number.isFinite(c.speed)&&c.speed>=0?c.speed*3.6:0;updateTrackerMetrics();return;}
+
+  const segmentSpeed=segmentKm/(dt/3600);
+  if(segmentM>350||segmentSpeed>32){trackerAlert('caution','Đã bỏ một điểm GPS bất thường.',`Bước nhảy ${round(segmentM)} m không được cộng vào quãng đường.`,'⌖');return;}
+
+  tracker.distanceKm+=segmentKm;tracker.lastPoint=point;tracker.points.push(point);
+  const rawSpeed=Number.isFinite(c.speed)&&c.speed>=0?c.speed*3.6:segmentSpeed;tracker.speedSamples.push(clamp(rawSpeed,0,32));if(tracker.speedSamples.length>5)tracker.speedSamples.shift();tracker.currentSpeed=tracker.speedSamples.reduce((a,b)=>a+b,0)/tracker.speedSamples.length;
+  updateRunMap(point,true);updateTrackerMetrics();refreshTrackerEnvironment(point);
+}
+
+function handleTrackError(error){
+  if(error.code===1){setSystemStatus('gps','error','Bị chặn');trackerAlert('bad','Không có quyền GPS.','Hãy cho phép vị trí trong trình duyệt rồi bắt đầu lại.','!');abortTracker();}
+  else if(error.code===2){setSystemStatus('gps','warn','Chưa có vị trí');trackerAlert('caution','Chưa xác định được vị trí.','Di chuyển ra nơi thoáng hơn và giữ AIRUN đang mở.','⌖');}
+  else{setSystemStatus('gps','warn','Đang chờ tín hiệu');trackerAlert('caution','GPS phản hồi chậm.','AIRUN vẫn đang chờ vị trí mới.','◷');}
+}
+
+function resetTrackerData(){
+  tracker.startedAt=0;tracker.pausedMs=0;tracker.pauseStarted=0;tracker.distanceKm=0;tracker.points=[];tracker.lastPoint=null;tracker.speedSamples=[];tracker.currentSpeed=0;tracker.envLastAt=0;tracker.envPoint=null;tracker.lastEnvResult=null;resetRunMap();
+  $('trackerLocation').textContent='Đang chờ GPS…';$('trackerAccuracy').textContent='Độ chính xác —';updateGpsBars(NaN);$('trackerAqi').textContent='—';$('trackerTemp').textContent='—';$('trackerWind').textContent='—';$('trackerAdvice').textContent='Chưa có';$('routePointCount').textContent='0';updateTrackerMetrics();
+}
+
+async function startRun(){
+  if(!navigator.geolocation){showToast('Thiết bị/trình duyệt này không hỗ trợ GPS.');return;}
+  const button=$('startRunBtn');
+  setBusy(button,true,'Đang kết nối GPS…');
+  setSystemStatus('gps','loading','Đang kết nối');
+  trackerAlert('','Đang kiểm tra GPS…','AIRUN sẽ chỉ bắt đầu tính thời gian sau khi nhận được vị trí đầu tiên.','⌖');
+
+  try{
+    const readiness=await gpsReadiness();
+    if(!readiness.ok) throw geoError(readiness.reason==='denied'?1:readiness.reason,readiness.reason);
+
+    const first=await requestGPSPosition(stage=>trackerAlert('',stage,'Nếu đang ở trong nhà, vị trí có thể mất vài giây để xuất hiện.','⌖'),{maximumAge:5000});
+    resetTrackerData();
+    tracker.startedAt=Date.now();trackerSetState('running');
+    button.disabled=true;button.textContent='▶ Đang chạy';
+    $('pauseRunBtn').disabled=false;$('finishRunBtn').disabled=false;$('pauseRunBtn').textContent='Ⅱ Tạm dừng';
+
+    // Feed the first fix immediately so the UI never sits at “waiting GPS”.
+    handleTrackPosition(first);
+    const acc=Number(first.coords.accuracy||999);
+    setSystemStatus('gps',acc>80?'warn':'ok',`±${round(acc)} m`);
+    if(acc>80){
+      trackerAlert('caution','GPS đã kết nối nhưng còn yếu.',`Độ chính xác hiện tại khoảng ±${round(acc)} m. AIRUN đang chờ tín hiệu tốt hơn trước khi cộng quãng đường.`,'⌖');
+    }else{
+      trackerAlert('good','GPS đã kết nối.',`Độ chính xác khoảng ±${round(acc)} m. AIRUN đang ghi lộ trình.`,'✓');
+    }
+
+    startTrackerWatch();tracker.timer=setInterval(updateTrackerMetrics,1000);requestWakeLock();
+    showToast(`GPS đã kết nối · ±${round(acc)} m.`);
+
+    // Ask for a better high-accuracy fix in the background if the first one is coarse.
+    if(acc>20){
+      void refineGPSPosition(first).then(better=>{
+        if(better && tracker.status==='running') handleTrackPosition(better);
+      });
+    }
+  }catch(error){
+    setBusy(button,false);
+    trackerSetState('idle');
+    const help=gpsHelpMessage(error);
+    setSystemStatus('gps','error',error?.code===1?'Bị chặn':'Không kết nối');
+    trackerAlert('bad','Chưa kết nối được GPS.',help,'!');
+    showToast(help);
+    return;
+  }
+}
+
+async function pauseOrResumeRun(){
+  if(tracker.status==='running'){
+    tracker.pauseStarted=Date.now();trackerSetState('paused');stopTrackerWatch();await releaseWakeLock();$('pauseRunBtn').textContent='▶ Tiếp tục';tracker.currentSpeed=0;updateTrackerMetrics();trackerAlert('caution','Đã tạm dừng.','Quãng đường không được cộng trong thời gian tạm dừng.','Ⅱ');
+  }else if(tracker.status==='paused'){
+    tracker.pausedMs+=Date.now()-tracker.pauseStarted;tracker.pauseStarted=0;trackerSetState('running');$('pauseRunBtn').textContent='Ⅱ Tạm dừng';startTrackerWatch();requestWakeLock();trackerAlert('','Đang tiếp tục.','AIRUN đang chờ điểm GPS tiếp theo.','⌖');
+  }
+}
+
+function abortTracker(){
+  stopTrackerWatch();clearInterval(tracker.timer);tracker.timer=null;releaseWakeLock();trackerSetState('idle');$('startRunBtn').disabled=false;$('pauseRunBtn').disabled=true;$('finishRunBtn').disabled=true;
+}
+
+async function finishRun(){
+  if(!['running','paused'].includes(tracker.status))return;
+  if(tracker.status==='paused'){tracker.pausedMs+=Date.now()-tracker.pauseStarted;tracker.pauseStarted=0;}
+  stopTrackerWatch();clearInterval(tracker.timer);tracker.timer=null;await releaseWakeLock();tracker.currentSpeed=0;updateTrackerMetrics();trackerSetState('finished');
+  $('startRunBtn').disabled=false;$('startRunBtn').textContent='▶ Chạy mới';$('pauseRunBtn').disabled=true;$('finishRunBtn').disabled=true;
+  const seconds=trackerElapsedSeconds(),pace=tracker.distanceKm>=.05?(seconds/60)/tracker.distanceKm:null;const near=tracker.lastPoint?nearestWard(tracker.lastPoint.lat,tracker.lastPoint.lon).item:ward();
+  $('runSummary').hidden=false;$('summaryTitle').textContent=tracker.points.length>=2?'Buổi chạy đã hoàn thành':'Phiên GPS đã kết thúc';$('summaryMeta').textContent=`${new Date().toLocaleString('vi-VN')} · ${near.name} · ${tracker.points.length} điểm GPS hợp lệ`;$('summaryDistance').textContent=`${tracker.distanceKm.toFixed(2)} km`;$('summaryTime').textContent=formatDuration(seconds);$('summaryPace').textContent=pace?`${formatPace(pace)} /km`:'—';
+  if(tracker.points.length>=2&&seconds>=10){saveRunToJournal({seconds,pace,area:near.name});showToast('Đã lưu tóm tắt buổi chạy trên thiết bị.');}
+  else showToast('Chưa đủ điểm GPS để lưu thành một buổi chạy.');
+  trackerAlert(tracker.lastEnvResult?.tone||'good','Đã kết thúc.',`Quãng đường ${tracker.distanceKm.toFixed(2)} km · ${formatDuration(seconds)}. Toàn bộ chuỗi tọa độ không được lưu vào nhật ký.`,'✓');
+}
+
+function journalRows(){
+  let rows=localGet(STORAGE.journal,null);
+  if(rows===null){rows=localGet('airun-v40-journal',[]);localSet(STORAGE.journal,rows);}
+  return Array.isArray(rows)?rows:[];
+}
+
+function saveRunToJournal({seconds,pace,area}){
+  const rows=journalRows();rows.unshift({id:Date.now(),type:'run',at:new Date().toISOString(),area,distance:round(tracker.distanceKm,2),durationSec:round(seconds),pace:pace?formatPace(pace):'',aqi:tracker.lastEnvResult?$('trackerAqi').textContent:'',score:tracker.lastEnvResult?.score??'',source:'gps'});localSet(STORAGE.journal,rows.slice(0,50));renderJournal();
+}
+
+function saveJournal(){
+  if(!activeResult||!activeSnapshot){showToast('Hãy phân tích kế hoạch trước khi lưu.');return;}
+  if(!selectedDecision){showToast('Hãy chọn quyết định của bạn trước khi lưu.');return;}
+  const rows=journalRows(),plan=currentPlan(),label=activeData?.location?.label||ward().name;
+  const estimate=planEstimate(plan);
+  rows.unshift({id:Date.now(),type:'plan',at:new Date().toISOString(),area:label,time:plan.time,duration:plan.duration,pace:formatPace(estimate.pace),distance:round(estimate.distance,2),intensity:plan.intensity,sensitive:plan.sensitive,decision:selectedDecision,score:activeResult.score,aqi:round(activeSnapshot.aqi),temp:round(activeSnapshot.temp),note:$('note').value.trim(),source:activeData.source});
+  localSet(STORAGE.journal,rows.slice(0,50));$('note').value='';renderJournal();showToast('Đã lưu kế hoạch vào nhật ký trên thiết bị.');
+}
+
+function renderJournal(){
+  const rows=journalRows();
+  $('journalList').innerHTML=rows.length?rows.map(row=>{
+    const date=new Date(row.at);const isRun=row.type==='run';
+    const title=isRun?`🏃 Buổi chạy GPS · ${escapeHTML(row.area)}`:`${escapeHTML(row.area)} · ${escapeHTML(row.decision||'Kế hoạch')}`;
+    const desc=isRun?`${row.distance??0} km · ${formatDuration(row.durationSec||0)}${row.pace?` · pace ${escapeHTML(row.pace)}/km`:''}`:`${escapeHTML(row.time||'')} · ${row.duration||0} phút · ${row.distance??'—'} km${row.pace?` · pace ${escapeHTML(row.pace)}/km`:''} · ${escapeHTML(row.intensity||'')} · AQI ${row.aqi??'—'}${row.note?` · ${escapeHTML(row.note)}`:''}`;
+    const metric=isRun?`${row.distance??0} km`:`${row.score??'—'}/10`;const metricLabel=isRun?'quãng đường':'thuận lợi';
+    return `<article class="journal-item"><div class="journal-date"><b>${date.toLocaleDateString('vi-VN',{day:'2-digit'})}</b><span>${date.toLocaleDateString('vi-VN',{month:'2-digit',year:'numeric'})}</span></div><div class="journal-main"><b>${title}</b><p>${desc}</p></div><div class="journal-score"><b>${metric}</b><span>${metricLabel}</span></div><button class="journal-delete" type="button" data-delete="${row.id}" aria-label="Xóa mục này">×</button></article>`;
+  }).join(''):'<div class="empty-state">Chưa có dữ liệu được lưu.</div>';
+  $('journalList').querySelectorAll('[data-delete]').forEach(button=>button.addEventListener('click',()=>{localSet(STORAGE.journal,rows.filter(row=>row.id!==Number(button.dataset.delete)));renderJournal();}));
+}
+
+function csvCell(value){let text=String(value??'');if(/^[=+\-@]/.test(text))text=`'${text}`;return `"${text.replace(/"/g,'""')}"`;}
+function exportJournal(){
+  const rows=journalRows();if(!rows.length){showToast('Nhật ký đang trống.');return;}
+  const header=['Loại','Thời điểm','Khu vực','Giờ/Khoảng thời gian','Thời lượng giây','Quãng đường km','Pace','Cường độ','Quyết định','Điểm','AQI','Nhiệt độ','Nguồn','Ghi chú'];
+  const body=rows.map(row=>row.type==='run'?['Buổi chạy GPS',new Date(row.at).toLocaleString('vi-VN'),row.area,'',row.durationSec,row.distance,row.pace,'','','',row.aqi,'','GPS', '']:['Kế hoạch',new Date(row.at).toLocaleString('vi-VN'),row.area,row.time,(row.duration||0)*60,'','',row.intensity,row.decision,row.score,row.aqi,row.temp,sourceLabel(row.source),row.note]);
+  const lines=[header,...body].map(row=>row.map(csvCell).join(','));const url=URL.createObjectURL(new Blob(['\uFEFF'+lines.join('\r\n')],{type:'text/csv;charset=utf-8'})),link=document.createElement('a');link.href=url;link.download=`AIRUN_Nhat_ky_${new Date().toISOString().slice(0,10)}.csv`;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+function initDialogs(){
+  const dialog=$('dataDialog');if(!dialog)return;
+  const open=()=>{if(typeof dialog.showModal==='function')dialog.showModal();else dialog.setAttribute('open','');};
+  const close=()=>{if(typeof dialog.close==='function')dialog.close();else dialog.removeAttribute('open');};
+  on('dataInfoBtn','click',open);on('footerDataBtn','click',open);on('dialogClose','click',close);on('dialogOk','click',close);
+  dialog.addEventListener('click',event=>{if(event.target===dialog)close();});
+}
+
+function initPWA(){
+  // V5.5 stability mode: remove legacy service workers/caches so stale JS can no longer control the app.
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.getRegistrations().then(regs=>Promise.all(regs.map(reg=>reg.unregister()))).catch(()=>{});
+  }
+  if('caches' in window){caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('airun-')).map(key=>caches.delete(key)))).catch(()=>{});}
+  const button=$('installBtn'); if(button)button.hidden=true;
+}
+
+async function runDiagnostics(){
+  const button=$('diagnosticBtn');setBusy(button,true,'Đang kiểm tra…');
+  setSystemStatus('js','ok','V5.5 đang chạy');updateConnection();
+  try{
+    const permission=await geolocationPermissionState();
+    setSystemStatus('gps',permission==='denied'?'error':permission==='granted'?'ok':'warn',permission==='denied'?'Bị chặn':permission==='granted'?'Đã cấp quyền':'Chưa cấp quyền');
+    const data=await getEnvironmentForActive(true,(partial)=>renderEnvironmentData(partial));
+    renderEnvironmentData(data);
+    const live=data.source==='live';
+    showToast(live?'Weather + Air API đã phản hồi trực tiếp.':'AIRUN đã kiểm tra xong; xem 4 trạng thái kết nối bên dưới số liệu.');
+  }catch(error){console.warn('AIRUN diagnostics:',error);showToast('Đã kiểm tra. Có nguồn dữ liệu chưa phản hồi; xem trạng thái kết nối.');}
+  finally{setBusy(button,false);}
+}
+
+function bindEvents(){
+  on('planForm','submit',event=>{event.preventDefault();analyzePlan(true);});
+  on('area','change',event=>selectWard(event.target.value,{analyze:true,force:true}));
+  on('time','change',()=>analyzePlan(false));on('duration','change',()=>{updatePlanEstimate();analyzePlan(false);});on('planPace','input',()=>{updatePlanEstimate();savePlanSettings();});on('planPace','change',()=>analyzePlan(false));on('sensitive','change',()=>analyzePlan(false));
+  document.querySelectorAll('[data-intensity]').forEach(button=>button.addEventListener('click',()=>{intensity=button.dataset.intensity;document.querySelectorAll('[data-intensity]').forEach(node=>node.classList.toggle('active',node===button));updatePlanEstimate();analyzePlan(false);}));
+  document.querySelectorAll('[data-decision]').forEach(button=>button.addEventListener('click',()=>{selectedDecision=button.dataset.decision;document.querySelectorAll('[data-decision]').forEach(node=>node.classList.toggle('active',node===button));if(selectedDecision==='Đổi giờ')$('time')?.focus();if(selectedDecision==='Đổi khu vực')$('area')?.focus();}));
+  on('refreshBtn','click',async()=>{const button=$('refreshBtn');setBusy(button,true,'Đang cập nhật…');try{const data=await getEnvironmentForActive(true,(partial)=>renderEnvironmentData(partial));renderEnvironmentData(data);showToast(data.source==='live'?'Đã nhận dữ liệu trực tiếp.':'Đã cập nhật bằng nguồn dữ liệu sẵn có.');}finally{setBusy(button,false);}});
+  on('diagnosticBtn','click',runDiagnostics);
+  on('compareBtn','click',compareAreas);on('gpsBtn','click',()=>useGPS({scroll:false}));on('heroGps','click',()=>useGPS({scroll:false}));on('plannerGpsBtn','click',()=>useGPS({scroll:true}));
+  on('clearGpsPlan','click',()=>selectWard(selectedKey,{analyze:true,force:true}));on('wardSearch','input',event=>renderWardControls(event.target.value));
+  on('paceDistance','input',calculatePace);on('paceMinutes','input',calculatePace);on('savePlanBtn','click',saveJournal);on('exportBtn','click',exportJournal);
+  on('clearJournalBtn','click',()=>{if(journalRows().length&&confirm('Xóa toàn bộ nhật ký trên thiết bị này?')){localSet(STORAGE.journal,[]);renderJournal();showToast('Đã xóa nhật ký.');}});
+  on('startRunBtn','click',startRun);on('pauseRunBtn','click',pauseOrResumeRun);on('finishRunBtn','click',finishRun);
+  on('menuBtn','click',()=>{const nav=$('mainNav');if(!nav)return;const open=nav.classList.toggle('open');$('menuBtn')?.setAttribute('aria-expanded',String(open));});
+  $('mainNav')?.querySelectorAll('a').forEach(link=>link.addEventListener('click',()=>{$('mainNav')?.classList.remove('open');$('menuBtn')?.setAttribute('aria-expanded','false');}));
+  window.addEventListener('scroll',()=>{const node=$('backTop');if(node)node.classList.toggle('show',scrollY>600);},{passive:true});on('backTop','click',()=>scrollTo({top:0,behavior:'smooth'}));
+  window.addEventListener('online',()=>{updateConnection();showToast('Đã kết nối lại Internet.');void runDiagnostics();});
+  window.addEventListener('offline',()=>{updateConnection();setSystemStatus('weather','warn','Ngoại tuyến');setSystemStatus('air','warn','Ngoại tuyến');showToast('Mất kết nối: GPS vẫn hoạt động, dữ liệu môi trường dùng bản đã lưu/dự phòng.');});
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&tracker.status==='running'&&!tracker.wakeLock)requestWakeLock();});
+  window.addEventListener('beforeunload',event=>{if(tracker.status==='running'){event.preventDefault();event.returnValue='';}});
+}
+
+let airunInitialized=false;
+async function init(){
+  if(airunInitialized)return;airunInitialized=true;
+  if(typeof window!=='undefined')window.__AIRUN_APP_READY='v55';
+  setSystemStatus('js','ok','V5.5 đang chạy');
+  safeCall('khu vực',()=>{$('area').innerHTML=WARDS.map(item=>`<option value="${item.key}">${escapeHTML(item.name)}</option>`).join('');});
+  safeCall('khôi phục cài đặt',restorePlanSettings);
+  safeCall('chọn khu vực',()=>{$('area').value=selectedKey;});
+  safeCall('danh sách khu vực',renderWardControls);
+  safeCall('bản đồ bên',updateMapSide);
+  safeCall('nhật ký',renderJournal);
+  safeCall('pace',calculatePace);
+  safeCall('ước tính kế hoạch',updatePlanEstimate);
+  safeCall('trạng thái mạng',updateConnection);
+  safeCall('nút bấm',bindEvents);
+  safeCall('hộp thoại',initDialogs);
+  safeCall('PWA',initPWA);
+  safeCall('tracker',updateTrackerMetrics);
+
+  const lastGps=localGet('airun-v54-last-gps',null);
+  if(lastGps&&Date.now()-Number(lastGps.at||0)<60*60*1000)setSystemStatus('gps','warn',`Gần nhất ±${round(lastGps.accuracy||0)} m`);
+  else setSystemStatus('gps','idle','Chưa yêu cầu');
+
+  // Không bao giờ để dashboard trống: số dự phòng xuất hiện ngay trước khi gọi mạng.
+  safeCall('dữ liệu tức thời',()=>renderEnvironmentInstant(quickEnvironmentForWard(selectedKey),{updating:true}));
+
+  // Bản đồ, API và GPS là các luồng độc lập; một luồng lỗi không làm chết nút bấm.
+  loadLeaflet().then(initMaps).catch(()=>{const fallback=$('mapFallback');if(fallback)fallback.hidden=false;});
+  selectWard(selectedKey,{analyze:true,force:true}).catch(error=>{console.warn('AIRUN initial live update:',error);setApiUpdateText('API chưa phản hồi · đang dùng dữ liệu dự phòng');});
+}
+
+if(hasDom()){
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});
+  else void init();
+}
+
+if(typeof module!=='undefined'&&module.exports){module.exports={WARDS,aqiInfo,uvInfo,analyzeSnapshot,fallbackData,haversine,weatherText,escapeHTML,clamp,round,formatPace,formatDuration,gpsLevel,parsePace,planEstimate,defaultPaceForIntensity};}
+
+  </script>
   <script>
   (()=>{
     setTimeout(()=>{
-      if(window.__AIRUN_APP_READY==='v53')return;
+      if(window.__AIRUN_APP_READY==='v55')return;
       const connection=document.getElementById('connectionText');
       const chip=document.getElementById('jsStatusChip');
       const label=document.getElementById('jsStatus');
       const button=document.getElementById('diagnosticBtn');
       if(connection)connection.textContent='JavaScript chính chưa khởi động · GPS/API chưa thể hoạt động';
       if(chip)chip.dataset.state='error';
-      if(label)label.textContent='app.js chưa chạy';
+      if(label)label.textContent='AIRUN chưa khởi động';
       if(button){
         button.textContent='Sửa cache & tải lại';
         button.onclick=async()=>{

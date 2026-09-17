@@ -194,27 +194,26 @@ async function fetchEnvironmentAt(lat, lon, options = {}){
     const stale = getStaleCache(cacheId); return stale ? {...stale,source:'cached'} : fallbackData(nearest.item,location);
   }
 
-  const base = `latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lon)}&timezone=auto`;
-  // Current requests are intentionally tiny, so hero numbers can appear before the hourly forecast.
-  const weatherCurrentUrl = `https://api.open-meteo.com/v1/forecast?${base}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m,uv_index&forecast_days=1`;
-  const airCurrentUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?${base}&current=us_aqi,pm2_5,pm10&forecast_days=1`;
-  const weatherForecastUrl = `https://api.open-meteo.com/v1/forecast?${base}&forecast_hours=30&hourly=temperature_2m,apparent_temperature,relative_humidity_2m,precipitation_probability,weather_code,wind_speed_10m,uv_index`;
-  const airForecastUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?${base}&forecast_hours=30&hourly=us_aqi,pm2_5,pm10`;
+  const tz=encodeURIComponent('Asia/Ho_Chi_Minh');
+  const base = `latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lon)}&timezone=${tz}&forecast_hours=36`;
+  // V5.5: only TWO external requests. Each returns current + hourly data together.
+  const weatherUrl = `https://api.open-meteo.com/v1/forecast?${base}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&hourly=temperature_2m,apparent_temperature,relative_humidity_2m,precipitation_probability,weather_code,wind_speed_10m,uv_index`;
+  const airUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?${base}&current=us_aqi,pm2_5,pm10,uv_index&hourly=us_aqi,pm2_5,pm10,uv_index`;
 
   const stale = getStaleCache(cacheId);
   const backup = stale ? {...stale,source:'cached',location} : fallbackData(nearest.item,location);
   const hourlyMap = new Map((backup.hourly||[]).map(row=>[row.time,{...row}]));
   let current = {...backup.current};
-  let weatherOk=false, airOk=false, weatherForecastOk=false, airForecastOk=false;
+  let weatherOk=false, airOk=false;
   let weatherMs=null, airMs=null;
 
   const buildResult=()=>({
     cacheId,key,
     source:weatherOk&&airOk?'live':(weatherOk||airOk?'partial':backup.source),
-    forecastSource:weatherForecastOk&&airForecastOk?'live':(weatherForecastOk||airForecastOk?'partial':backup.source),
+    forecastSource:weatherOk&&airOk?'live':(weatherOk||airOk?'partial':backup.source),
     updated:Date.now(),location,current:{...current},
     hourly:[...hourlyMap.values()].sort((a,b)=>a.time.localeCompare(b.time)),
-    liveParts:{weather:weatherOk,air:airOk,weatherForecast:weatherForecastOk,airForecast:airForecastOk},
+    liveParts:{weather:weatherOk,air:airOk,weatherForecast:weatherOk,airForecast:airOk},
     latency:{weather:weatherMs,air:airMs}
   });
   const publish=part=>{
@@ -222,103 +221,75 @@ async function fetchEnvironmentAt(lat, lon, options = {}){
     if(onProgress){try{onProgress(result,part);}catch(error){console.warn('AIRUN progress render:',error);}}
     return result;
   };
-  const applyWeatherCurrent=w=>{
-    const wc=w.current||{};
-    current={...current,
-      temp:Number.isFinite(wc.temperature_2m)?wc.temperature_2m:current.temp,
-      feels:Number.isFinite(wc.apparent_temperature)?wc.apparent_temperature:current.feels,
-      humidity:Number.isFinite(wc.relative_humidity_2m)?wc.relative_humidity_2m:current.humidity,
-      wind:Number.isFinite(wc.wind_speed_10m)?wc.wind_speed_10m:current.wind,
-      code:Number.isFinite(wc.weather_code)?wc.weather_code:current.code,
-      rain:Number.isFinite(wc.precipitation)?(wc.precipitation>0?100:0):current.rain,
-      uv:Number.isFinite(wc.uv_index)?wc.uv_index:current.uv
-    };
-  };
-  const applyAirCurrent=a=>{
-    const ac=a.current||{};
-    current={...current,
-      aqi:Number.isFinite(ac.us_aqi)?ac.us_aqi:current.aqi,
-      pm:Number.isFinite(ac.pm2_5)?ac.pm2_5:current.pm,
-      pm10:Number.isFinite(ac.pm10)?ac.pm10:current.pm10
-    };
-  };
-  const applyWeatherForecast=w=>{
-    const h=w.hourly||{},times=h.time||[];
-    times.forEach((time,index)=>{
-      const old=hourlyMap.get(time)||{time};
-      hourlyMap.set(time,{...old,time,
-        temp:h.temperature_2m?.[index],feels:h.apparent_temperature?.[index],humidity:h.relative_humidity_2m?.[index],
-        rain:h.precipitation_probability?.[index],wind:h.wind_speed_10m?.[index],uv:h.uv_index?.[index],code:h.weather_code?.[index]
+
+  setSystemStatus('weather','loading','Đang kết nối…');
+  setSystemStatus('air','loading','Đang kết nối…');
+  setApiUpdateText('Đang kết nối 2 nguồn dữ liệu trực tiếp…');
+
+  const weatherTask=(async()=>{
+    const started=performance.now();
+    try{
+      const w=await fetchJSON(weatherUrl,5200,1,()=>setSystemStatus('weather','loading','Đang thử lại…'));
+      const wc=w.current||{};
+      current={...current,
+        temp:Number.isFinite(wc.temperature_2m)?wc.temperature_2m:current.temp,
+        feels:Number.isFinite(wc.apparent_temperature)?wc.apparent_temperature:current.feels,
+        humidity:Number.isFinite(wc.relative_humidity_2m)?wc.relative_humidity_2m:current.humidity,
+        wind:Number.isFinite(wc.wind_speed_10m)?wc.wind_speed_10m:current.wind,
+        code:Number.isFinite(wc.weather_code)?wc.weather_code:current.code,
+        rain:Number.isFinite(wc.precipitation)?(wc.precipitation>0?100:0):current.rain
+      };
+      const h=w.hourly||{},times=h.time||[];
+      times.forEach((time,index)=>{
+        const old=hourlyMap.get(time)||{time};
+        hourlyMap.set(time,{...old,time,
+          temp:h.temperature_2m?.[index],feels:h.apparent_temperature?.[index],humidity:h.relative_humidity_2m?.[index],
+          rain:h.precipitation_probability?.[index],wind:h.wind_speed_10m?.[index],uv:h.uv_index?.[index],code:h.weather_code?.[index]
+        });
       });
-    });
-  };
-  const applyAirForecast=a=>{
-    const h=a.hourly||{},times=h.time||[];
-    times.forEach((time,index)=>{
-      const old=hourlyMap.get(time)||{time};
-      hourlyMap.set(time,{...old,time,aqi:h.us_aqi?.[index],pm:h.pm2_5?.[index],pm10:h.pm10?.[index]});
-    });
-  };
+      // Use the nearest hourly UV value as current UV if available.
+      const nowHour=vnIso().slice(0,13)+':00';
+      const uvNow=hourlyMap.get(nowHour)?.uv;
+      if(Number.isFinite(uvNow))current.uv=uvNow;
+      weatherOk=true;weatherMs=Math.max(1,Math.round(performance.now()-started));
+      setSystemStatus('weather','ok',`${weatherMs} ms`);publish('weather');return true;
+    }catch(error){console.warn('AIRUN Weather:',error);setSystemStatus('weather','error',apiErrorLabel(error));return false;}
+  })();
 
-  setSystemStatus('weather','loading','Đang lấy hiện tại…');
-  setSystemStatus('air','loading','Đang lấy hiện tại…');
-  setApiUpdateText('Đang lấy số liệu hiện tại; dự báo theo giờ tải ở nền…');
-
-  const weatherCurrentTask=(async()=>{
+  const airTask=(async()=>{
     const started=performance.now();
     try{
-      const w=await fetchJSON(weatherCurrentUrl,6500,1,()=>setSystemStatus('weather','loading','Đang thử lại…'));
-      applyWeatherCurrent(w);weatherOk=true;weatherMs=Math.max(1,Math.round(performance.now()-started));
-      setSystemStatus('weather','ok',`${weatherMs} ms`);publish('weather-current');return true;
-    }catch(error){console.warn('AIRUN Weather current:',error);setSystemStatus('weather','error',apiErrorLabel(error));return false;}
-  })();
-  const airCurrentTask=(async()=>{
-    const started=performance.now();
-    try{
-      const a=await fetchJSON(airCurrentUrl,6500,1,()=>setSystemStatus('air','loading','Đang thử lại…'));
-      applyAirCurrent(a);airOk=true;airMs=Math.max(1,Math.round(performance.now()-started));
-      setSystemStatus('air','ok',`${airMs} ms`);publish('air-current');return true;
-    }catch(error){console.warn('AIRUN Air current:',error);setSystemStatus('air','error',apiErrorLabel(error));return false;}
-  })();
-
-  // Forecast is independent. It must never block current numbers or planner interaction.
-  const weatherForecastTask=(async()=>{
-    try{const w=await fetchJSON(weatherForecastUrl,8500,1);applyWeatherForecast(w);weatherForecastOk=true;publish('weather-forecast');return true;}
-    catch(error){console.warn('AIRUN Weather forecast:',error);return false;}
-  })();
-  const airForecastTask=(async()=>{
-    try{const a=await fetchJSON(airForecastUrl,8500,1);applyAirForecast(a);airForecastOk=true;publish('air-forecast');return true;}
-    catch(error){console.warn('AIRUN Air forecast:',error);return false;}
+      const a=await fetchJSON(airUrl,5200,1,()=>setSystemStatus('air','loading','Đang thử lại…'));
+      const ac=a.current||{};
+      current={...current,
+        aqi:Number.isFinite(ac.us_aqi)?ac.us_aqi:current.aqi,
+        pm:Number.isFinite(ac.pm2_5)?ac.pm2_5:current.pm,
+        pm10:Number.isFinite(ac.pm10)?ac.pm10:current.pm10,
+        uv:Number.isFinite(ac.uv_index)?ac.uv_index:current.uv
+      };
+      const h=a.hourly||{},times=h.time||[];
+      times.forEach((time,index)=>{
+        const old=hourlyMap.get(time)||{time};
+        hourlyMap.set(time,{...old,time,aqi:h.us_aqi?.[index],pm:h.pm2_5?.[index],pm10:h.pm10?.[index],uv:Number.isFinite(h.uv_index?.[index])?h.uv_index?.[index]:old.uv});
+      });
+      airOk=true;airMs=Math.max(1,Math.round(performance.now()-started));
+      setSystemStatus('air','ok',`${airMs} ms`);publish('air');return true;
+    }catch(error){console.warn('AIRUN Air:',error);setSystemStatus('air','error',apiErrorLabel(error));return false;}
   })();
 
-  // Return live current data as soon as the two small current calls settle.
-  await Promise.allSettled([weatherCurrentTask,airCurrentTask]);
-  let currentResult=buildResult();
-  if(weatherOk||airOk){
-    memoryCache.set(cacheId,currentResult);savePersistentCache(currentResult);
-    const nowText=new Date().toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-    setApiUpdateText(`${weatherOk&&airOk?'Đã nhận Weather + Air trực tiếp':'Đã nhận một phần dữ liệu trực tiếp'} · ${nowText} · đang tải dự báo`);
-    publish('current-ready');
-  }else{
-    setApiUpdateText('Weather/Air chưa phản hồi · planner vẫn dùng dữ liệu dự phòng tức thời');
-  }
-
-  // Give forecast a short background window. If it is slower, the UI is already usable.
-  await Promise.race([
-    Promise.allSettled([weatherForecastTask,airForecastTask]),
-    new Promise(resolve=>setTimeout(resolve,2200))
-  ]);
+  await Promise.allSettled([weatherTask,airTask]);
   const result=buildResult();
-  if(weatherOk||airOk||weatherForecastOk||airForecastOk){
+  if(weatherOk||airOk){
     memoryCache.set(cacheId,result);savePersistentCache(result);
-    if(weatherForecastOk||airForecastOk){
-      const nowText=new Date().toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-      setApiUpdateText(`${weatherOk&&airOk?'Dữ liệu hiện tại trực tiếp':'Dữ liệu hiện tại một phần'} · forecast ${weatherForecastOk&&airForecastOk?'đã sẵn sàng':'một phần'} · ${nowText}`);
-    }
+    const nowText=new Date().toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    setApiUpdateText(`${weatherOk&&airOk?'Weather + Air trực tiếp':'Đã nhận một phần dữ liệu trực tiếp'} · ${nowText}`);
+    publish('ready');
     return result;
   }
+  setApiUpdateText('Không kết nối được Open-Meteo · đang dùng dữ liệu dự phòng');
   return backup;
 }
+
 function fetchEnvironment(key, force = false, onProgress = null){
   const item = ward(key);
   return fetchEnvironmentAt(item.lat,item.lon,{key:item.key,label:item.name,cacheId:`ward:${item.key}`,mode:'ward',force,onProgress});
@@ -1018,16 +989,17 @@ function initDialogs(){
 }
 
 function initPWA(){
-  window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();installPrompt=event;const button=$('installBtn');if(button)button.hidden=false;});
-  on('installBtn','click',async()=>{if(!installPrompt)return;installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;$('installBtn').hidden=true;});
-  if('serviceWorker' in navigator&&location.protocol.startsWith('http')){
-    navigator.serviceWorker.register('sw.js?v=54').then(registration=>registration.update()).catch(error=>console.warn('AIRUN service worker:',error));
+  // V5.5 stability mode: remove legacy service workers/caches so stale JS can no longer control the app.
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.getRegistrations().then(regs=>Promise.all(regs.map(reg=>reg.unregister()))).catch(()=>{});
   }
+  if('caches' in window){caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('airun-')).map(key=>caches.delete(key)))).catch(()=>{});}
+  const button=$('installBtn'); if(button)button.hidden=true;
 }
 
 async function runDiagnostics(){
   const button=$('diagnosticBtn');setBusy(button,true,'Đang kiểm tra…');
-  setSystemStatus('js','ok','V5.4 đang chạy');updateConnection();
+  setSystemStatus('js','ok','V5.5 đang chạy');updateConnection();
   try{
     const permission=await geolocationPermissionState();
     setSystemStatus('gps',permission==='denied'?'error':permission==='granted'?'ok':'warn',permission==='denied'?'Bị chặn':permission==='granted'?'Đã cấp quyền':'Chưa cấp quyền');
@@ -1064,8 +1036,8 @@ function bindEvents(){
 let airunInitialized=false;
 async function init(){
   if(airunInitialized)return;airunInitialized=true;
-  if(typeof window!=='undefined')window.__AIRUN_APP_READY='v54';
-  setSystemStatus('js','ok','V5.4 đang chạy');
+  if(typeof window!=='undefined')window.__AIRUN_APP_READY='v55';
+  setSystemStatus('js','ok','V5.5 đang chạy');
   safeCall('khu vực',()=>{$('area').innerHTML=WARDS.map(item=>`<option value="${item.key}">${escapeHTML(item.name)}</option>`).join('');});
   safeCall('khôi phục cài đặt',restorePlanSettings);
   safeCall('chọn khu vực',()=>{$('area').value=selectedKey;});
