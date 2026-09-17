@@ -39,7 +39,7 @@ const WEATHER_TEXT = {
 };
 
 const STORAGE = {
-  plan:'airun-v57-plan', journal:'airun-v57-journal', cache:'airun-v57-live-cache', migrated:'airun-v57-migrated'
+  plan:'airun-v58-plan', journal:'airun-v58-journal', cache:'airun-v58-live-cache', migrated:'airun-v58-migrated'
 };
 
 const memoryCache = new Map();
@@ -84,10 +84,26 @@ function setSystemStatus(kind,state,text){
 function setApiUpdateText(text){const node=hasDom()?$('apiLastUpdate'):null;if(node)node.textContent=text;}
 function safeCall(name,fn){try{return fn();}catch(error){console.error(`AIRUN ${name}:`,error);setSystemStatus('js','error',`Lỗi: ${name}`);return null;}}
 function on(id,event,handler,options){const node=$(id);if(!node){console.warn(`AIRUN missing #${id}`);return false;}node.addEventListener(event,handler,options);return true;}
+function asNumber(value,fallback=null){const n=Number(value);return Number.isFinite(n)?n:fallback;}
+function runAsyncTask(name,task){
+  Promise.resolve().then(task).catch(error=>{
+    console.error(`AIRUN async ${name}:`,error);
+    setSystemStatus('js','warn','V5.8 · tác vụ phụ lỗi');
+    showToast(`${name} chưa hoàn tất. Các chức năng khác vẫn hoạt động.`);
+  });
+}
 
 if(typeof window!=='undefined'){
-  window.addEventListener('error',event=>{console.error('AIRUN global error:',event.error||event.message);setSystemStatus('js','error','Lỗi JavaScript');});
-  window.addEventListener('unhandledrejection',event=>{console.error('AIRUN rejected promise:',event.reason);setSystemStatus('js','error','Lỗi tác vụ nền');});
+  window.addEventListener('error',event=>{
+    console.error('AIRUN global error:',event.error||event.message);
+    setSystemStatus('js','warn','V5.8 · có lỗi phụ');
+    setApiUpdateText(`Lỗi giao diện phụ: ${String(event.message||'không xác định').slice(0,80)}`);
+  });
+  window.addEventListener('unhandledrejection',event=>{
+    console.error('AIRUN rejected promise:',event.reason);
+    // Một tác vụ phụ (bản đồ/GPS refine/animation) không được làm người dùng nghĩ toàn app đã chết.
+    setSystemStatus('js','warn','V5.8 · tác vụ phụ lỗi');
+  });
 }
 
 function showToast(message){
@@ -149,12 +165,14 @@ async function fetchJSON(url, timeout = 7000, retries = 0, onRetry = null){
     const timer = setTimeout(() => controller.abort(), timeout);
     try{
       const response = await fetch(url,{signal:controller.signal,cache:'no-store',headers:{Accept:'application/json'}});
-      if(!response.ok) throw new Error(`HTTP ${response.status}`);
-      const contentType = response.headers.get('content-type') || '';
-      if(!contentType.includes('application/json')){
-        throw new Error('PROXY_NOT_CONFIGURED');
+      const raw = await response.text();
+      if(!response.ok) throw new Error(`HTTP ${response.status}: ${raw.slice(0,120)}`);
+      let data;
+      try{ data = JSON.parse(raw); }
+      catch{
+        if(/<!doctype|<html/i.test(raw)) throw new Error('PROXY_NOT_CONFIGURED');
+        throw new Error('API_NOT_JSON');
       }
-      const data = await response.json();
       if(!data || data.error) throw new Error(data?.reason || 'API trả về dữ liệu không hợp lệ');
       return data;
     }catch(error){
@@ -175,7 +193,8 @@ function nearestWard(lat,lon){
 function apiErrorLabel(error){
   if(error?.name==='AbortError') return 'Timeout';
   const text=String(error?.message||'');
-  if(text.includes('PROXY_NOT_CONFIGURED')) return 'Chưa cấu hình proxy';
+  if(text.includes('PROXY_NOT_CONFIGURED')) return 'Proxy trả HTML';
+  if(text.includes('API_NOT_JSON')) return 'Phản hồi không phải JSON';
   if(/HTTP\s+\d+/.test(text)) return text;
   if(typeof navigator!=='undefined' && !navigator.onLine) return 'Ngoại tuyến';
   return 'Không phản hồi';
@@ -189,6 +208,11 @@ async function fetchEnvironmentAt(lat, lon, options = {}){
   const force = Boolean(options.force);
   const location = {lat,lon,label,accuracy:options.accuracy ?? null,mode:options.mode || 'ward'};
   const onProgress = typeof options.onProgress==='function' ? options.onProgress : null;
+
+  // Trạng thái phải đổi NGAY khi hàm được gọi để người dùng biết request thật sự đã bắt đầu.
+  setSystemStatus('weather','loading','Đang kết nối…');
+  setSystemStatus('air','loading','Đang kết nối…');
+  setApiUpdateText(`Đang gọi proxy Render cho ${label}…`);
 
   const mem = memoryCache.get(cacheId);
   if(!force && mem && Date.now()-mem.updated < 90*1000) return mem;
@@ -228,22 +252,18 @@ async function fetchEnvironmentAt(lat, lon, options = {}){
     return result;
   };
 
-  setSystemStatus('weather','loading','Đang kết nối…');
-  setSystemStatus('air','loading','Đang kết nối…');
-  setApiUpdateText('Đang kết nối Weather + Air qua proxy Render…');
-
   const weatherTask=(async()=>{
     const started=performance.now();
     try{
       const w=await fetchJSON(weatherUrl,5200,1,()=>setSystemStatus('weather','loading','Đang thử lại…'));
       const wc=w.current||{};
       current={...current,
-        temp:Number.isFinite(wc.temperature_2m)?wc.temperature_2m:current.temp,
-        feels:Number.isFinite(wc.apparent_temperature)?wc.apparent_temperature:current.feels,
-        humidity:Number.isFinite(wc.relative_humidity_2m)?wc.relative_humidity_2m:current.humidity,
-        wind:Number.isFinite(wc.wind_speed_10m)?wc.wind_speed_10m:current.wind,
-        code:Number.isFinite(wc.weather_code)?wc.weather_code:current.code,
-        rain:Number.isFinite(wc.precipitation)?(wc.precipitation>0?100:0):current.rain
+        temp:asNumber(wc.temperature_2m,current.temp),
+        feels:asNumber(wc.apparent_temperature,current.feels),
+        humidity:asNumber(wc.relative_humidity_2m,current.humidity),
+        wind:asNumber(wc.wind_speed_10m,current.wind),
+        code:asNumber(wc.weather_code,current.code),
+        rain:asNumber(wc.precipitation,null)!==null?(asNumber(wc.precipitation,0)>0?100:0):current.rain
       };
       const h=w.hourly||{},times=h.time||[];
       times.forEach((time,index)=>{
@@ -264,15 +284,15 @@ async function fetchEnvironmentAt(lat, lon, options = {}){
       const a=await fetchJSON(airUrl,5200,1,()=>setSystemStatus('air','loading','Đang thử lại…'));
       const ac=a.current||{};
       current={...current,
-        aqi:Number.isFinite(ac.us_aqi)?ac.us_aqi:current.aqi,
-        pm:Number.isFinite(ac.pm2_5)?ac.pm2_5:current.pm,
-        pm10:Number.isFinite(ac.pm10)?ac.pm10:current.pm10,
-        uv:Number.isFinite(ac.uv_index)?ac.uv_index:current.uv
+        aqi:asNumber(ac.us_aqi,current.aqi),
+        pm:asNumber(ac.pm2_5,current.pm),
+        pm10:asNumber(ac.pm10,current.pm10),
+        uv:asNumber(ac.uv_index,current.uv)
       };
       const h=a.hourly||{},times=h.time||[];
       times.forEach((time,index)=>{
         const old=hourlyMap.get(time)||{time};
-        hourlyMap.set(time,{...old,time,aqi:h.us_aqi?.[index],pm:h.pm2_5?.[index],pm10:h.pm10?.[index],uv:Number.isFinite(h.uv_index?.[index])?h.uv_index?.[index]:old.uv});
+        hourlyMap.set(time,{...old,time,aqi:h.us_aqi?.[index],pm:h.pm2_5?.[index],pm10:h.pm10?.[index],uv:asNumber(h.uv_index?.[index],old.uv)});
       });
       airOk=true;airMs=Math.max(1,Math.round(performance.now()-started));
       setSystemStatus('air','ok',`${airMs} ms`);publish('air');return true;
@@ -526,17 +546,21 @@ async function selectWard(key,{scroll=false,force=false,analyze=true}={}){
   gpsLocation=null;setGpsPlanUi();selectedKey=ward(key).key;$('area').value=selectedKey;savePlanSettings();updateMapSide();
   if(map){const item=ward();map.flyTo([item.lat,item.lon],Math.max(map.getZoom(),11),{duration:.7});markers.get(selectedKey)?.openPopup();}
 
-  // Never leave the dashboard blank while an external API is slow.
-  const quick=quickEnvironmentForWard(selectedKey);
-  renderEnvironmentInstant(quick,{updating:true});
+  // Luôn có biến quick ở phạm vi toàn hàm; catch không còn ReferenceError như V5.7.
+  let quick=fallbackData(ward(selectedKey));
+  try{quick=quickEnvironmentForWard(selectedKey);renderEnvironmentInstant(quick,{updating:true});}
+  catch(error){console.warn('AIRUN instant render ignored:',error);try{renderEnvironmentInstant(quick,{updating:true});}catch{}}
 
+  // Request live bắt đầu độc lập với cache/UI.
   try{
-    const data=await fetchEnvironment(selectedKey,force,(partial)=>renderEnvironmentData(partial));
+    const data=await fetchEnvironment(selectedKey,force,(partial)=>{
+      try{renderEnvironmentData(partial);}catch(error){console.warn('AIRUN partial render:',error);}
+    });
     if(analyze)renderEnvironmentData(data);else{activeData=data;renderHero(data);}
   }catch(error){
     console.warn('AIRUN live update failed:',error);
-    renderEnvironmentInstant(quick);
-    $('heroLocationNote').textContent='Open-Meteo đang phản hồi chậm hoặc mạng không ổn định. AIRUN vẫn hoạt động với dữ liệu dự phòng; GPS chạy bộ không bị ảnh hưởng.';
+    try{renderEnvironmentInstant(quick);}catch{}
+    $('heroLocationNote').textContent='Proxy/API chưa phản hồi. AIRUN vẫn hoạt động với dữ liệu dự phòng; hãy xem trạng thái Weather/Air để biết lỗi cụ thể.';
   }
   if(scroll)$('planner').scrollIntoView({behavior:'smooth'});
 }
@@ -578,7 +602,7 @@ function renderWardControls(filter=''){
   const normalized=filter.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
   const items=WARDS.filter(item=>item.name.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().includes(normalized));
   $('wardList').innerHTML=items.map(item=>`<button type="button" data-ward="${item.key}" class="${item.key===selectedKey?'active':''}">${escapeHTML(item.name)}</button>`).join('')||'<div class="empty-state">Không tìm thấy.</div>';
-  $('wardList').querySelectorAll('[data-ward]').forEach(button=>button.addEventListener('click',()=>selectWard(button.dataset.ward,{analyze:true})));
+  $('wardList').querySelectorAll('[data-ward]').forEach(button=>button.addEventListener('click',()=>runAsyncTask('Chọn khu vực',()=>selectWard(button.dataset.ward,{analyze:true}))));
 }
 
 function loadLeaflet(){
@@ -749,7 +773,7 @@ async function useGPS({scroll=true}={}){
           $('liveBadge').textContent='GPS ĐÃ KẾT NỐI';$('liveBadge').className='source-badge live';
           $('heroLocationNote').textContent=`GPS đã cải thiện lên khoảng ±${round(betterAcc)} m.`;
         }
-      });
+      }).catch(error=>console.warn('AIRUN GPS refine background:',error));
     }
 
     if(scroll)$('planner').scrollIntoView({behavior:'smooth'});
@@ -770,7 +794,7 @@ async function compareAreas(){
   try{
     const plan=currentPlan();const rows=await Promise.all(keys.map(async key=>{const data=await fetchEnvironment(key);const snap=snapshotFor(data,plan.time);return {key,data,snap,result:analyzeSnapshot(snap,plan)};}));rows.sort((a,b)=>b.result.score-a.result.score);
     $('compareGrid').innerHTML=rows.map((row,index)=>`<article class="compare-card ${index===0?'best':''}"><span class="compare-rank">${index===0?'ĐIỂM CAO NHẤT TRONG 5 KHU VỰC':`VỊ TRÍ ${index+1}/5`}</span><h3>${escapeHTML(ward(row.key).name)}</h3><div class="compare-score"><strong>${row.result.score}</strong><span>/10 thuận lợi</span></div><div class="compare-stats"><span>AQI ${round(row.snap.aqi)}</span><span>${round(row.snap.temp)}°C</span><span>PM2.5 ${round(row.snap.pm,1)}</span><span>UV ${round(row.snap.uv,1)}</span></div><button type="button" data-compare-key="${row.key}">Chọn khu vực này</button></article>`).join('');
-    $('compareGrid').querySelectorAll('[data-compare-key]').forEach(node=>node.addEventListener('click',()=>selectWard(node.dataset.compareKey,{scroll:true,analyze:true})));
+    $('compareGrid').querySelectorAll('[data-compare-key]').forEach(node=>node.addEventListener('click',()=>runAsyncTask('Chọn khu vực',()=>selectWard(node.dataset.compareKey,{scroll:true,analyze:true}))));
   }catch{$('compareGrid').innerHTML='<div class="empty-state">Chưa thể so sánh lúc này. Hãy kiểm tra mạng và thử lại.</div>';}
   finally{setBusy(button,false);}
 }
@@ -990,18 +1014,27 @@ function initDialogs(){
   dialog.addEventListener('click',event=>{if(event.target===dialog)close();});
 }
 
-function initPWA(){
-  // V5.6 proxy mode: remove legacy service workers/caches so stale JS can no longer control the app.
-  if('serviceWorker' in navigator){
-    navigator.serviceWorker.getRegistrations().then(regs=>Promise.all(regs.map(reg=>reg.unregister()))).catch(()=>{});
-  }
-  if('caches' in window){caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('airun-')).map(key=>caches.delete(key)))).catch(()=>{});}
-  const button=$('installBtn'); if(button)button.hidden=true;
+async function clearLegacyServiceWorkerControl(){
+  if(!('serviceWorker' in navigator)) return false;
+  try{
+    const wasControlled=Boolean(navigator.serviceWorker.controller);
+    const regs=await navigator.serviceWorker.getRegistrations();
+    await Promise.all(regs.map(reg=>reg.unregister()));
+    if('caches' in window){const keys=await caches.keys();await Promise.all(keys.filter(k=>k.startsWith('airun-')).map(k=>caches.delete(k)));}
+    // Worker cũ vẫn có thể kiểm soát tab hiện tại cho tới lần reload kế tiếp.
+    if(wasControlled && !sessionStorage.getItem('airun-v58-worker-cleared')){
+      sessionStorage.setItem('airun-v58-worker-cleared','1');
+      const url=new URL(location.href);url.searchParams.set('v58',Date.now());location.replace(url.toString());
+      return true;
+    }
+  }catch(error){console.warn('AIRUN worker cleanup:',error);}
+  return false;
 }
+function initPWA(){const button=$('installBtn');if(button)button.hidden=true;}
 
 async function runDiagnostics(){
   const button=$('diagnosticBtn');setBusy(button,true,'Đang kiểm tra…');
-  setSystemStatus('js','ok','V5.7 Live API đang chạy');updateConnection();
+  setSystemStatus('js','ok','V5.8 Live API đang chạy');updateConnection();
   try{
     const permission=await geolocationPermissionState();
     setSystemStatus('gps',permission==='denied'?'error':permission==='granted'?'ok':'warn',permission==='denied'?'Bị chặn':permission==='granted'?'Đã cấp quyền':'Chưa cấp quyền');
@@ -1015,21 +1048,21 @@ async function runDiagnostics(){
 
 function bindEvents(){
   on('planForm','submit',event=>{event.preventDefault();analyzePlan(true);});
-  on('area','change',event=>selectWard(event.target.value,{analyze:true,force:true}));
+  on('area','change',event=>runAsyncTask('Đổi khu vực',()=>selectWard(event.target.value,{analyze:true,force:true})));
   on('time','change',()=>analyzePlan(false));on('duration','change',()=>{updatePlanEstimate();analyzePlan(false);});on('planPace','input',()=>{updatePlanEstimate();savePlanSettings();});on('planPace','change',()=>analyzePlan(false));on('sensitive','change',()=>analyzePlan(false));
   document.querySelectorAll('[data-intensity]').forEach(button=>button.addEventListener('click',()=>{intensity=button.dataset.intensity;document.querySelectorAll('[data-intensity]').forEach(node=>node.classList.toggle('active',node===button));updatePlanEstimate();analyzePlan(false);}));
   document.querySelectorAll('[data-decision]').forEach(button=>button.addEventListener('click',()=>{selectedDecision=button.dataset.decision;document.querySelectorAll('[data-decision]').forEach(node=>node.classList.toggle('active',node===button));if(selectedDecision==='Đổi giờ')$('time')?.focus();if(selectedDecision==='Đổi khu vực')$('area')?.focus();}));
   on('refreshBtn','click',async()=>{const button=$('refreshBtn');setBusy(button,true,'Đang cập nhật…');try{const data=await getEnvironmentForActive(true,(partial)=>renderEnvironmentData(partial));renderEnvironmentData(data);showToast(data.source==='live'?'Đã nhận dữ liệu trực tiếp.':'Đã cập nhật bằng nguồn dữ liệu sẵn có.');}finally{setBusy(button,false);}});
-  on('diagnosticBtn','click',runDiagnostics);
-  on('compareBtn','click',compareAreas);on('gpsBtn','click',()=>useGPS({scroll:false}));on('heroGps','click',()=>useGPS({scroll:false}));on('plannerGpsBtn','click',()=>useGPS({scroll:true}));
-  on('clearGpsPlan','click',()=>selectWard(selectedKey,{analyze:true,force:true}));on('wardSearch','input',event=>renderWardControls(event.target.value));
+  on('diagnosticBtn','click',()=>runAsyncTask('Kiểm tra kết nối',runDiagnostics));
+  on('compareBtn','click',()=>runAsyncTask('So sánh khu vực',compareAreas));on('gpsBtn','click',()=>runAsyncTask('GPS',()=>useGPS({scroll:false})));on('heroGps','click',()=>runAsyncTask('GPS',()=>useGPS({scroll:false})));on('plannerGpsBtn','click',()=>runAsyncTask('GPS',()=>useGPS({scroll:true})));
+  on('clearGpsPlan','click',()=>runAsyncTask('Bỏ GPS',()=>selectWard(selectedKey,{analyze:true,force:true})));on('wardSearch','input',event=>renderWardControls(event.target.value));
   on('paceDistance','input',calculatePace);on('paceMinutes','input',calculatePace);on('savePlanBtn','click',saveJournal);on('exportBtn','click',exportJournal);
   on('clearJournalBtn','click',()=>{if(journalRows().length&&confirm('Xóa toàn bộ nhật ký trên thiết bị này?')){localSet(STORAGE.journal,[]);renderJournal();showToast('Đã xóa nhật ký.');}});
   on('startRunBtn','click',startRun);on('pauseRunBtn','click',pauseOrResumeRun);on('finishRunBtn','click',finishRun);
   on('menuBtn','click',()=>{const nav=$('mainNav');if(!nav)return;const open=nav.classList.toggle('open');$('menuBtn')?.setAttribute('aria-expanded',String(open));});
   $('mainNav')?.querySelectorAll('a').forEach(link=>link.addEventListener('click',()=>{$('mainNav')?.classList.remove('open');$('menuBtn')?.setAttribute('aria-expanded','false');}));
   window.addEventListener('scroll',()=>{const node=$('backTop');if(node)node.classList.toggle('show',scrollY>600);},{passive:true});on('backTop','click',()=>scrollTo({top:0,behavior:'smooth'}));
-  window.addEventListener('online',()=>{updateConnection();showToast('Đã kết nối lại Internet.');void runDiagnostics();});
+  window.addEventListener('online',()=>{updateConnection();showToast('Đã kết nối lại Internet.');runAsyncTask('Kết nối lại API',runDiagnostics);});
   window.addEventListener('offline',()=>{updateConnection();setSystemStatus('weather','warn','Ngoại tuyến');setSystemStatus('air','warn','Ngoại tuyến');showToast('Mất kết nối: GPS vẫn hoạt động, dữ liệu môi trường dùng bản đã lưu/dự phòng.');});
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&tracker.status==='running'&&!tracker.wakeLock)requestWakeLock();});
   window.addEventListener('beforeunload',event=>{if(tracker.status==='running'){event.preventDefault();event.returnValue='';}});
@@ -1038,8 +1071,9 @@ function bindEvents(){
 let airunInitialized=false;
 async function init(){
   if(airunInitialized)return;airunInitialized=true;
-  if(typeof window!=='undefined')window.__AIRUN_APP_READY='v57';
-  setSystemStatus('js','ok','V5.7 Live API đang chạy');
+  if(await clearLegacyServiceWorkerControl()) return;
+  if(typeof window!=='undefined')window.__AIRUN_APP_READY='v58';
+  setSystemStatus('js','ok','V5.8 Live API đang chạy');
   safeCall('khu vực',()=>{$('area').innerHTML=WARDS.map(item=>`<option value="${item.key}">${escapeHTML(item.name)}</option>`).join('');});
   safeCall('khôi phục cài đặt',restorePlanSettings);
   safeCall('chọn khu vực',()=>{$('area').value=selectedKey;});
@@ -1071,4 +1105,4 @@ if(hasDom()){
   else void init();
 }
 
-if(typeof module!=='undefined'&&module.exports){module.exports={WARDS,aqiInfo,uvInfo,analyzeSnapshot,fallbackData,haversine,weatherText,escapeHTML,clamp,round,formatPace,formatDuration,gpsLevel,parsePace,planEstimate,defaultPaceForIntensity};}
+if(typeof module!=='undefined'&&module.exports){module.exports={WARDS,aqiInfo,uvInfo,analyzeSnapshot,fallbackData,haversine,weatherText,escapeHTML,clamp,round,formatPace,formatDuration,gpsLevel,parsePace,planEstimate,defaultPaceForIntensity,fetchEnvironmentAt};}
