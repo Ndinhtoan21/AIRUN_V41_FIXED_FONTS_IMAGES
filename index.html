@@ -40,7 +40,7 @@
 footer{background:#041f1a;color:#c7ddd5;padding:30px max(24px,calc((100% - var(--max))/2));display:grid;grid-template-columns:auto 1fr auto;gap:32px;align-items:center}.footer-brand{display:flex;align-items:center;gap:9px}.brand-mark.small{width:34px;height:34px;border-radius:10px;font-size:16px}.footer-brand b,.footer-brand small{display:block}.footer-brand b{font-size:11px;color:#fff}.footer-brand small{font-size:7px}footer>p{font-size:7px;margin:0;max-width:600px;line-height:1.7}.footer-links{display:flex;gap:10px;align-items:center}.footer-links a,.footer-links button{font-size:7px;color:#c7ddd5;background:transparent;border:0;text-decoration:underline;padding:0}.back-top{position:fixed;right:16px;bottom:16px;z-index:90;width:42px;height:42px;border:0;border-radius:50%;background:var(--green);color:#fff;box-shadow:var(--shadow);font-size:18px;opacity:0;pointer-events:none;transform:translateY(10px);transition:.2s}.back-top.show{opacity:1;pointer-events:auto;transform:none}.toast{position:fixed;left:50%;bottom:20px;z-index:9999;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#102f28;color:#fff;border-radius:12px;padding:10px 15px;box-shadow:var(--shadow);font-size:9px;transition:.25s;max-width:min(500px,calc(100% - 28px));text-align:center}.toast.show{opacity:1;transform:translate(-50%,0)}
 dialog{border:0;border-radius:20px;padding:25px;width:min(680px,calc(100% - 30px));box-shadow:0 28px 90px rgba(0,0,0,.28);color:var(--ink)}dialog::backdrop{background:rgba(2,31,24,.62);backdrop-filter:blur(5px)}dialog h2{font-size:28px;margin:0 0 15px}.dialog-close{position:absolute;right:13px;top:11px;border:0;background:#edf5f1;width:33px;height:33px;border-radius:50%;font-size:20px}.dialog-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.dialog-grid>div{padding:12px;border:1px solid var(--line);border-radius:11px;background:#f8fbf9}.dialog-grid b{font-size:10px}.dialog-grid p{font-size:8px;color:var(--muted);margin:3px 0 0;line-height:1.6}.dialog-note{font-size:8px;color:var(--muted);margin:12px 0}.dialog-note+.primary{width:100%}
 
-/* AIRUN V7.1 — clear route map + loop planner */
+/* AIRUN V7.3 — route planner + OpenFreeMap fallback */
 .route-plan-cta{width:100%;margin-top:9px;background:#0b6b53;color:#fff}.route-layout{grid-template-columns:minmax(0,1.55fr) minmax(310px,.55fr)}
 .route-map-wrap{overflow:hidden}.route-base-map{pointer-events:none}.suggested-route-svg{position:absolute;inset:0;width:100%;height:100%;z-index:4;pointer-events:none}.route-map-badge{position:absolute;left:14px;top:14px;z-index:5;padding:8px 11px;border-radius:999px;background:rgba(255,255,255,.94);box-shadow:var(--soft-shadow);font-size:8px;font-weight:900;color:var(--green)}
 .route-side{display:flex;flex-direction:column;gap:12px}.route-step{display:flex;gap:10px;align-items:flex-start}.route-step>span{display:grid;place-items:center;width:27px;height:27px;flex:0 0 27px;border-radius:50%;background:#e6f5ee;color:var(--green);font-size:10px;font-weight:900}.route-step small{display:block;font-size:6px;color:var(--muted);font-weight:900;letter-spacing:.08em}.route-step h3{margin:1px 0 2px;font-size:21px}.route-step p{margin:0;font-size:8px;color:var(--muted);line-height:1.5}
@@ -160,9 +160,9 @@ dialog{border:0;border-radius:20px;padding:25px;width:min(680px,calc(100% - 30px
 
 /* AIRUN V6 map core */
 .run-route-svg{position:absolute;inset:0;width:100%;height:100%;z-index:2;background:#eef6f2}.tracker-map-wrap{overflow:hidden}.map-fallback[hidden]{display:none!important}.area-map-frame{display:block}
-\n\n/* AIRUN V7.1 — GPS map always visible + live route overlay */\n.run-map-frame{position:absolute;inset:0;width:100%;height:100%;border:0;z-index:1;background:#e7f0ec}.run-route-svg{position:absolute;inset:0;width:100%;height:100%;z-index:2;background:transparent;pointer-events:none}.run-map-placeholder{position:absolute;left:14px;right:14px;bottom:14px;inset:auto 14px 14px 14px;z-index:5;display:flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid rgba(8,102,79,.12);border-radius:12px;background:rgba(255,255,255,.94);box-shadow:0 8px 24px rgba(15,48,38,.10);color:#49665c;text-align:left;backdrop-filter:blur(8px)}.run-map-placeholder span{font-size:18px;color:var(--green);flex:0 0 auto}.run-map-placeholder b{display:none}.run-map-placeholder p{font-size:8px;max-width:none;margin:0;line-height:1.45}.tracker-map-wrap{background:#dfeae5}.map-float{z-index:6}.run-map-frame+ .run-route-svg{display:block}\n@media(max-width:780px){.run-map-placeholder{left:9px;right:9px;bottom:9px;padding:8px 10px}.run-map-placeholder p{font-size:10px}.tracker-map-wrap{min-height:360px}}\n
+\n\n/* AIRUN V7.3 — GPS map always visible + live route overlay */\n.run-map-frame{position:absolute;inset:0;width:100%;height:100%;border:0;z-index:1;background:#e7f0ec}.run-route-svg{position:absolute;inset:0;width:100%;height:100%;z-index:2;background:transparent;pointer-events:none}.run-map-placeholder{position:absolute;left:14px;right:14px;bottom:14px;inset:auto 14px 14px 14px;z-index:5;display:flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid rgba(8,102,79,.12);border-radius:12px;background:rgba(255,255,255,.94);box-shadow:0 8px 24px rgba(15,48,38,.10);color:#49665c;text-align:left;backdrop-filter:blur(8px)}.run-map-placeholder span{font-size:18px;color:var(--green);flex:0 0 auto}.run-map-placeholder b{display:none}.run-map-placeholder p{font-size:8px;max-width:none;margin:0;line-height:1.45}.tracker-map-wrap{background:#dfeae5}.map-float{z-index:6}.run-map-frame+ .run-route-svg{display:block}\n@media(max-width:780px){.run-map-placeholder{left:9px;right:9px;bottom:9px;padding:8px 10px}.run-map-placeholder p{font-size:10px}.tracker-map-wrap{min-height:360px}}\n
 
-/* AIRUN V7.1 — Mapbox + GraphHopper advanced route map */
+/* AIRUN V7.3 — Mapbox + GraphHopper advanced route map */
 .mapbox-route-map{position:absolute;inset:0;z-index:3;background:#dfe9e5}
 .mapbox-route-map[hidden]{display:none!important}
 .mapboxgl-map{font-family:"Be Vietnam Pro","Segoe UI",Arial,sans-serif}
@@ -175,7 +175,14 @@ dialog{border:0;border-radius:20px;padding:25px;width:min(680px,calc(100% - 30px
 .setup-card{width:min(560px,100%);max-height:min(760px,92vh);overflow:auto;background:#fff;border-radius:24px;padding:24px;box-shadow:0 28px 80px rgba(0,0,0,.3)}.setup-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}.setup-head h3{font-size:24px;margin:2px 0 5px;letter-spacing:-.04em}.setup-head p{font-size:9px;color:var(--muted);margin:0;line-height:1.6}.setup-close{border:0;background:#edf5f1;color:var(--green);width:36px;height:36px;border-radius:12px;font-size:18px}.setup-grid{display:grid;gap:13px;margin-top:18px}.setup-grid label{display:grid;gap:6px;font-size:9px;font-weight:800}.setup-grid label span{display:flex;justify-content:space-between;gap:8px}.setup-grid small{font-size:7px;color:var(--muted);font-weight:500}.setup-grid input{width:100%;border:1px solid var(--line);border-radius:12px;padding:12px 13px;font-size:10px;outline:none}.setup-grid input:focus{border-color:#2a9b78;box-shadow:0 0 0 3px rgba(42,155,120,.1)}.setup-note{margin-top:13px;padding:11px 12px;border-radius:12px;background:#fff7e8;color:#77521e;font-size:8px;line-height:1.6}.setup-actions{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:15px}.setup-actions button{min-height:44px}.provider-badge{display:inline-flex;align-items:center;gap:5px;padding:5px 7px;border-radius:999px;background:#e9f6ef;color:#08745a;font-size:7px;font-weight:900}.provider-badge:before{content:"";width:6px;height:6px;border-radius:50%;background:#38c78d}
 @media(max-width:780px){.setup-card{padding:18px;border-radius:19px}.setup-head h3{font-size:20px}.setup-grid label{font-size:10px}.setup-grid input{font-size:12px}.route-provider-row{align-items:stretch;flex-direction:column}.route-settings-btn{width:100%;min-height:42px!important;font-size:10px!important}}
 
-/* AIRUN V7.2 — stable Mapbox + MapLibre fallback, route clarity, Vietnamese-safe labels */
+
+/* AIRUN V7.3 — OpenFreeMap fallback (no direct OpenStreetMap iframe dependency) */
+.route-maplibre-map{position:absolute;inset:0;width:100%;height:100%;z-index:3;background:#dfe9e5}
+.route-maplibre-map[hidden]{display:none!important}
+#routeMapLibreMap .maplibregl-canvas,#runMapLibreMap .maplibregl-canvas{width:100%!important;height:100%!important;display:block}
+.map-wrap.openfree-active .route-base-map,.map-wrap.openfree-active .suggested-route-svg{visibility:hidden;pointer-events:none}
+
+/* AIRUN V7.3 — Mapbox primary + OpenFreeMap/MapLibre fallback */
 .tracker-shell{grid-template-columns:minmax(390px,.78fr) minmax(0,1.22fr);min-height:620px}
 .tracker-map-wrap{min-height:620px;overflow:hidden;isolation:isolate;min-width:0}
 .run-mapbox-map{position:absolute;inset:0;width:100%;height:100%;z-index:1;background:#dfe9e5}
@@ -384,6 +391,7 @@ dialog{border:0;border-radius:20px;padding:25px;width:min(680px,calc(100% - 30px
       <div class="map-layout route-layout card">
         <div class="map-wrap route-map-wrap">
           <div id="mapboxRouteMap" class="mapbox-route-map" hidden aria-label="Bản đồ Mapbox cung chạy gợi ý"></div>
+          <div id="routeMapLibreMap" class="route-maplibre-map" hidden aria-label="Bản đồ OpenFreeMap cung chạy gợi ý"></div>
           <iframe id="areaMapFrame" class="area-map-frame route-base-map" title="Bản đồ cung chạy gợi ý" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
           <svg id="suggestedRouteSvg" class="suggested-route-svg" viewBox="0 0 700 500" preserveAspectRatio="none" aria-hidden="true"></svg>
           <div id="routeMapBadge" class="route-map-badge">Chưa tạo cung chạy</div>
@@ -395,7 +403,7 @@ dialog{border:0;border-radius:20px;padding:25px;width:min(680px,calc(100% - 30px
           <div id="routeMapSummary" class="route-map-summary" hidden>
             <b id="routeMapDistance">— km</b><span id="routeMapEta">— phút</span>
           </div>
-          <div id="mapFallback" class="map-fallback" hidden><b>Bản đồ trực tuyến chưa tải được</b><p>Bạn vẫn có thể tạo kế hoạch và mở vị trí trên OpenStreetMap.</p></div>
+          <div id="mapFallback" class="map-fallback" hidden><b>Bản đồ trực tuyến chưa tải được</b><p>AIRUN sẽ thử Mapbox rồi OpenFreeMap. Nếu cả hai nguồn đều lỗi, hãy kiểm tra kết nối mạng.</p></div>
         </div>
         <aside class="map-side route-side">
           <div class="route-step"><span>1</span><div><small>MỤC TIÊU</small><h3><b id="routeTargetValue">4.29</b> km</h3><p id="routeTargetHint">Lấy từ kế hoạch hiện tại.</p></div></div>
@@ -404,7 +412,7 @@ dialog{border:0;border-radius:20px;padding:25px;width:min(680px,calc(100% - 30px
           </div>
           <div class="route-step route-origin"><span>2</span><div><small>ĐIỂM XUẤT PHÁT</small><h3 id="routeOriginName">Hải Châu</h3><p id="routeOriginNote">Dùng khu vực đã chọn. GPS sẽ chính xác hơn.</p></div></div>
           <button id="generateRouteBtn" class="primary route-generate" type="button">⌁ Tạo cung chạy phù hợp</button>
-          <div class="route-provider-row"><span id="routeProviderStatus" class="route-provider-status">Bản đồ cơ bản đang sẵn sàng. Kết nối Mapbox + GraphHopper để có cung chạy đẹp và chính xác hơn.</span><button id="routeMapSettingsBtn" class="soft-btn route-settings-btn" type="button">⚙ Kết nối bản đồ nâng cao</button></div>
+          <div class="route-provider-row"><span id="routeProviderStatus" class="route-provider-status">OpenFreeMap đang sẵn sàng làm bản đồ dự phòng. Kết nối Mapbox + GraphHopper để có cung chạy nâng cao.</span><button id="routeMapSettingsBtn" class="soft-btn route-settings-btn" type="button">⚙ Kết nối bản đồ nâng cao</button></div>
           <div id="routeResult" class="route-result" hidden>
             <div class="route-result-head"><span id="routeSourcePill">CUNG GỢI Ý</span><b id="routeDistanceResult">— km</b></div>
             <h3 id="routeResultTitle">Cung chạy đi – về</h3>
@@ -422,7 +430,7 @@ dialog{border:0;border-radius:20px;padding:25px;width:min(680px,calc(100% - 30px
           <div class="map-side-head route-env-head"><div><small>ĐIỀU KIỆN HIỆN TẠI</small><h3 id="mapAreaName">Hải Châu</h3></div><span id="mapAreaAqi">AQI —</span></div>
           <p id="mapAreaDescription">AIRUN sẽ dùng dữ liệu môi trường tại điểm xuất phát để đánh giá kế hoạch.</p>
           <div class="map-facts"><span><b id="mapAreaTemp">—°C</b>Nhiệt độ</span><span><b id="mapAreaScore">—/10</b>Thuận lợi</span></div>
-          <a id="openOsm" class="map-link" href="https://www.openstreetmap.org" target="_blank" rel="noopener">Mở vị trí trên OpenStreetMap ↗</a>
+          <a id="openOsm" class="map-link" href="https://www.google.com/maps" target="_blank" rel="noopener">Mở vị trí trên Google Maps ↗</a>
         </aside>
       </div>
     </section>
@@ -478,14 +486,14 @@ dialog{border:0;border-radius:20px;padding:25px;width:min(680px,calc(100% - 30px
           <p class="tracker-note">Theo dõi GPS trên web hoạt động tốt nhất khi AIRUN đang mở trên màn hình. AIRUN sẽ cố giữ màn hình sáng nếu trình duyệt hỗ trợ Screen Wake Lock.</p>
         </div>
 
-        <div class="tracker-map-wrap">
+        <div id="trackerMapWrap" class="tracker-map-wrap">
           <div id="runMapboxMap" class="run-mapbox-map" hidden aria-label="Bản đồ GPS Mapbox"></div>
           <div id="runMapLibreMap" class="run-maplibre-map" hidden aria-label="Bản đồ GPS dự phòng MapLibre"></div>
           <iframe id="runMapFrame" class="run-map-frame" title="Bản đồ GPS buổi chạy" loading="eager" referrerpolicy="no-referrer-when-downgrade"></iframe>
           <svg id="runRouteSvg" class="run-route-svg" viewBox="0 0 600 420" role="img" aria-label="Lộ trình GPS trực tiếp"></svg>
           <div id="runMapFallback" class="run-map-placeholder"><span>⌖</span><b>Trạng thái GPS</b><p>Bản đồ đã sẵn sàng · bấm “Bắt đầu chạy” để định vị và vẽ lộ trình.</p></div>
           <div class="map-float"><span class="live-dot"></span><b id="routePointCount">0</b> điểm GPS hợp lệ</div>
-          <div id="runMapProvider" class="run-map-provider">OpenStreetMap · dự phòng</div>
+          <div id="runMapProvider" class="run-map-provider">OpenFreeMap · đang khởi tạo</div>
         </div>
       </div>
 
@@ -583,7 +591,7 @@ dialog{border:0;border-radius:20px;padding:25px;width:min(680px,calc(100% - 30px
       <div><b>🌦 Thời tiết</b><p>Open-Meteo Weather API theo tọa độ GPS hoặc khu vực đã chọn. Đây là dữ liệu dự báo mô hình.</p></div>
       <div><b>🌿 Không khí</b><p>Open-Meteo Air Quality API cung cấp AQI Mỹ, PM2.5 và PM10 theo ô lưới dự báo.</p></div>
       <div><b>📍 GPS</b><p>GPS chỉ được bật khi bạn chủ động yêu cầu. Chế độ chạy dùng watchPosition để nhận các điểm liên tục và lọc điểm có độ chính xác kém.</p></div>
-      <div><b>🏃 Lộ trình</b><p>Cung chạy gợi ý dùng mạng đường OpenStreetMap khi dịch vụ định tuyến công khai phản hồi; nếu dịch vụ bận, AIRUN chỉ hiển thị phác thảo tham khảo. GPS thực tế vẫn được theo dõi riêng khi chạy.</p></div>
+      <div><b>🏃 Lộ trình</b><p>Bản đồ dự phòng dùng OpenFreeMap/MapLibre; dữ liệu đường nền có nguồn từ OpenStreetMap. Dịch vụ định tuyến tạo cung chạy hoạt động độc lập với lớp bản đồ hiển thị.</p></div>
       <div><b>💾 Nhật ký</b><p>Dữ liệu được lưu bằng localStorage trên thiết bị. AIRUN không có máy chủ riêng nhận nhật ký cá nhân.</p></div>
       <div><b>⚠ Dữ liệu dự phòng</b><p>Nếu API không truy cập được, AIRUN ưu tiên dữ liệu đã lưu gần đây; nếu không có sẽ hiển thị rõ là dữ liệu mô phỏng để giao diện không bị trống.</p></div>
     </div>
@@ -663,6 +671,7 @@ const tracker = {
 const routePlanner={targetKm:null,usePlan:true,seed:0,current:null,busy:false};
 const ROUTE_CONFIG_KEYS={mapbox:'airun-v70-mapbox-token',graphhopper:'airun-v70-graphhopper-key'};
 const advancedMap={map:null,loaded:false,loading:null,startMarker:null,kmMarkers:[],routeReady:false};
+const routeFallbackMap={map:null,loading:null,startMarker:null,kmMarkers:[],routeReady:false,lastFitSignature:''};
 const runAdvancedMap={map:null,loading:null,currentMarker:null,startMarker:null,lastFitSignature:'',resizeTimer:null};
 const runFallbackMap={map:null,loading:null,currentMarker:null,startMarker:null,lastFitSignature:'',resizeTimer:null};
 
@@ -1112,24 +1121,20 @@ function setGpsPlanUi(){
   else chip.hidden=true;
 }
 
-function osmEmbedUrl(lat,lon,zoom=14){
-  const d=zoom>=15?0.018:zoom>=13?0.04:0.08;
-  const left=(Number(lon)-d).toFixed(6),right=(Number(lon)+d).toFixed(6),bottom=(Number(lat)-d*.62).toFixed(6),top=(Number(lat)+d*.62).toFixed(6);
-  return `https://www.openstreetmap.org/export/embed.html?bbox=${encodeURIComponent(`${left},${bottom},${right},${top}`)}&layer=mapnik&marker=${Number(lat).toFixed(6)},${Number(lon).toFixed(6)}`;
-}
 function renderAreaMap(lat,lon,label){
-  const frame=$('areaMapFrame');if(!frame)return;
-  const next=osmEmbedUrl(lat,lon,14);
-  if(frame.dataset.src!==next){frame.dataset.src=next;frame.src=next;}
-  frame.title=`Bản đồ ${label||'khu vực đang chọn'}`;
   const fallback=$('mapFallback');if(fallback)fallback.hidden=true;
+  const frame=$('areaMapFrame');if(frame){frame.style.visibility='hidden';frame.removeAttribute('src');}
+  void ensureRouteMapLibre().then(map=>{if(!map)return;map.resize();map.easeTo({center:[Number(lon),Number(lat)],zoom:14.2,duration:450});}).catch(error=>{
+    console.warn('AIRUN OpenFreeMap area:',error);
+    if(fallback){fallback.hidden=false;const p=fallback.querySelector('p');if(p)p.textContent='Không tải được Mapbox/OpenFreeMap. Kiểm tra mạng hoặc kết nối lại Mapbox.';}
+  });
 }
 function updateMapSide(){
   const item=ward();
   $('mapAreaName').textContent=gpsLocation?`${item.name} · GPS`:item.name;
   $('mapAreaDescription').textContent=gpsLocation?'Đang phân tích theo tọa độ GPS chính xác của thiết bị; khu vực này chỉ là tên gần nhất.':item.desc;
   const lat=gpsLocation?.lat??item.lat,lon=gpsLocation?.lon??item.lon;
-  $('openOsm').href=`https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=15/${lat}/${lon}`;
+  $('openOsm').href=`https://www.google.com/maps?q=${lat},${lon}`;
   document.querySelectorAll('[data-ward]').forEach(button=>button.classList.toggle('active',button.dataset.ward===selectedKey));
   renderAreaMap(lat,lon,gpsLocation?.label||item.name);
   if(typeof syncRouteOrigin==='function')syncRouteOrigin();
@@ -1385,7 +1390,7 @@ function syncRouteProviderStatus(message=''){
   if(message){node.textContent=message;return;}
   if(cfg.mapbox&&cfg.graphhopper){node.textContent='Mapbox + GraphHopper đã cấu hình · sẵn sàng tạo cung chạy vòng.';node.className='route-provider-status ready';}
   else if(cfg.mapbox||cfg.graphhopper){node.textContent=`Đã có ${cfg.mapbox?'Mapbox':'GraphHopper'} · còn thiếu ${cfg.mapbox?'GraphHopper':'Mapbox'}.`;node.className='route-provider-status warn';}
-  else{node.textContent='Bản đồ cơ bản đang sẵn sàng. Kết nối Mapbox + GraphHopper để có cung chạy đẹp và chính xác hơn.';node.className='route-provider-status';}
+  else{node.textContent='OpenFreeMap đang sẵn sàng làm bản đồ dự phòng. Kết nối Mapbox + GraphHopper để có cung chạy nâng cao.';node.className='route-provider-status';}
 }
 function openRoutingSetup(){
   const modal=$('routingSetupModal'),cfg=routeConfig();if(!modal)return;
@@ -1405,11 +1410,24 @@ function clearRoutingSetup(){
   syncRouteProviderStatus();$('mapboxTokenInput').value='';$('graphhopperKeyInput').value='';showToast('Đã xóa cấu hình Mapbox/GraphHopper khỏi trình duyệt.');
 }
 function loadExternalAsset(type,url,id){
-  return new Promise((resolve,reject)=>{if(document.getElementById(id)){if(type==='script'&&window.mapboxgl)return resolve();return resolve();}
+  return new Promise((resolve,reject)=>{
+    const existing=document.getElementById(id);
+    if(existing){if(existing.dataset.airunLoaded==='1')return resolve();existing.remove();}
     const el=document.createElement(type==='script'?'script':'link');el.id=id;
     if(type==='script'){el.src=url;el.async=true;}else{el.rel='stylesheet';el.href=url;}
-    el.onload=()=>resolve();el.onerror=()=>reject(new Error(`Không tải được ${url}`));document.head.appendChild(el);
+    el.onload=()=>{el.dataset.airunLoaded='1';resolve();};
+    el.onerror=()=>{el.remove();reject(new Error(`Không tải được ${url}`));};
+    document.head.appendChild(el);
   });
+}
+async function ensureMapLibreAssets(){
+  if(window.maplibregl)return true;
+  const cssSources=['https://cdn.jsdelivr.net/npm/maplibre-gl@5.24.0/dist/maplibre-gl.css','https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.css'];
+  const jsSources=['https://cdn.jsdelivr.net/npm/maplibre-gl@5.24.0/dist/maplibre-gl.js','https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.js'];
+  let cssOk=false;for(const url of cssSources){try{await loadExternalAsset('style',url,'airun-maplibre-css');cssOk=true;break;}catch{}}
+  let jsOk=false;for(const url of jsSources){try{await loadExternalAsset('script',url,'airun-maplibre-js');if(window.maplibregl){jsOk=true;break;}}catch{}}
+  if(!cssOk||!jsOk||!window.maplibregl)throw new Error('Không tải được MapLibre từ các CDN dự phòng');
+  return true;
 }
 async function ensureMapbox(){
   const cfg=routeConfig();if(!cfg.mapbox)throw new Error('Chưa có Mapbox token');if(advancedMap.map)return advancedMap.map;if(advancedMap.loading)return advancedMap.loading;
@@ -1417,8 +1435,8 @@ async function ensureMapbox(){
     await loadExternalAsset('style','https://api.mapbox.com/mapbox-gl-js/v3.30.0/mapbox-gl.css','airun-mapbox-css');
     await loadExternalAsset('script','https://api.mapbox.com/mapbox-gl-js/v3.30.0/mapbox-gl.js','airun-mapbox-js');
     if(!window.mapboxgl)throw new Error('Mapbox GL JS chưa sẵn sàng');
-    mapboxgl.accessToken=cfg.mapbox;const origin=routeOrigin();const container=$('mapboxRouteMap');container.hidden=false;
-    const fallback=$('areaMapFrame');if(fallback)fallback.style.visibility='hidden';const svg=$('suggestedRouteSvg');if(svg)svg.style.display='none';
+    mapboxgl.accessToken=cfg.mapbox;const origin=routeOrigin();const container=$('mapboxRouteMap');container.hidden=false;const free=$('routeMapLibreMap');if(free)free.hidden=true;container.closest('.map-wrap')?.classList.remove('openfree-active');
+    const fallback=$('areaMapFrame');if(fallback){fallback.style.visibility='hidden';fallback.removeAttribute('src');}const svg=$('suggestedRouteSvg');if(svg)svg.style.display='none';
     advancedMap.map=new mapboxgl.Map({container:'mapboxRouteMap',style:'mapbox://styles/mapbox/outdoors-v12',center:[origin.lon,origin.lat],zoom:14,attributionControl:true});
     advancedMap.map.addControl(new mapboxgl.NavigationControl({showCompass:false}),'top-right');
     await new Promise((resolve,reject)=>{const t=setTimeout(()=>reject(new Error('Mapbox tải quá lâu')),10000);advancedMap.map.once('load',()=>{clearTimeout(t);resolve();});advancedMap.map.once('error',e=>{if(!advancedMap.loaded){clearTimeout(t);reject(e?.error||new Error('Mapbox lỗi'));}});});
@@ -1448,8 +1466,47 @@ async function renderMapboxRoute(route){
       setTimeout(()=>map.resize(),80);
     };
     if(map.loaded())update();else map.once('load',update);advancedMap.routeReady=true;return true;
-  }catch(error){console.warn('AIRUN Mapbox render:',error);const container=$('mapboxRouteMap');if(container)container.hidden=true;const fallback=$('areaMapFrame');if(fallback)fallback.style.visibility='visible';const svg=$('suggestedRouteSvg');if(svg)svg.style.display='';syncRouteProviderStatus(`Mapbox lỗi · đang dùng bản đồ dự phòng (${apiErrorLabel(error)})`);return false;}
+  }catch(error){console.warn('AIRUN Mapbox render:',error);const container=$('mapboxRouteMap');if(container)container.hidden=true;const fallback=$('areaMapFrame');if(fallback){fallback.style.visibility='hidden';fallback.removeAttribute('src');}const svg=$('suggestedRouteSvg');if(svg)svg.style.display='';syncRouteProviderStatus(`Mapbox lỗi · đang chuyển sang OpenFreeMap (${apiErrorLabel(error)})`);return false;}
 }
+
+function clearRouteMapLibreMarkers(){
+  if(routeFallbackMap.startMarker){routeFallbackMap.startMarker.remove();routeFallbackMap.startMarker=null;}
+  routeFallbackMap.kmMarkers.forEach(m=>m.remove());routeFallbackMap.kmMarkers=[];
+}
+async function ensureRouteMapLibre(){
+  if(routeFallbackMap.map){requestAnimationFrame(()=>routeFallbackMap.map.resize());return routeFallbackMap.map;}
+  if(routeFallbackMap.loading)return routeFallbackMap.loading;
+  routeFallbackMap.loading=(async()=>{
+    await ensureMapLibreAssets();
+    const container=$('routeMapLibreMap'),wrap=container?.closest('.map-wrap'),iframe=$('areaMapFrame'),mapbox=$('mapboxRouteMap');
+    if(!container)throw new Error('Thiếu vùng bản đồ OpenFreeMap');
+    container.hidden=false;if(mapbox)mapbox.hidden=true;if(iframe){iframe.style.visibility='hidden';iframe.removeAttribute('src');}
+    wrap?.classList.add('openfree-active');
+    const origin=routeOrigin();
+    const map=new maplibregl.Map({container:'routeMapLibreMap',style:'https://tiles.openfreemap.org/styles/liberty',center:[origin.lon,origin.lat],zoom:14.2,attributionControl:true});
+    map.addControl(new maplibregl.NavigationControl({showCompass:false}),'top-right');routeFallbackMap.map=map;
+    await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(new Error('OpenFreeMap tải quá lâu')),12000);map.once('load',()=>{clearTimeout(timer);resolve();});map.once('error',e=>{if(!map.loaded()){clearTimeout(timer);reject(e?.error||new Error('OpenFreeMap lỗi'));}});});
+    requestAnimationFrame(()=>{map.resize();setTimeout(()=>map.resize(),180);});return map;
+  })().catch(error=>{console.warn('AIRUN route OpenFreeMap:',error);routeFallbackMap.map=null;const c=$('routeMapLibreMap'),fallback=$('mapFallback');if(c)c.hidden=true;if(fallback){fallback.hidden=false;const p=fallback.querySelector('p');if(p)p.textContent='Không tải được OpenFreeMap. Nếu có Mapbox token, hãy kết nối lại bản đồ nâng cao.';}return null;}).finally(()=>{routeFallbackMap.loading=null;});
+  return routeFallbackMap.loading;
+}
+async function renderMapLibreRoute(route){
+  if(!route?.points?.length)return false;const map=await ensureRouteMapLibre();if(!map)return false;
+  const coords=route.points.map(p=>[p.lon,p.lat]),geo={type:'Feature',properties:{},geometry:{type:'LineString',coordinates:coords}};
+  const update=()=>{
+    if(map.getSource('airun-route-free'))map.getSource('airun-route-free').setData(geo);else{
+      map.addSource('airun-route-free',{type:'geojson',data:geo});
+      map.addLayer({id:'airun-route-free-casing',type:'line',source:'airun-route-free',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':'#ffffff','line-width':['interpolate',['linear'],['zoom'],11,5.2,16,8.2],'line-opacity':.96}});
+      map.addLayer({id:'airun-route-free-main',type:'line',source:'airun-route-free',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':'#08745a','line-width':['interpolate',['linear'],['zoom'],11,3.0,16,5.6]}});
+      map.addLayer({id:'airun-route-free-core',type:'line',source:'airun-route-free',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':'#c8f16b','line-width':['interpolate',['linear'],['zoom'],11,.9,16,2.0],'line-opacity':.9}});
+    }
+    clearRouteMapLibreMarkers();const first=route.points[0],el=document.createElement('div');el.className='airun-start-marker';el.innerHTML='<i></i><span>Bắt đầu / Kết thúc</span>';routeFallbackMap.startMarker=new maplibregl.Marker({element:el,anchor:'left'}).setLngLat([first.lon,first.lat]).addTo(map);
+    const kmMarks=routeDistanceMarkers(route.points,1).filter(m=>m.km<Math.max(1,Math.ceil(route.distanceKm)));for(const m of kmMarks){const k=document.createElement('div');k.className='airun-km-marker';k.textContent=String(m.km);routeFallbackMap.kmMarkers.push(new maplibregl.Marker({element:k}).setLngLat([m.lon,m.lat]).addTo(map));}
+    const bounds=new maplibregl.LngLatBounds();coords.forEach(c=>bounds.extend(c));map.fitBounds(bounds,{padding:{top:70,bottom:80,left:70,right:70},duration:700,maxZoom:16});setTimeout(()=>map.resize(),100);
+  };
+  if(map.loaded())update();else map.once('load',update);routeFallbackMap.routeReady=true;const badge=$('routeMapBadge');if(badge)badge.textContent='OpenFreeMap · cung chạy';return true;
+}
+
 async function fetchGraphHopperRoundTrip(origin,targetKm,seed=0){
   const key=routeConfig().graphhopper;if(!key)throw new Error('Chưa có GraphHopper API key');
   const qs=new URLSearchParams();qs.append('point',`${origin.lat},${origin.lon}`);qs.set('profile','foot');qs.set('locale','vi');qs.set('algorithm','round_trip');qs.set('round_trip.distance',String(Math.max(800,Math.round(targetKm*1000))));qs.set('round_trip.seed',String(seed));qs.set('points_encoded','false');qs.set('instructions','false');qs.set('calc_points','true');qs.set('elevation','true');qs.set('key',key);
@@ -1496,10 +1553,6 @@ function routeBounds(points){
   const minLatSpan=.010,minLonSpan=.012/cos;let latSpan=Math.max(maxLat-minLat,minLatSpan),lonSpan=Math.max(maxLon-minLon,minLonSpan);latSpan*=1.3;lonSpan*=1.3;
   const cLat=(minLat+maxLat)/2,cLon=(minLon+maxLon)/2;return {left:cLon-lonSpan/2,right:cLon+lonSpan/2,bottom:cLat-latSpan/2,top:cLat+latSpan/2};
 }
-function osmEmbedBoundsUrl(bounds){
-  const bbox=`${bounds.left.toFixed(6)},${bounds.bottom.toFixed(6)},${bounds.right.toFixed(6)},${bounds.top.toFixed(6)}`;
-  return `https://www.openstreetmap.org/export/embed.html?bbox=${encodeURIComponent(bbox)}&layer=mapnik`;
-}
 function projectRoute(points,bounds,w=700,h=500){
   // OpenStreetMap uses Web Mercator. Projecting latitude the same way keeps
   // the SVG route aligned much more closely with the embedded OSM basemap.
@@ -1542,9 +1595,10 @@ function routeArrowPoints(points,count=3){
 }
 function renderSuggestedRoute(route){
   if(!route?.points?.length)return;
-  if(routeConfig().mapbox){void renderMapboxRoute(route);}else{const mb=$('mapboxRouteMap');if(mb)mb.hidden=true;}
-  const bounds=routeBounds(route.points),frame=$('areaMapFrame'),svg=$('suggestedRouteSvg');
-  if(frame){const src=osmEmbedBoundsUrl(bounds);frame.src=src;frame.dataset.src=src;frame.style.filter='saturate(.72) contrast(.94) brightness(1.03)';}
+  const mb=$('mapboxRouteMap'),frame=$('areaMapFrame'),svg=$('suggestedRouteSvg');
+  if(frame){frame.style.visibility='hidden';frame.removeAttribute('src');}
+  if(routeConfig().mapbox){void renderMapboxRoute(route).then(ok=>{if(!ok)void renderMapLibreRoute(route);});}else{if(mb)mb.hidden=true;void renderMapLibreRoute(route);}
+  const bounds=routeBounds(route.points);
   if(svg){
     const {x,y,path}=projectRoute(route.points,bounds),first=route.points[0],last=route.points[route.points.length-1];
     const network=route.source==='network'||route.source==='graphhopper',stroke=network?'#08745a':'#d28a22',inner=network?'#b7f34c':'#ffe0a8';
@@ -1629,7 +1683,7 @@ async function generateSuggestedRoute({regenerate=false}={}){
   $('routeResultText').textContent=route.source==='graphhopper'?`GraphHopper tạo cung vòng từ đúng điểm xuất phát. Mục tiêu ${target.toFixed(1)} km; thực tế ${route.distanceKm.toFixed(2)} km. Bấm “Tạo cung khác” để đổi seed và nhận một vòng khác.`:route.source==='network'?`Cung vòng dự phòng được ghép theo mạng đường đi bộ, gần mục tiêu ${target.toFixed(1)} km.`:'Dịch vụ định tuyến chưa phản hồi. Đường nét đứt chỉ minh họa phạm vi quãng đường, không dùng để dẫn đường.';
   const diff=route.distanceKm-target;
   setRouteStatus(route.source==='graphhopper'?`GraphHopper: ${route.distanceKm.toFixed(2)} km · chênh ${diff>=0?'+':''}${diff.toFixed(2)} km so với mục tiêu.`:route.source==='network'?`Đã tạo cung dự phòng ${route.distanceKm.toFixed(2)} km.`:`Chưa lấy được đường phố thực tế${networkError?' · '+apiErrorLabel(networkError):''}. Đang hiển thị phác thảo.`,route.source==='approx'?'error':'ok');
-  const open=$('openOsm');if(open)open.href=`https://www.openstreetmap.org/?mlat=${origin.lat}&mlon=${origin.lon}#map=15/${origin.lat}/${origin.lon}`;
+  const open=$('openOsm');if(open)open.href=`https://www.google.com/maps?q=${origin.lat},${origin.lon}`;
   setBusy(btn,false);routePlanner.busy=false;syncRoutePlanCard();return route;
 }
 function useSuggestedRoute(){
@@ -1692,35 +1746,34 @@ function makeRunMarker(cls){const el=document.createElement('div');el.className=
 async function ensureRunMapbox(){
   if(!runMapboxConfigured())return null;if(runAdvancedMap.map){requestAnimationFrame(()=>runAdvancedMap.map.resize());return runAdvancedMap.map;}if(runAdvancedMap.loading)return runAdvancedMap.loading;
   runAdvancedMap.loading=(async()=>{await loadExternalAsset('style','https://api.mapbox.com/mapbox-gl-js/v3.30.0/mapbox-gl.css','airun-mapbox-css');await loadExternalAsset('script','https://api.mapbox.com/mapbox-gl-js/v3.30.0/mapbox-gl.js','airun-mapbox-js');if(!window.mapboxgl)throw new Error('Mapbox GL JS chưa sẵn sàng');mapboxgl.accessToken=routeConfig().mapbox;
-    const container=$('runMapboxMap'),wrap=$('trackerMapWrap'),fallback=$('runMapFrame');container.hidden=false;wrap?.classList.add('mapbox-active');if(fallback)fallback.style.visibility='hidden';const base=gpsLocation||ward();
+    const container=$('runMapboxMap'),wrap=$('trackerMapWrap'),fallback=$('runMapFrame'),free=$('runMapLibreMap');container.hidden=false;if(free)free.hidden=true;wrap?.classList.add('mapbox-active');wrap?.classList.remove('maplibre-active');if(fallback){fallback.style.visibility='hidden';fallback.removeAttribute('src');}const base=gpsLocation||ward();
     const map=new mapboxgl.Map({container:'runMapboxMap',style:'mapbox://styles/mapbox/outdoors-v12',center:[base.lon,base.lat],zoom:14.8,attributionControl:true});map.addControl(new mapboxgl.NavigationControl({showCompass:false}),'top-right');runAdvancedMap.map=map;
     await new Promise((resolve,reject)=>{map.once('load',resolve);map.once('error',e=>{if(!map.loaded())reject(e?.error||new Error('Mapbox load error'));});});
     runSetSource(map,'airun-run-plan-src',[]);runSetSource(map,'airun-run-raw-src',[]);runSetSource(map,'airun-run-actual-src',[]);runAddLayers(map);const provider=$('runMapProvider');if(provider)provider.textContent='Mapbox · GPS trực tiếp';requestAnimationFrame(()=>{map.resize();setTimeout(()=>map.resize(),180);});return map;
-  })().catch(error=>{console.warn('AIRUN run Mapbox:',error);runAdvancedMap.map=null;const c=$('runMapboxMap'),w=$('trackerMapWrap'),f=$('runMapFrame');if(c)c.hidden=true;w?.classList.remove('mapbox-active');if(f)f.style.visibility='visible';const provider=$('runMapProvider');if(provider)provider.textContent='Đang chuyển sang MapLibre…';void refreshRunMapLibre({fit:true});return null;}).finally(()=>{runAdvancedMap.loading=null;});return runAdvancedMap.loading;
+  })().catch(error=>{console.warn('AIRUN run Mapbox:',error);runAdvancedMap.map=null;const c=$('runMapboxMap'),w=$('trackerMapWrap'),f=$('runMapFrame');if(c)c.hidden=true;w?.classList.remove('mapbox-active');if(f){f.style.visibility='hidden';f.removeAttribute('src');}const provider=$('runMapProvider');if(provider)provider.textContent='Đang chuyển sang OpenFreeMap…';void refreshRunMapLibre({fit:true});return null;}).finally(()=>{runAdvancedMap.loading=null;});return runAdvancedMap.loading;
 }
 
 async function ensureRunMapLibre(){
   if(runFallbackMap.map){requestAnimationFrame(()=>runFallbackMap.map.resize());return runFallbackMap.map;}
   if(runFallbackMap.loading)return runFallbackMap.loading;
   runFallbackMap.loading=(async()=>{
-    await loadExternalAsset('style','https://cdn.jsdelivr.net/npm/maplibre-gl@5.24.0/dist/maplibre-gl.css','airun-maplibre-css');
-    await loadExternalAsset('script','https://cdn.jsdelivr.net/npm/maplibre-gl@5.24.0/dist/maplibre-gl.js','airun-maplibre-js');
-    if(!window.maplibregl)throw new Error('MapLibre GL JS chưa sẵn sàng');
+    await ensureMapLibreAssets();
     const container=$('runMapLibreMap'),wrap=$('trackerMapWrap'),iframe=$('runMapFrame'),mapbox=$('runMapboxMap');
     if(!container)throw new Error('Thiếu vùng bản đồ MapLibre');
-    container.hidden=false; if(mapbox)mapbox.hidden=true; wrap?.classList.add('maplibre-active'); wrap?.classList.remove('mapbox-active'); if(iframe)iframe.style.visibility='hidden';
+    container.hidden=false;if(mapbox)mapbox.hidden=true;wrap?.classList.add('maplibre-active');wrap?.classList.remove('mapbox-active');if(iframe){iframe.style.visibility='hidden';iframe.removeAttribute('src');}
     const base=tracker.rawPoint||gpsLocation||ward();
-    const style={version:8,sources:{osm:{type:'raster',tiles:['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],tileSize:256,attribution:'© OpenStreetMap contributors'}},layers:[{id:'osm-base',type:'raster',source:'osm'}]};
-    const map=new maplibregl.Map({container:'runMapLibreMap',style,center:[base.lon,base.lat],zoom:14.8,attributionControl:true});
+    const map=new maplibregl.Map({container:'runMapLibreMap',style:'https://tiles.openfreemap.org/styles/liberty',center:[base.lon,base.lat],zoom:14.8,attributionControl:true});
     map.addControl(new maplibregl.NavigationControl({showCompass:false}),'top-right');runFallbackMap.map=map;
-    await new Promise((resolve,reject)=>{map.once('load',resolve);map.once('error',e=>{if(!map.loaded())reject(e?.error||new Error('MapLibre load error'));});});
+    await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(new Error('OpenFreeMap tải quá lâu')),12000);map.once('load',()=>{clearTimeout(timer);resolve();});map.once('error',e=>{if(!map.loaded()){clearTimeout(timer);reject(e?.error||new Error('OpenFreeMap load error'));}});});
     runSetSource(map,'airun-run-plan-src',[]);runSetSource(map,'airun-run-raw-src',[]);runSetSource(map,'airun-run-actual-src',[]);runAddLayers(map);
-    const provider=$('runMapProvider');if(provider)provider.textContent='OpenStreetMap · MapLibre';
+    const provider=$('runMapProvider');if(provider)provider.textContent='OpenFreeMap · MapLibre';
     requestAnimationFrame(()=>{map.resize();setTimeout(()=>map.resize(),180);});return map;
   })().catch(error=>{
-    console.warn('AIRUN MapLibre fallback:',error);runFallbackMap.map=null;
-    const c=$('runMapLibreMap'),w=$('trackerMapWrap'),f=$('runMapFrame');if(c)c.hidden=true;w?.classList.remove('maplibre-active');if(f){f.style.visibility='visible';const b=tracker.mapBounds||runMapBoundsAround((tracker.rawPoint||gpsLocation||ward()).lat,(tracker.rawPoint||gpsLocation||ward()).lon);const next=runMapEmbedUrl(b);f.src=next;f.dataset.src=next;tracker.mapSrc=next;}
-    const provider=$('runMapProvider');if(provider)provider.textContent='OpenStreetMap · iframe cuối';return null;
+    console.warn('AIRUN OpenFreeMap fallback:',error);runFallbackMap.map=null;
+    const c=$('runMapLibreMap'),w=$('trackerMapWrap'),f=$('runMapFrame');if(c)c.hidden=true;w?.classList.remove('maplibre-active');if(f){f.style.visibility='hidden';f.removeAttribute('src');}
+    const provider=$('runMapProvider');if(provider)provider.textContent='Bản đồ dự phòng chưa tải được';
+    setRunMapHint('Không tải được Mapbox/OpenFreeMap. GPS vẫn ghi được quãng đường; hãy kiểm tra mạng hoặc kết nối lại Mapbox.',true);
+    return null;
   }).finally(()=>{runFallbackMap.loading=null;});return runFallbackMap.loading;
 }
 function fitRunMapLibre(map,points,force=false){
@@ -1751,10 +1804,6 @@ function runMapBoundsAround(lat,lon){
   const halfLon=.0078/cos;
   return {left:centerLon-halfLon,right:centerLon+halfLon,bottom:centerLat-halfLat,top:centerLat+halfLat};
 }
-function runMapEmbedUrl(bounds){
-  const bbox=`${bounds.left.toFixed(6)},${bounds.bottom.toFixed(6)},${bounds.right.toFixed(6)},${bounds.top.toFixed(6)}`;
-  return `https://www.openstreetmap.org/export/embed.html?bbox=${encodeURIComponent(bbox)}&layer=mapnik`;
-}
 function pointInsideRunBounds(point,bounds,margin=.12){
   if(!point||!bounds)return false;
   const w=bounds.right-bounds.left,h=bounds.top-bounds.bottom;
@@ -1772,13 +1821,10 @@ function expandedRunBounds(point){
   return {left:centerLon-lonSpan/2,right:centerLon+lonSpan/2,bottom:centerLat-latSpan/2,top:centerLat+latSpan/2};
 }
 function setRunBasemap(bounds,force=false){
-  const frame=$('runMapFrame');
-  if(runMapboxConfigured()){void refreshRunMapbox({fit:force});return;}
-  // V7.2: ưu tiên MapLibre + OpenStreetMap tiles; iframe chỉ là fallback cuối cùng.
-  void refreshRunMapLibre({fit:force}).then(ok=>{
-    if(ok)return;
-    if(!frame)return;const next=runMapEmbedUrl(bounds);if(force||tracker.mapSrc!==next){tracker.mapSrc=next;frame.src=next;frame.dataset.src=next;}
-  });
+  const frame=$('runMapFrame');if(frame){frame.style.visibility='hidden';frame.removeAttribute('src');}
+  if(runMapboxConfigured()){void refreshRunMapbox({fit:force}).then(ok=>{if(!ok)void refreshRunMapLibre({fit:force});});return;}
+  // V7.3: không dùng OpenStreetMap export/embed hoặc tile.openstreetmap.org nữa.
+  void refreshRunMapLibre({fit:force});
 }
 function setRunMapHint(text,visible=true){
   const node=$('runMapFallback');if(!node)return;
@@ -2066,7 +2112,7 @@ function initPWA(){const button=$('installBtn');if(button)button.hidden=true;}
 
 async function runDiagnostics(){
   const button=$('diagnosticBtn');setBusy(button,true,'Đang kiểm tra…');
-  setSystemStatus('js','ok','V7.2 Stable Map Fallback');updateConnection();
+  setSystemStatus('js','ok','V7.3 OpenFreeMap Stable');updateConnection();
   try{
     const permission=await geolocationPermissionState();
     setSystemStatus('gps',permission==='denied'?'error':permission==='granted'?'ok':'warn',permission==='denied'?'Bị chặn':permission==='granted'?'Đã cấp quyền':'Chưa cấp quyền');
@@ -2112,7 +2158,7 @@ async function init(){
   if(airunInitialized)return;airunInitialized=true;
   if(await clearLegacyServiceWorkerControl()) return;
   if(typeof window!=='undefined')window.__AIRUN_APP_READY='v72';
-  setSystemStatus('js','ok','V7.2 Stable Map Fallback');
+  setSystemStatus('js','ok','V7.3 OpenFreeMap Stable');
   safeCall('khu vực',()=>{$('area').innerHTML=WARDS.map(item=>`<option value="${item.key}">${escapeHTML(item.name)}</option>`).join('');});
   safeCall('khôi phục cài đặt',restorePlanSettings);
   safeCall('chọn khu vực',()=>{$('area').value=selectedKey;});
@@ -2158,7 +2204,7 @@ if(typeof module!=='undefined'&&module.exports){module.exports={WARDS,aqiInfo,uv
       const button=document.getElementById('diagnosticBtn');
       if(connection)connection.textContent='JavaScript chính chưa khởi động · GPS/API chưa thể hoạt động';
       if(chip)chip.dataset.state='error';
-      if(label)label.textContent='AIRUN V7.1 chưa khởi động';
+      if(label)label.textContent='AIRUN V7.3 chưa khởi động';
       if(button){
         button.textContent='Sửa cache & tải lại';
         button.onclick=async()=>{
