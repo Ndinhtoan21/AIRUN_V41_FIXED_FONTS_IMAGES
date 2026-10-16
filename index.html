@@ -253,7 +253,8 @@ dialog{border:0;border-radius:20px;padding:25px;width:min(680px,calc(100% - 30px
 .feedback-card fieldset{border:0;padding:0;margin:15px 0 0;display:flex;flex-wrap:wrap;gap:8px}
 .feedback-card legend{font-size:12px;font-weight:800;color:#2e4239;margin-bottom:8px;padding:0}
 .feedback-card fieldset label{flex:1;min-width:150px;cursor:pointer}
-.feedback-card fieldset input{position:absolute;opacity:0;pointer-events:none}
+.feedback-card fieldset label{position:relative}
+.feedback-card fieldset input{position:absolute!important;opacity:0;pointer-events:none;width:1px!important;height:1px!important;min-height:0!important;left:8px;top:8px;margin:0;padding:0}
 .feedback-card fieldset span{display:block;border:1px solid var(--line);border-radius:12px;padding:11px 13px;font-size:13px;font-weight:800;color:#2e4239;background:#fff;text-align:center}
 .feedback-card fieldset span small{display:block;font-weight:500;font-size:11px;color:var(--muted)}
 .feedback-card fieldset input:checked+span{border-color:var(--green);background:#eaf6f0;color:var(--green);box-shadow:0 0 0 2px rgba(8,102,79,.15)}
@@ -274,6 +275,69 @@ dialog{border:0;border-radius:20px;padding:25px;width:min(680px,calc(100% - 30px
 .journal-fb.strict{background:#fff4e2;color:#9a5b10}.journal-fb.lenient{background:#fdeceb;color:#a3392f}
 @media(max-width:1050px){.coach-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:780px){.coach-card{padding:17px}.coach-head{flex-wrap:wrap}.coach-pill{order:3}.coach-title h3{font-size:17px}.coach-grid{grid-template-columns:1fr}.fb-scales{grid-template-columns:1fr}.fb-row{grid-template-columns:1fr}.feedback-head{flex-direction:column}.coach-foot{flex-direction:column;align-items:flex-start}.coach-msg{max-width:94%}}
+
+/* AIRUN V8.2 — giao diện thân thiện */
+[hidden]{display:none!important}
+.voice-toggle input{width:18px!important;height:18px!important;min-height:0!important;flex:none;padding:0}
+.lvl{display:inline-block;margin-top:3px;font-style:normal;font-size:11px;font-weight:800;padding:2px 8px;border-radius:999px;background:#eef3f1;color:#5b6d66}
+.lvl.good{background:#e3f6e6;color:#1f6f32}.lvl.ok{background:#fff5d9;color:#8a6400}.lvl.warn{background:#ffe9d6;color:#a4520f}.lvl.bad{background:#fde3e1;color:#a3332b}
+.orbit-metrics>div{display:flex;flex-direction:column;align-items:flex-start}
+.hero-verdict{display:flex;gap:10px;align-items:center;margin:12px 0 4px;padding:11px 13px;border-radius:14px;background:#eef6f2;color:#163a2f}
+.hero-verdict>span:first-child{font-size:26px;line-height:1}
+.hero-verdict b{display:block;font-size:14px}.hero-verdict small{display:block;font-size:12px;color:#4d6159;margin-top:2px}
+.hero-verdict.caution{background:#fff6e2}.hero-verdict.bad{background:#fdebea}
+.tech-status{margin-top:8px}
+.tech-status summary{cursor:pointer;font-size:11px;font-weight:700;color:#60746c;list-style:none;padding:4px 0}
+.tech-status summary::before{content:"⚙ ";}
+.tech-status[open] summary{margin-bottom:6px}
+a.quick-strip,.quick-strip>a{padding:6px 13px;display:grid;grid-template-columns:auto 1fr;column-gap:10px;text-decoration:none;color:inherit;border-radius:12px;transition:background .15s}
+.quick-strip>a:hover{background:#f1f7f4}
+.quick-strip>a span{grid-row:1/3;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--green);color:#fff;font-size:14px;font-weight:900}
+.quick-strip>a b{font-size:13px}.quick-strip>a small{font-size:11px;color:var(--muted)}
+.step-lead{margin:8px 0 0;font-size:14px;color:var(--muted);max-width:640px}
+.decision-panel h2{font-size:24px!important}
+.decision-icon{font-size:30px!important;background:transparent!important;box-shadow:none!important}
+.friendly-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:12px}
+.cond{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:14px;padding:12px;background:#fff;border-left-width:4px}
+.cond.good{border-left-color:#3aa356}.cond.ok{border-left-color:#e2b021}.cond.warn{border-left-color:#e07b28}.cond.bad{border-left-color:#d1453b}.cond.none{border-left-color:#c9d3cf}
+.cond-ic{font-size:22px;line-height:1.1}
+.cond small{display:block;font-size:11px;font-weight:700;color:var(--muted)}
+.cond b{display:block;font-size:16px;color:var(--ink);margin:1px 0}
+.cond em{display:block;font-style:normal;font-size:11px;color:#6a7c75}
+.hour-box{margin-top:12px;border:1px solid var(--line);border-radius:16px;padding:14px;background:#fbfdfc}
+.hour-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-end;flex-wrap:wrap}
+.hour-head small{display:block;font-size:11px;font-weight:900;letter-spacing:.08em;color:var(--green)}
+.hour-head strong{font-size:18px;color:var(--ink)}
+.hour-head p{margin:0;font-size:12px;color:var(--muted)}
+.hour-strip{display:flex;align-items:flex-end;gap:5px;overflow-x:auto;padding:12px 2px 4px;scroll-snap-type:x proximity}
+.hour-day{flex:none;writing-mode:vertical-rl;transform:rotate(180deg);font-size:10px;font-weight:800;color:var(--muted);align-self:stretch;text-align:center;border-left:1px dashed #cfdcd6;padding-left:3px}
+.hour-bar{flex:1 0 34px;max-width:52px;height:120px;position:relative;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;border:1px solid transparent!important;background:#eef3f1!important;border-radius:10px!important;padding:0 0 4px!important;cursor:pointer;scroll-snap-align:center;overflow:hidden}
+.hour-bar .hb-fill{position:absolute;left:0;right:0;bottom:0;height:var(--h);border-radius:9px 9px 0 0;opacity:.9}
+.hour-bar.good .hb-fill{background:linear-gradient(#5cc27a,#2f9a4f)}.hour-bar.caution .hb-fill{background:linear-gradient(#f3cd5b,#e0a21c)}.hour-bar.bad .hb-fill{background:linear-gradient(#ee8a7f,#d1453b)}
+.hour-bar b{position:relative;font-size:11px!important;color:#24372f;margin-bottom:auto;margin-top:5px;background:rgba(255,255,255,.85);border-radius:6px;padding:0 4px}
+.hour-bar small{position:relative;font-size:11px;font-weight:800;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.35)}
+.hour-bar.sel{outline:3px solid var(--ink);outline-offset:1px}
+.hour-bar.best b{color:#0b5a3f;background:#fff}
+.hour-bar:hover{filter:brightness(1.05)}
+.hour-empty{font-size:13px;color:var(--muted);padding:20px 4px}
+.hour-legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:6px;font-size:11px;color:var(--muted)}
+.hour-legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+.hour-legend i.good{background:#3aa356}.hour-legend i.caution{background:#e0a21c}.hour-legend i.bad{background:#d1453b}
+.route-plan-cta{margin-top:14px!important;font-size:14px!important;padding:14px!important}
+.more-details{margin-top:10px;border:1px solid var(--line);border-radius:14px;background:#fff}
+.more-details>summary{cursor:pointer;padding:12px 14px;font-size:13px;font-weight:800;color:#2e4239;list-style:none}
+.more-details>summary::-webkit-details-marker{display:none}
+.more-details>summary::after{content:"▾";float:right;color:var(--muted)}
+.more-details[open]>summary::after{content:"▴"}
+.more-details[open]{padding:0 12px 12px}
+.more-details[open]>summary{padding-left:2px;padding-right:2px}
+.planner-grid>*,.result-card,.hour-box,.coach-card,.route-layout>*,.tracker-shell>*{min-width:0}
+.tracker-map-wrap{max-width:100%}
+.hero-trust{flex-wrap:wrap}
+.compare-grid>.empty-state{position:sticky;left:0;max-width:calc(100vw - 60px)}
+@media(max-width:1050px){.friendly-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:780px){.quick-strip>a{padding:8px}.decision-panel h2{font-size:20px!important}.hour-bar{flex-basis:36px;height:104px}.cond b{font-size:15px}}
+@media(max-width:420px){.friendly-grid{gap:7px}.cond{padding:10px;gap:7px}.cond-ic{font-size:19px}}
 </style>
 </head>
 <body>
@@ -343,12 +407,14 @@ dialog{border:0;border-radius:20px;padding:25px;width:min(680px,calc(100% - 30px
             <div><small id="heroArea">Hải Châu</small><strong><span id="heroTemp">…</span>°C</strong><p id="heroWeather">Đang đồng bộ dữ liệu trực tiếp…</p></div>
           </div>
           <div class="orbit-metrics">
-            <div><small>AQI Mỹ</small><b id="heroAqi">…</b></div>
-            <div><small>PM2.5</small><b><span id="heroPm">…</span><i> µg/m³</i></b></div>
-            <div><small>Gió</small><b><span id="heroWind">…</span><i> km/h</i></b></div>
-            <div><small>UV</small><b id="heroUv">…</b></div>
+            <div><small>🌫️ Không khí</small><b id="heroAqi">…</b><em id="heroAqiLvl" class="lvl"></em></div>
+            <div><small>🌡️ Cảm giác</small><b><span id="heroFeels">…</span><i>°C</i></b><em id="heroFeelsLvl" class="lvl"></em></div>
+            <div><small>☀️ Tia UV</small><b id="heroUv">…</b><em id="heroUvLvl" class="lvl"></em></div>
+            <div><small>💨 Gió</small><b><span id="heroWind">…</span><i> km/h</i></b><em id="heroWindLvl" class="lvl"></em><span id="heroPm" hidden></span></div>
           </div>
+          <p class="hero-verdict" id="heroVerdict" hidden></p>
           <p class="orbit-note" id="heroLocationNote">AIRUN đang lấy thời tiết và AQI trực tiếp từ Open-Meteo…</p>
+          <details class="tech-status"><summary>Tình trạng kết nối dữ liệu</summary>
           <div class="system-status" aria-label="Trạng thái kết nối AIRUN">
             <div class="system-chip" data-state="idle" id="jsStatusChip"><i></i><span><small>ỨNG DỤNG</small><b id="jsStatus">Chưa khởi động</b></span></div>
             <div class="system-chip" data-state="idle" id="weatherStatusChip"><i></i><span><small>WEATHER API</small><b id="weatherApiStatus">Chưa kết nối</b></span></div>
@@ -359,20 +425,21 @@ dialog{border:0;border-radius:20px;padding:25px;width:min(680px,calc(100% - 30px
             <button id="diagnosticBtn" class="mini-action" type="button">Kiểm tra kết nối ngay</button>
             <span id="apiLastUpdate">Chưa có dữ liệu API trực tiếp</span>
           </div>
+          </details>
         </div>
       </div>
     </section>
 
-    <section class="quick-strip" aria-label="Tính năng chính">
-      <div><span>01</span><b>Chọn mục tiêu</b><small>Bạn muốn chạy bao lâu và với nhịp nào?</small></div>
-      <div><span>02</span><b>Kiểm tra điều kiện</b><small>AQI, nhiệt độ, mưa, gió và UV</small></div>
-      <div><span>03</span><b>Tạo cung chạy</b><small>AIRUN ghép số km với vị trí của bạn</small></div>
-      <div><span>04</span><b>Bắt đầu chạy</b><small>GPS theo dõi quãng đường thực tế</small></div>
-    </section>
+    <nav class="quick-strip" aria-label="Các bước dùng AIRUN">
+      <a href="#planner"><span>1</span><b>Kiểm tra điều kiện</b><small>Hôm nay chạy lúc nào là hợp?</small></a>
+      <a href="#coachCard"><span>2</span><b>Hỏi AI Coach</b><small>Giải thích bằng lời, hỏi thêm được</small></a>
+      <a href="#mapSection"><span>3</span><b>Chọn cung &amp; chạy GPS</b><small>Cung đúng số km, ghi quãng đường</small></a>
+      <a href="#feedbackForm"><span>4</span><b>Đánh giá sau khi chạy</b><small>Giúp AIRUN chấm điểm đúng hơn</small></a>
+    </nav>
 
     <section class="section-wrap planner-section" id="planner">
       <div class="section-heading">
-        <div><p class="eyebrow">SMART RUN ADVISOR</p><h2>Trước khi chạy, hãy kiểm tra điều kiện.</h2></div>
+        <div><p class="eyebrow">BƯỚC 1 · KIỂM TRA ĐIỀU KIỆN</p><h2>Hôm nay chạy lúc nào là hợp?</h2><p class="step-lead">Chọn giờ và thời lượng, AIRUN đọc thời tiết + không khí thật rồi trả lời ngắn gọn.</p></div>
         <button id="refreshBtn" class="soft-btn" type="button">↻ Cập nhật dữ liệu</button>
       </div>
 
@@ -415,9 +482,20 @@ dialog{border:0;border-radius:20px;padding:25px;width:min(680px,calc(100% - 30px
         <article class="card result-card" aria-live="polite">
           <div class="card-title result-title"><span class="step-number purple">2</span><div><h3>Kết quả phân tích</h3><p id="resultSource">Đang chuẩn bị dữ liệu…</p></div><span id="resultStatusPill" class="result-pill neutral">Chờ phân tích</span></div>
           <div class="decision-panel neutral" id="decisionPanel">
-            <div class="decision-copy"><span class="decision-icon" id="decisionIcon" aria-hidden="true">◌</span><div><small>AIRUN GỢI Ý</small><h2 id="decisionTitle">Đang đọc dữ liệu</h2><p id="decisionText">AIRUN sẽ giải thích các yếu tố quan trọng trước khi bạn chạy.</p></div></div>
+            <div class="decision-copy"><span class="decision-icon" id="decisionIcon" aria-hidden="true">◌</span><div><small id="decisionWhen">AIRUN GỢI Ý</small><h2 id="decisionTitle">Đang đọc dữ liệu</h2><p id="decisionText">AIRUN sẽ giải thích các yếu tố quan trọng trước khi bạn chạy.</p></div></div>
             <div class="score-ring" id="scoreRing" style="--score:0%"><strong id="scoreValue">—</strong><small>/10</small><span>thuận lợi</span></div>
           </div>
+          <div class="friendly-grid" id="friendlyGrid" aria-label="Điều kiện lúc bạn định chạy"></div>
+
+          <div class="hour-box">
+            <div class="hour-head"><div><small>◷ GIỜ NÀO CHẠY TỐT?</small><strong id="bestTime">Đang tính…</strong></div><p id="bestTimeReason">Bấm vào một cột để đổi giờ chạy.</p></div>
+            <div class="hour-strip" id="hourStrip" role="list" aria-label="Điểm thuận lợi theo giờ"></div>
+            <div class="hour-legend"><span><i class="good"></i>Hợp</span><span><i class="caution"></i>Nên điều chỉnh</span><span><i class="bad"></i>Không nên</span><span>★ giờ tốt nhất</span></div>
+          </div>
+
+
+          <button id="routeFromPlanBtn" class="primary route-plan-cta" type="button">⌁ Tạo cung chạy theo kế hoạch</button>
+          <details class="more-details"><summary>📊 Xem số liệu chi tiết &amp; vì sao có điểm này</summary>
           <div class="plan-summary" id="planSummary" aria-live="polite">
             <div><small>KẾ HOẠCH</small><strong id="planSummaryDistance">4.29 km</strong><span id="planSummaryPace">pace 7:00/km</span></div>
             <div><small>THỜI LƯỢNG</small><strong id="planSummaryDuration">30 phút</strong><span id="planSummarySpeed">≈ 8.6 km/h</span></div>
@@ -435,9 +513,8 @@ dialog{border:0;border-radius:20px;padding:25px;width:min(680px,calc(100% - 30px
             <div class="reason-head"><span>✦</span><div><h3>Vì sao AIRUN gợi ý như vậy?</h3><p>Mỗi kết luận đều đi kèm dấu hiệu để bạn tự kiểm tra.</p></div></div>
             <ul id="reasonList"><li>Chưa có phân tích.</li></ul>
           </div>
-          <div class="best-time" id="bestTimeBox">
-            <span class="best-time-icon">◷</span><div><small>KHUNG GIỜ ĐÁNG CÂN NHẮC</small><strong id="bestTime">Đang tính…</strong><p id="bestTimeReason">AIRUN so sánh các giờ chạy phổ biến trong dữ liệu dự báo.</p></div>
-          </div>
+          </details>
+          <details class="more-details"><summary>📝 Ghi quyết định vào nhật ký</summary>
           <div class="decision-actions" aria-label="Lưu quyết định chạy">
             <button type="button" data-decision="Giữ kế hoạch">✓ Giữ kế hoạch</button>
             <button type="button" data-decision="Đổi giờ">◷ Đổi giờ</button>
@@ -447,14 +524,14 @@ dialog{border:0;border-radius:20px;padding:25px;width:min(680px,calc(100% - 30px
           <label class="sr-only" for="note">Ghi chú cho buổi chạy</label>
           <textarea id="note" rows="2" maxlength="280" placeholder="Ghi chú ngắn cho buổi chạy hôm nay…"></textarea>
           <button id="savePlanBtn" class="save-btn" type="button">Lưu kế hoạch vào nhật ký</button>
-          <button id="routeFromPlanBtn" class="primary route-plan-cta" type="button">⌁ Tạo cung chạy theo kế hoạch</button>
+          </details>
         </article>
       </div>
 
       <article class="card coach-card" id="coachCard" aria-live="polite">
         <div class="coach-head">
           <span class="coach-mark" aria-hidden="true">AI</span>
-          <div class="coach-title"><p class="eyebrow">AIRUN COACH · AI ĐỌC SỐ LIỆU ĐANG HIỂN THỊ</p><h3 id="coachHeadline">AI Coach sẽ nói tình hình bằng lời khi có dữ liệu thật</h3></div>
+          <div class="coach-title"><p class="eyebrow">BƯỚC 2 · AI COACH NÓI GÌ?</p><h3 id="coachHeadline">AI Coach sẽ nói tình hình bằng lời khi có dữ liệu thật</h3></div>
           <span id="coachPill" class="coach-pill">Chờ dữ liệu</span>
         </div>
         <p id="coachSummary" class="coach-summary">AIRUN gửi cho AI đúng các con số ở trên (thời tiết, AQI, UV, kế hoạch, điểm và dự báo theo giờ). AI tóm tắt, gợi ý giờ chạy, cách chạy và đồ cần mang.</p>
@@ -483,7 +560,7 @@ dialog{border:0;border-radius:20px;padding:25px;width:min(680px,calc(100% - 30px
 
     <section class="section-wrap map-section" id="mapSection">
       <div class="section-heading">
-        <div><p class="eyebrow">CUNG CHẠY GỢI Ý</p><h2>Từ số km trong kế hoạch đến một cung chạy dễ hiểu.</h2><p>AIRUN lấy vị trí hiện tại nếu có. Nếu chưa dùng GPS, AIRUN bắt đầu từ khu vực bạn đã chọn.</p></div>
+        <div><p class="eyebrow">BƯỚC 3 · CHỌN CUNG CHẠY</p><h2>Một vòng chạy đúng số km, xuất phát và về lại chỗ bạn.</h2><p>AIRUN lấy vị trí hiện tại nếu có. Nếu chưa dùng GPS, AIRUN bắt đầu từ khu vực bạn đã chọn.</p></div>
         <button id="gpsBtn" class="soft-btn" type="button">⌖ Dùng vị trí của tôi</button>
       </div>
       <div class="map-layout route-layout card">
@@ -537,7 +614,7 @@ dialog{border:0;border-radius:20px;padding:25px;width:min(680px,calc(100% - 30px
 
     <section class="section-wrap tracker-section" id="tracker">
       <div class="section-heading tracker-heading">
-        <div><p class="eyebrow">BƯỚC CUỐI · CHẠY GPS</p><h2>Bắt đầu chạy theo cung bạn đã chọn.</h2><p>Nếu bạn chưa tạo cung gợi ý, GPS vẫn hoạt động bình thường. Điểm GPS yếu vẫn hiện trên bản đồ nhưng không được cộng sai vào quãng đường.</p></div>
+        <div><p class="eyebrow">BƯỚC 3 · CHẠY VỚI GPS</p><h2>Bấm “Bắt đầu chạy”, AIRUN ghi quãng đường và nhắc bạn.</h2><p>Nếu bạn chưa tạo cung gợi ý, GPS vẫn hoạt động bình thường. Điểm GPS yếu vẫn hiện trên bản đồ nhưng không được cộng sai vào quãng đường.</p></div>
         <span id="trackerStatus" class="tracker-state idle"><i></i> Chưa bắt đầu</span>
       </div>
 
@@ -597,7 +674,7 @@ dialog{border:0;border-radius:20px;padding:25px;width:min(680px,calc(100% - 30px
       </div>
 
       <form class="feedback-card card" id="feedbackForm" autocomplete="off">
-        <div class="feedback-head"><div><p class="eyebrow">SAU BUỔI CHẠY · 30 GIÂY</p><h3>Khuyến nghị của AIRUN có hợp lý không?</h3><p id="feedbackContext">Đánh giá giúp nhóm phát hiện chỗ chấm điểm chưa đúng. Dùng được cả khi bạn không bật GPS.</p></div><span id="feedbackStats" class="coach-pill">Chưa có đánh giá</span></div>
+        <div class="feedback-head"><div><p class="eyebrow">BƯỚC 4 · ĐÁNH GIÁ · 30 GIÂY</p><h3>Khuyến nghị của AIRUN có hợp lý không?</h3><p id="feedbackContext">Đánh giá giúp nhóm phát hiện chỗ chấm điểm chưa đúng. Dùng được cả khi bạn không bật GPS.</p></div><span id="feedbackStats" class="coach-pill">Chưa có đánh giá</span></div>
         <fieldset class="fb-verdict"><legend>Điểm và lời khuyên trước khi chạy</legend>
           <label><input type="radio" name="fbVerdict" value="dung"><span>✓ Đúng với cảm nhận</span></label>
           <label><input type="radio" name="fbVerdict" value="qua_khat_khe"><span>▲ Quá khắt khe<small>thực tế dễ chạy hơn</small></span></label>
@@ -1144,9 +1221,9 @@ function analyzeSnapshot(snapshot, plan, options = {}){
   if(plan.sensitive&&has.aqi&&aqi>50){score-=aqi>100?2.2:1;reasons.push('Bạn đã chọn nhóm nhạy cảm nên AIRUN áp dụng ngưỡng thận trọng hơn.');}
 
   score=round(clamp(score,0,10),1);
-  let tone='good',title='Có thể cân nhắc chạy',text='Điều kiện khá thuận lợi. Hãy khởi động và quan sát thực tế trước khi xuất phát.',icon='✓';
-  if(score<5||(has.aqi&&aqi>150)||feels>=41){tone='bad';title='Nên đổi kế hoạch';text='Ưu tiên chạy trong nhà, đổi giờ hoặc chọn thời điểm khác để giảm rủi ro.';icon='!';}
-  else if(score<7.5){tone='caution';title='Nên điều chỉnh';text='Vẫn chạy được nếu chạy nhẹ hơn, ngắn hơn hoặc chuyển sang khung giờ thuận lợi hơn.';icon='◷';}
+  let tone='good',title=score>=8.5?'Rất hợp để chạy':'Hợp để chạy',text='Điều kiện thuận lợi. Khởi động kỹ rồi chạy theo kế hoạch.',icon='✓';
+  if(score<5||(has.aqi&&aqi>150)||feels>=41){tone='bad';title='Không nên chạy ngoài trời';text='Nên đổi sang giờ khác hoặc chạy trong nhà để an toàn.';icon='!';}
+  else if(score<7.5){tone='caution';title=score>=6.5?'Chạy được, nên chạy nhẹ':'Nên đổi giờ hoặc chạy nhẹ';text=score>=6.5?'Vẫn chạy được: giảm tốc độ, mang nước, chọn đường có gió/bóng râm.':'Điều kiện chưa tốt: nên chuyển sang giờ có cột xanh bên dưới, hoặc chạy ngắn và nhẹ.';icon='◷';}
   return {score,tone,title,text,icon,reasons:reasons.slice(0,7)};
 }
 
@@ -1187,6 +1264,63 @@ function updatePlanEstimate(){
   if($('planSummarySpeed'))$('planSummarySpeed').textContent=`≈ ${estimate.speed.toFixed(1)} km/h`;
   if(typeof syncRoutePlanCard==='function')syncRoutePlanCard(estimate);
   return estimate;
+}
+
+/* ===== V8.2 · Hiển thị thân thiện: kết luận bằng lời, số liệu là phụ ===== */
+function levelAir(aqi){if(!hasNum(aqi))return {word:'Chưa có',tone:'none'};aqi=Number(aqi);if(aqi<=50)return {word:'Trong lành',tone:'good'};if(aqi<=100)return {word:'Trung bình',tone:'ok'};if(aqi<=150)return {word:'Kém',tone:'warn'};return {word:'Xấu',tone:'bad'};}
+function levelHeat(f){if(!hasNum(f))return {word:'Chưa có',tone:'none'};f=Number(f);if(f<24)return {word:'Mát',tone:'good'};if(f<30)return {word:'Dễ chịu',tone:'good'};if(f<35)return {word:'Hơi nóng',tone:'ok'};if(f<39)return {word:'Nóng',tone:'warn'};return {word:'Rất nóng',tone:'bad'};}
+function levelUv(u){if(!hasNum(u))return {word:'Chưa có',tone:'none'};u=Number(u);if(u<3)return {word:'Thấp',tone:'good'};if(u<6)return {word:'Vừa',tone:'ok'};if(u<8)return {word:'Cao',tone:'warn'};return {word:'Rất cao',tone:'bad'};}
+function levelRain(r){if(!hasNum(r))return {word:'Chưa có',tone:'none'};r=Number(r);if(r<30)return {word:'Ít mưa',tone:'good'};if(r<60)return {word:'Có thể mưa',tone:'ok'};return {word:'Dễ mưa',tone:'warn'};}
+function levelWind(w){if(!hasNum(w))return {word:'Chưa có',tone:'none'};w=Number(w);if(w<20)return {word:'Gió nhẹ',tone:'good'};if(w<35)return {word:'Gió khá mạnh',tone:'ok'};return {word:'Gió mạnh',tone:'bad'};}
+function setLvl(id,l){const n=$(id);if(!n)return;n.textContent=l.word;n.className=`lvl ${l.tone}`;}
+function verdictEmoji(result){if(!result)return '◌';return result.tone==='bad'?'😟':result.tone==='caution'?(result.score>=6.5?'🙂':'😐'):'😀';}
+
+function renderFriendlyGrid(s){
+  const grid=$('friendlyGrid');if(!grid)return;
+  if(!s){grid.innerHTML='';return;}
+  const air=levelAir(s.aqi),heat=levelHeat(s.feels),uv=levelUv(s.uv),rain=levelRain(s.rain),wind=levelWind(s.wind);
+  const rainWind=rain.tone==='warn'||wind.tone==='bad'?(rain.tone==='warn'?rain:wind):rain.tone==='ok'?rain:wind.tone==='ok'?wind:rain;
+  const items=[
+    {ic:'🌡️',name:'Nhiệt độ',l:heat,detail:hasNum(s.feels)?`Cảm giác ${round(s.feels)}°C · thực ${fmt(s.temp)}°C`:'—'},
+    {ic:'🌫️',name:'Không khí',l:air,detail:hasNum(s.aqi)?`AQI ${round(s.aqi)} · bụi mịn ${fmt(s.pm,0)} µg/m³`:'Chưa có AQI'},
+    {ic:'☀️',name:'Nắng (UV)',l:uv,detail:hasNum(s.uv)?`Chỉ số UV ${round(s.uv,1)}`:'—'},
+    {ic:'🌦️',name:'Mưa & gió',l:rainWind,detail:`${hasNum(s.rain)?`Mưa ${round(s.rain)}%`:'Mưa —'} · ${hasNum(s.wind)?`gió ${round(s.wind)} km/h`:'gió —'}`}
+  ];
+  grid.innerHTML=items.map(i=>`<div class="cond ${i.l.tone}"><span class="cond-ic" aria-hidden="true">${i.ic}</span><div><small>${i.name}</small><b>${escapeHTML(i.l.word)}</b><em>${escapeHTML(i.detail)}</em></div></div>`).join('');
+}
+
+function renderHourStrip(data,plan){
+  const box=$('hourStrip');if(!box)return;
+  if(!data||isNoData(data)){box.innerHTML='<div class="hour-empty">Đang chờ dự báo theo giờ…</div>';return;}
+  const today=vnIso().slice(0,10);
+  const rows=upcomingHours(data,40).filter(r=>{const h=Number(r.time.slice(11,13));return h>=5&&h<=21;}).slice(0,18);
+  if(!rows.length){box.innerHTML='<div class="hour-empty">Chưa có dự báo theo giờ.</div>';return;}
+  const scored=rows.map(r=>({r,res:analyzeSnapshot({...data.current,...r},plan)}));
+  const best=bestTimeFor(data,plan);const bestTime=best?.row.time;
+  const target=targetIso(plan.time);
+  let lastDay='';
+  box.innerHTML=scored.map(({r,res})=>{
+    const day=r.time.slice(0,10),h=Number(r.time.slice(11,13));
+    const sep=day!==lastDay?`<span class="hour-day">${day===today?'Hôm nay':'Ngày mai'}</span>`:'';lastDay=day;
+    const isBest=r.time===bestTime,isSel=r.time===target;
+    const title=`${h}h${day===today?'':' ngày mai'}: ${res.score}/10 · cảm giác ${fmt(r.feels)}°C · AQI ${fmt(r.aqi)} · UV ${fmt(r.uv,1)}`;
+    return `${sep}<button type="button" role="listitem" class="hour-bar ${res.tone}${isBest?' best':''}${isSel?' sel':''}" data-hour="${String(h).padStart(2,'0')}:00" title="${escapeHTML(title)}" aria-label="${escapeHTML(title)}"><span class="hb-fill" style="--h:${Math.max(12,res.score*10)}%"></span><b>${isBest?'★':''}${res.score.toFixed(1)}</b><small>${h}h</small></button>`;
+  }).join('');
+  box.querySelectorAll('[data-hour]').forEach(btn=>btn.addEventListener('click',()=>{
+    $('time').value=btn.dataset.hour;savePlanSettings();analyzePlan(false);
+    showToast(`Đã đổi giờ chạy sang ${btn.dataset.hour}${btn.textContent.includes('★')?' (giờ tốt nhất)':''}.`);
+  }));
+  const sel=box.querySelector('.sel')||box.querySelector('.best');if(sel)sel.scrollIntoView({block:'nearest',inline:'center'});
+}
+
+function renderHeroVerdict(data){
+  const node=$('heroVerdict');if(!node)return;
+  if(!data||isNoData(data)){node.hidden=true;return;}
+  const now={...data.current,time:vnIso()};
+  const res=analyzeSnapshot(now,{...currentPlan(),time:vnIso().slice(11,16)});
+  const best=bestTimeFor(data,currentPlan());
+  node.hidden=false;node.className=`hero-verdict ${res.tone}`;
+  node.innerHTML=`<span>${verdictEmoji(res)}</span><span><b>Ngay bây giờ: ${escapeHTML(res.title.toLowerCase())}</b>${best?`<small>Giờ tốt nhất sắp tới: ${best.row.time.slice(11,16)}${best.row.time.slice(0,10)!==vnIso().slice(0,10)?' ngày mai':''}</small>`:''}</span>`;
 }
 
 function upcomingHours(data,hours=30){
@@ -1250,7 +1384,8 @@ function renderHero(data){
   const current=noData?{}:data.current,weather=noData?[data?.failed?'Không lấy được dữ liệu':'Đang tải…','◌']:weatherText(current.code),label=data.location?.label||ward(data.key).name;
   const dash=data?.failed?'—':'…';
   $('heroArea').textContent=label;$('heroTemp').textContent=fmt(current.temp,0,dash);$('heroWeather').textContent=weather[0];$('weatherSymbol').textContent=weather[1];
-  $('heroAqi').textContent=fmt(current.aqi,0,dash);$('heroPm').textContent=fmt(current.pm,1,dash);$('heroWind').textContent=fmt(current.wind,1,dash);$('heroUv').textContent=fmt(current.uv,1,dash);
+  $('heroAqi').textContent=fmt(current.aqi,0,dash);$('heroPm').textContent=fmt(current.pm,1,dash);$('heroWind').textContent=fmt(current.wind,0,dash);$('heroUv').textContent=fmt(current.uv,1,dash);if($('heroFeels'))$('heroFeels').textContent=fmt(current.feels,0,dash);
+  setLvl('heroAqiLvl',levelAir(current.aqi));setLvl('heroFeelsLvl',levelHeat(current.feels));setLvl('heroUvLvl',levelUv(current.uv));setLvl('heroWindLvl',levelWind(current.wind));renderHeroVerdict(data);
   $('heroUpdated').textContent=new Date(data.updated).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});
   $('liveBadge').textContent=noData?(data.failed?'CHƯA CÓ DỮ LIỆU THẬT':'ĐANG TẢI DỮ LIỆU THẬT'):sourceLabel(data.source).toUpperCase();
   $('liveBadge').className=`source-badge ${data.source==='live'?'':noData?(data.failed?'demo':'loading'):data.source}`;
@@ -1281,7 +1416,7 @@ function renderResult(data,snapshot,result){
     $('reasonList').innerHTML=`<li>${failed?'Không có dữ liệu thật để giải thích.':'Đang chờ dữ liệu trực tiếp…'}</li>`;
     $('bestTime').textContent=failed?'Chưa có dự báo giờ':'Đang tính…';$('bestTimeReason').textContent='AIRUN so sánh các giờ chạy phổ biến trong dự báo trực tiếp.';
     $('mapAreaAqi').textContent='AQI —';$('mapAreaTemp').textContent='—°C';$('mapAreaScore').textContent='—/10';
-    renderKit({},currentPlan());
+    renderKit({},currentPlan());renderFriendlyGrid(null);renderHourStrip(null);
     if(typeof renderCoachWaiting==='function')renderCoachWaiting(failed);
     return;
   }
@@ -1289,7 +1424,9 @@ function renderResult(data,snapshot,result){
   const missing=[];if(!hasNum(snapshot.aqi))missing.push('AQI');if(!hasNum(snapshot.feels))missing.push('nhiệt độ');
   $('resultSource').textContent=`${sourceLabel(data.source)} · ${label} · ${snapshot.time?.slice(11,16)||'hiện tại'}${missing.length?` · thiếu ${missing.join(', ')}`:''}`;
   $('resultStatusPill').textContent=result.title;$('resultStatusPill').className=`result-pill ${result.tone}`;
-  $('decisionPanel').className=`decision-panel ${result.tone}`;$('decisionIcon').textContent=result.icon;$('decisionTitle').textContent=result.title;$('decisionText').textContent=result.text;
+  $('decisionPanel').className=`decision-panel ${result.tone}`;$('decisionIcon').textContent=verdictEmoji(result);$('decisionTitle').textContent=result.title;$('decisionText').textContent=result.text;
+  renderFriendlyGrid(snapshot);renderHourStrip(data,currentPlan());
+  if($('decisionWhen')){const t=snapshot.time||'';$('decisionWhen').textContent=`NẾU CHẠY LÚC ${t.slice(11,16)||currentPlan().time}${t&&t.slice(0,10)!==vnIso().slice(0,10)?' NGÀY MAI':' HÔM NAY'}`;}
   $('scoreValue').textContent=result.score;$('scoreRing').style.setProperty('--score',`${result.score*10}%`);
   $('metricAqi').textContent=fmt(snapshot.aqi);$('metricAqiLabel').textContent=info.label;$('metricPm').textContent=fmt(snapshot.pm,1);
   $('metricTemp').textContent=hasNum(snapshot.temp)?`${round(snapshot.temp)}°`:'—';$('metricFeels').textContent=`Cảm giác ${hasNum(snapshot.feels)?round(snapshot.feels)+'°':'—'}`;$('metricWind').textContent=fmt(snapshot.wind,1);
@@ -1301,7 +1438,7 @@ function renderResult(data,snapshot,result){
     $('planSummaryForecast').textContent=fs==='live'?'Forecast trực tiếp đã sẵn sàng':fs==='partial'?'Forecast trực tiếp một phần':fs==='cached'?'Forecast đã lưu gần đây':'Chưa có forecast';
   }
   $('reasonList').innerHTML=result.reasons.map(reason=>`<li>${escapeHTML(reason)}</li>`).join('');
-  if(best){$('bestTime').textContent=`${best.row.time.slice(11,16)}${best.row.time.slice(0,10)!==vnIso().slice(0,10)?' ngày mai':''} · ${best.result.score}/10`;$('bestTimeReason').textContent='Trong các khung giờ chạy phổ biến sắp tới (5–9h, 16–21h), đây là thời điểm có điểm thuận lợi cao nhất trong dự báo trực tiếp.';}
+  if(best){$('bestTime').textContent=`Tốt nhất: ${best.row.time.slice(11,16)}${best.row.time.slice(0,10)!==vnIso().slice(0,10)?' ngày mai':''} (${best.result.score}/10)`;$('bestTimeReason').textContent='Cột càng cao càng dễ chạy. Bấm vào một cột để đổi giờ chạy.';}
   else{$('bestTime').textContent='Chưa có dự báo giờ';$('bestTimeReason').textContent='Hãy thử cập nhật lại dữ liệu.';}
   $('mapAreaAqi').textContent=`AQI ${fmt(snapshot.aqi)}`;$('mapAreaTemp').textContent=`${fmt(snapshot.temp)}°C`;$('mapAreaScore').textContent=`${result.score}/10`;
   renderKit(snapshot,currentPlan());
