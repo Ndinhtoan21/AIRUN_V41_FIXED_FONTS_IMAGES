@@ -24,7 +24,7 @@ const FEEDBACK_WEBHOOK_URL = (process.env.FEEDBACK_WEBHOOK_URL || '').trim();
 const ADMIN_TOKEN = (process.env.ADMIN_TOKEN || '').trim();
 const WEATHER_BASE = (process.env.WEATHER_BASE || 'https://api.open-meteo.com/v1/forecast');
 const AIR_BASE = (process.env.AIR_BASE || 'https://air-quality-api.open-meteo.com/v1/air-quality');
-const FEEDBACK_FILE = path.join(process.env.DATA_DIR || path.join(ROOT, 'data'), 'feedback.jsonl');
+const FEEDBACK_FILE = path.join(process.env.DATA_DIR || (process.env.VERCEL ? '/tmp' : path.join(ROOT, 'data')), 'feedback.jsonl');
 
 const MIME = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
@@ -49,6 +49,14 @@ function send(res, status, body, headers = {}) {
 const json = (res, status, data, headers = {}) => send(res, status, data, { 'Cache-Control': 'no-store', ...headers });
 
 function readBody(req, limit = 48 * 1024) {
+  // Vercel (serverless) có thể đã đọc sẵn body vào req.body.
+  if (process.env.VERCEL && req.body !== undefined && req.body !== null) {
+    const b = req.body;
+    if (typeof b === 'object' && !Buffer.isBuffer(b)) return Promise.resolve(b);
+    const text = Buffer.isBuffer(b) ? b.toString('utf8') : String(b);
+    if (text.length > limit) return Promise.reject(Object.assign(new Error('BODY_TOO_LARGE'), { status: 413 }));
+    try { return Promise.resolve(text ? JSON.parse(text) : {}); } catch { return Promise.reject(Object.assign(new Error('INVALID_JSON'), { status: 400 })); }
+  }
   return new Promise((resolve, reject) => {
     let size = 0; const chunks = [];
     req.on('data', chunk => {
@@ -362,9 +370,15 @@ function serveFile(res, full, headOnly) {
 }
 
 /* ---------- Router ---------- */
-const server = http.createServer(async (req, res) => {
+async function handler(req, res) {
   const url = new URL(req.url, 'http://localhost');
-  const p = url.pathname;
+  let p = url.pathname;
+  // Vercel: vercel.json chuyển /api/* → /api/index?__p=*
+  if (url.searchParams.has('__p')) {
+    const sub = url.searchParams.get('__p').replace(/^\/+/, '');
+    url.searchParams.delete('__p');
+    p = sub === '__healthz' ? '/healthz' : `/api/${sub}`;
+  }
   try {
     if (p === '/healthz') return json(res, 200, { ok: true, version: VERSION });
     if (p === '/api/config' && req.method === 'GET') {
@@ -384,11 +398,12 @@ const server = http.createServer(async (req, res) => {
     console.error('AIRUN server error:', error);
     return json(res, 500, { error: true, reason: 'Lỗi máy chủ' });
   }
-});
+}
+const server = http.createServer(handler);
 
 if (require.main === module) {
   server.listen(PORT, () => {
     console.log(`AIRUN ${VERSION} chạy tại cổng ${PORT} · AI ${OPENAI_API_KEY ? 'BẬT (' + OPENAI_MODEL + ')' : 'TẮT (thiếu OPENAI_API_KEY)'} · GraphHopper ${GRAPHHOPPER_API_KEY ? 'BẬT' : 'TẮT'}`);
   });
 }
-module.exports = { server, cleanFeedback, feedbackSummary, parseJSONLoose };
+module.exports = { handler, server, cleanFeedback, feedbackSummary, parseJSONLoose };

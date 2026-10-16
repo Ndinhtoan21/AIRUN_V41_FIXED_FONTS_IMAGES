@@ -32,3 +32,11 @@ OPENAI_API_KEY=sk-... node server.js   # bật AI Coach
 - `POST /api/coach` – `mode: plan | chat | run | live`
 - `GET /api/route?lat=&lon=&km=&seed=` – GraphHopper round trip (khóa trên máy chủ)
 - `POST /api/feedback`, `GET /api/feedback/summary`, `GET /api/feedback/export?token=`
+
+## Deploy lên Vercel
+Repo đã có sẵn `vercel.json` và `api/index.js` (serverless function dùng chung code với `server.js`).
+1. Vercel → Add New → Project → Import repo này (không cần build command).
+2. Settings → Environment Variables: thêm `OPENAI_API_KEY` (Production + Preview), các biến khác tùy chọn như bảng trên.
+3. Redeploy. Kiểm tra `https://<project>.vercel.app/api/config` → `"ai": true`.
+
+Vercel không ngủ như Render Free, nên trang mở nhanh khi giám khảo truy cập.

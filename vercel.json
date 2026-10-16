@@ -1,0 +1,20 @@
+{
+  "framework": null,
+  "installCommand": "",
+  "buildCommand": "",
+  "outputDirectory": ".",
+  "rewrites": [
+    { "source": "/healthz", "destination": "/api/index?__p=__healthz" },
+    { "source": "/api/:path*", "destination": "/api/index?__p=:path*" }
+  ],
+  "functions": {
+    "api/index.js": { "maxDuration": 30 }
+  },
+  "headers": [
+    { "source": "/(.*)", "headers": [
+      { "key": "X-Content-Type-Options", "value": "nosniff" },
+      { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+      { "key": "Permissions-Policy", "value": "geolocation=(self), camera=(), microphone=()" }
+    ] }
+  ]
+}
