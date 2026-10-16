@@ -182,7 +182,7 @@ Nguyên tắc bắt buộc:
 
 const MODE_INSTRUCTIONS = {
   plan: `Nhiệm vụ: đọc toàn bộ DỮ LIỆU và trả về JSON đúng dạng sau (không thêm chữ ngoài JSON):
-{"headline":"một câu kết luận ≤ 14 từ","summary":"2–3 câu mô tả tình hình bằng lời dễ hiểu, có số liệu","when":"nên chạy lúc mấy giờ và vì sao (1 câu, dựa vào dự báo theo giờ)","adjust":["1–3 điều chỉnh cụ thể cho kế hoạch"],"bring":["2–4 món nên mang"],"watch":["0–2 dấu hiệu cần dừng/lưu ý"],"score_comment":"1 câu: điểm AIRUN có hợp lý với bối cảnh không, nếu công thức có vẻ khắt khe hoặc dễ dãi thì nói rõ"}`,
+{"headline":"một câu kết luận ≤ 14 từ","summary":"2–3 câu mô tả tình hình bằng lời dễ hiểu, có số liệu","when":"1 câu: so sánh giờ dự định (plan.start_time) với best_upcoming_time; nếu giờ tốt nhất khác giờ dự định thì nói rõ cả hai và chênh lệch điều kiện (số liệu), nếu giờ dự định đã ổn thì nói vậy","adjust":["1–3 điều chỉnh cụ thể cho kế hoạch"],"bring":["2–4 món nên mang"],"watch":["0–2 dấu hiệu cần dừng/lưu ý"],"score_comment":"1 câu: điểm AIRUN có hợp lý với bối cảnh không, nếu công thức có vẻ khắt khe hoặc dễ dãi thì nói rõ"}`,
   run: `Nhiệm vụ: nhận xét buổi chạy vừa xong dựa vào kế hoạch, kết quả GPS, điều kiện và phản hồi của người dùng. Trả về JSON:
 {"headline":"một câu ≤ 14 từ","summary":"2–3 câu so sánh kế hoạch với thực tế và cảm nhận","next_time":["1–3 gợi ý cho lần chạy sau"],"score_review":"1 câu: phản hồi của người dùng cho thấy công thức chấm điểm cần chỉnh gì (nếu có)"}`,
   live: `Nhiệm vụ: người dùng ĐANG CHẠY. Đưa ra một lời nhắc ngắn (tối đa 2 câu, ≤ 35 từ) để đọc bằng giọng nói, dựa vào quãng đường, pace, thời gian và điều kiện hiện tại. Trả về JSON: {"cue":"..."}`,
