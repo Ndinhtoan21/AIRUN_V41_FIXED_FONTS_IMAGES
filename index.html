@@ -1697,6 +1697,25 @@ function clearRouteMapLibreMarkers(){
   if(routeFallbackMap.startMarker){routeFallbackMap.startMarker.remove();routeFallbackMap.startMarker=null;}
   routeFallbackMap.kmMarkers.forEach(m=>m.remove());routeFallbackMap.kmMarkers=[];
 }
+// V8.1: không coi "tải chậm" là lỗi. Mạng di động hoặc tab bị ẩn có thể làm bản đồ load chậm;
+// V7 hủy bản đồ sau 12 giây nên người dùng không bao giờ thấy bản đồ. Chỉ lỗi style mới là lỗi thật.
+function waitMapLoad(map,kind){
+  return new Promise((resolve,reject)=>{
+    if(map.loaded()){resolve();return;}
+    const slow=setTimeout(()=>{
+      const text='Bản đồ đang tải chậm… GPS và quãng đường vẫn hoạt động bình thường.';
+      if(kind==='run'){const p=$('runMapProvider');if(p)p.textContent='OpenFreeMap · đang tải chậm';setRunMapHint(text,true);}
+      else{const b=$('routeMapBadge');if(b)b.textContent='Bản đồ đang tải…';}
+    },15000);
+    map.once('load',()=>{clearTimeout(slow);resolve();});
+    const onError=e=>{
+      if(map.loaded())return;
+      if(e&&(e.sourceId||e.tile))return; // lỗi 1 ô bản đồ không làm hỏng cả bản đồ
+      clearTimeout(slow);map.off?.('error',onError);reject(e?.error||new Error('Không tải được kiểu bản đồ OpenFreeMap'));
+    };
+    map.on('error',onError);
+  });
+}
 async function ensureRouteMapLibre(){
   if(routeFallbackMap.map){requestAnimationFrame(()=>routeFallbackMap.map.resize());return routeFallbackMap.map;}
   if(routeFallbackMap.loading)return routeFallbackMap.loading;
@@ -1709,7 +1728,7 @@ async function ensureRouteMapLibre(){
     const origin=routeOrigin();
     const map=new maplibregl.Map({container:'routeMapLibreMap',style:'https://tiles.openfreemap.org/styles/liberty',center:[origin.lon,origin.lat],zoom:14.2,attributionControl:true});
     map.addControl(new maplibregl.NavigationControl({showCompass:false}),'top-right');routeFallbackMap.map=map;
-    await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(new Error('OpenFreeMap tải quá lâu')),30000);map.once('load',()=>{clearTimeout(timer);resolve();});map.once('error',e=>{if(!map.loaded()){clearTimeout(timer);reject(e?.error||new Error('OpenFreeMap lỗi'));}});});
+    await waitMapLoad(map,'route');
     requestAnimationFrame(()=>{map.resize();setTimeout(()=>map.resize(),180);});return map;
   })().catch(error=>{console.warn('AIRUN route OpenFreeMap:',error);routeFallbackMap.map=null;const c=$('routeMapLibreMap'),fallback=$('mapFallback');if(c)c.hidden=true;if(fallback){fallback.hidden=false;const p=fallback.querySelector('p');if(p)p.textContent='Không tải được OpenFreeMap. Nếu có Mapbox token, hãy kết nối lại bản đồ nâng cao.';}return null;}).finally(()=>{routeFallbackMap.loading=null;});
   return routeFallbackMap.loading;
@@ -1984,7 +2003,7 @@ async function ensureRunMapLibre(){
     const base=tracker.rawPoint||gpsLocation||ward();
     const map=new maplibregl.Map({container:'runMapLibreMap',style:'https://tiles.openfreemap.org/styles/liberty',center:[base.lon,base.lat],zoom:14.8,attributionControl:true});
     map.addControl(new maplibregl.NavigationControl({showCompass:false}),'top-right');runFallbackMap.map=map;
-    await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(new Error('OpenFreeMap tải quá lâu')),30000);map.once('load',()=>{clearTimeout(timer);resolve();});map.once('error',e=>{if(!map.loaded()){clearTimeout(timer);reject(e?.error||new Error('OpenFreeMap load error'));}});});
+    await waitMapLoad(map,'run');
     runSetSource(map,'airun-run-plan-src',[]);runSetSource(map,'airun-run-raw-src',[]);runSetSource(map,'airun-run-actual-src',[]);runAddLayers(map);
     const provider=$('runMapProvider');if(provider)provider.textContent='OpenFreeMap · MapLibre';
     requestAnimationFrame(()=>{map.resize();setTimeout(()=>map.resize(),180);});return map;
