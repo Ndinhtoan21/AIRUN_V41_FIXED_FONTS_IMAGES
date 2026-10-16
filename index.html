@@ -1475,8 +1475,8 @@ async function requestGPSPosition(onStage = ()=>{}, {maximumAge=300000}={}){
   onStage(readiness.permission==='prompt'?'Hãy cho phép quyền vị trí…':'Đang tìm vị trí…');
   setSystemStatus('gps','loading',readiness.permission==='prompt'?'Chờ cấp quyền':'Đang định vị');
 
-  const fast=geoPosition({enableHighAccuracy:false,timeout:2600,maximumAge},3200).then(position=>{position.__airunFix='fast';return position;});
-  const precise=geoPosition({enableHighAccuracy:true,timeout:5600,maximumAge:0},6500).then(position=>{position.__airunFix='precise';return position;});
+  const fast=geoPosition({enableHighAccuracy:false,timeout:8000,maximumAge},9000).then(position=>{position.__airunFix='fast';return position;});
+  const precise=geoPosition({enableHighAccuracy:true,timeout:20000,maximumAge:0},21000).then(position=>{position.__airunFix='precise';return position;});
   try{
     const first=await Promise.any([fast,precise]);
     setSystemStatus('gps','ok',`±${round(Number(first.coords?.accuracy||0))} m`);
@@ -1493,7 +1493,7 @@ async function requestGPSPosition(onStage = ()=>{}, {maximumAge=300000}={}){
 async function refineGPSPosition(previous, onStage = ()=>{}){
   try{
     onStage('Đang tăng độ chính xác GPS…');
-    const precise=await geoPosition({enableHighAccuracy:true,timeout:6500,maximumAge:0},7200);
+    const precise=await geoPosition({enableHighAccuracy:true,timeout:20000,maximumAge:0},21000);
     const oldAcc=Number(previous?.coords?.accuracy ?? Infinity);
     const newAcc=Number(precise?.coords?.accuracy ?? Infinity);
     return newAcc < oldAcc ? precise : null;
@@ -1502,11 +1502,13 @@ async function refineGPSPosition(previous, onStage = ()=>{}){
 
 function gpsHelpMessage(error){
   const code=error?.code;
-  if(code===1 || code==='denied') return 'Quyền vị trí đang bị chặn. Hãy cho phép Location cho AIRUN trong trình duyệt rồi thử lại.';
+  // Trình duyệt trong Zalo/Facebook/Messenger thường chặn GPS.
+  if(/Zalo|FBAN|FBAV|FB_IAB|Messenger|Instagram|Line\//i.test(navigator.userAgent||''))return 'Bạn đang mở AIRUN trong trình duyệt của Zalo/Facebook nên GPS bị chặn. Hãy bấm ⋯ → “Mở bằng trình duyệt” (Chrome/Safari) rồi thử lại.';
+  if(code===1 || code==='denied') return 'Quyền vị trí đang bị chặn. Bấm biểu tượng ổ khóa cạnh địa chỉ trang → Quyền → Vị trí → Cho phép, rồi tải lại trang.';
   if(code==='insecure') return 'GPS web chỉ hoạt động trên HTTPS. Hãy mở AIRUN bằng địa chỉ https://…onrender.com.';
   if(code==='unsupported') return 'Trình duyệt/thiết bị này không cung cấp Geolocation.';
   if(code===2) return 'Thiết bị chưa xác định được vị trí. Hãy bật Location Services của máy và thử ngoài trời hoặc gần cửa sổ.';
-  if(code===3) return 'Thiết bị chưa trả về vị trí trong thời gian chờ. Hãy kiểm tra Location Services, quyền trình duyệt hoặc thử trên điện thoại.';
+  if(code===3) return 'Thiết bị chưa trả về vị trí sau 20 giây. Hãy bật Vị trí (Location) của điện thoại, ra chỗ thoáng rồi thử lại. Máy tính bàn thường không có GPS — nên dùng điện thoại.';
   return 'AIRUN chưa lấy được vị trí. Hãy kiểm tra quyền Location và dịch vụ vị trí của thiết bị.';
 }
 
@@ -1615,25 +1617,41 @@ function syncRouteProviderStatus(message=''){
   if(cfg.graphhopper){node.textContent=`✓ Máy chủ AIRUN tạo cung vòng bằng GraphHopper (khóa giữ trên máy chủ)${cfg.mapbox?' · bản đồ Mapbox':' · bản đồ OpenFreeMap'}.`;node.className='route-provider-status ready';}
   else{node.textContent='Cung chạy được ghép theo mạng đường đi bộ OpenStreetMap (Valhalla) · bản đồ OpenFreeMap. Không cần nhập khóa.';node.className='route-provider-status';}
 }
+// V8.1: dùng chung một promise cho mỗi file. V7 để 2 bản đồ cùng tải MapLibre → bên sau xóa thẻ của bên trước → một bản đồ treo mãi.
+const externalAssetLoads=new Map();
 function loadExternalAsset(type,url,id){
-  return new Promise((resolve,reject)=>{
-    const existing=document.getElementById(id);
-    if(existing){if(existing.dataset.airunLoaded==='1')return resolve();existing.remove();}
+  const key=`${id}|${url}`;
+  if(externalAssetLoads.has(key))return externalAssetLoads.get(key);
+  const existing=document.getElementById(id);
+  if(existing&&existing.dataset.airunLoaded==='1'&&(existing.src===url||existing.href===url))return Promise.resolve();
+  const promise=new Promise((resolve,reject)=>{
+    const old=document.getElementById(id);if(old&&old.dataset.airunLoaded!=='1')old.remove();
     const el=document.createElement(type==='script'?'script':'link');el.id=id;
     if(type==='script'){el.src=url;el.async=true;}else{el.rel='stylesheet';el.href=url;}
-    el.onload=()=>{el.dataset.airunLoaded='1';resolve();};
-    el.onerror=()=>{el.remove();reject(new Error(`Không tải được ${url}`));};
+    const timer=setTimeout(()=>{el.remove();reject(new Error(`Tải quá lâu: ${url}`));},20000);
+    el.onload=()=>{clearTimeout(timer);el.dataset.airunLoaded='1';resolve();};
+    el.onerror=()=>{clearTimeout(timer);el.remove();reject(new Error(`Không tải được ${url}`));};
     document.head.appendChild(el);
   });
+  externalAssetLoads.set(key,promise);
+  promise.catch(()=>externalAssetLoads.delete(key));
+  return promise;
 }
-async function ensureMapLibreAssets(){
-  if(window.maplibregl)return true;
-  const cssSources=['https://cdn.jsdelivr.net/npm/maplibre-gl@5.24.0/dist/maplibre-gl.css','https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.css'];
-  const jsSources=['https://cdn.jsdelivr.net/npm/maplibre-gl@5.24.0/dist/maplibre-gl.js','https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.js'];
-  let cssOk=false;for(const url of cssSources){try{await loadExternalAsset('style',url,'airun-maplibre-css');cssOk=true;break;}catch{}}
-  let jsOk=false;for(const url of jsSources){try{await loadExternalAsset('script',url,'airun-maplibre-js');if(window.maplibregl){jsOk=true;break;}}catch{}}
-  if(!cssOk||!jsOk||!window.maplibregl)throw new Error('Không tải được MapLibre từ các CDN dự phòng');
-  return true;
+let mapLibreAssetsPromise=null;
+function ensureMapLibreAssets(){
+  if(window.maplibregl)return Promise.resolve(true);
+  if(mapLibreAssetsPromise)return mapLibreAssetsPromise;
+  mapLibreAssetsPromise=(async()=>{
+    const cssSources=['https://cdn.jsdelivr.net/npm/maplibre-gl@5.24.0/dist/maplibre-gl.css','https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.css'];
+    const jsSources=['https://cdn.jsdelivr.net/npm/maplibre-gl@5.24.0/dist/maplibre-gl.js','https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.js'];
+    let cssOk=false;for(const url of cssSources){try{await loadExternalAsset('style',url,'airun-maplibre-css');cssOk=true;break;}catch{}}
+    let jsOk=false;for(const url of jsSources){try{await loadExternalAsset('script',url,'airun-maplibre-js');if(window.maplibregl){jsOk=true;break;}}catch{}}
+    if(!jsOk||!window.maplibregl)throw new Error('Không tải được MapLibre từ các CDN dự phòng');
+    if(!cssOk)console.warn('AIRUN: MapLibre CSS chưa tải được, bản đồ vẫn chạy.');
+    return true;
+  })();
+  mapLibreAssetsPromise.catch(()=>{mapLibreAssetsPromise=null;});
+  return mapLibreAssetsPromise;
 }
 async function ensureMapbox(){
   const cfg=routeConfig();if(!cfg.mapbox)throw new Error('Chưa có Mapbox token');if(advancedMap.map)return advancedMap.map;if(advancedMap.loading)return advancedMap.loading;
@@ -1691,7 +1709,7 @@ async function ensureRouteMapLibre(){
     const origin=routeOrigin();
     const map=new maplibregl.Map({container:'routeMapLibreMap',style:'https://tiles.openfreemap.org/styles/liberty',center:[origin.lon,origin.lat],zoom:14.2,attributionControl:true});
     map.addControl(new maplibregl.NavigationControl({showCompass:false}),'top-right');routeFallbackMap.map=map;
-    await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(new Error('OpenFreeMap tải quá lâu')),12000);map.once('load',()=>{clearTimeout(timer);resolve();});map.once('error',e=>{if(!map.loaded()){clearTimeout(timer);reject(e?.error||new Error('OpenFreeMap lỗi'));}});});
+    await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(new Error('OpenFreeMap tải quá lâu')),30000);map.once('load',()=>{clearTimeout(timer);resolve();});map.once('error',e=>{if(!map.loaded()){clearTimeout(timer);reject(e?.error||new Error('OpenFreeMap lỗi'));}});});
     requestAnimationFrame(()=>{map.resize();setTimeout(()=>map.resize(),180);});return map;
   })().catch(error=>{console.warn('AIRUN route OpenFreeMap:',error);routeFallbackMap.map=null;const c=$('routeMapLibreMap'),fallback=$('mapFallback');if(c)c.hidden=true;if(fallback){fallback.hidden=false;const p=fallback.querySelector('p');if(p)p.textContent='Không tải được OpenFreeMap. Nếu có Mapbox token, hãy kết nối lại bản đồ nâng cao.';}return null;}).finally(()=>{routeFallbackMap.loading=null;});
   return routeFallbackMap.loading;
@@ -1966,7 +1984,7 @@ async function ensureRunMapLibre(){
     const base=tracker.rawPoint||gpsLocation||ward();
     const map=new maplibregl.Map({container:'runMapLibreMap',style:'https://tiles.openfreemap.org/styles/liberty',center:[base.lon,base.lat],zoom:14.8,attributionControl:true});
     map.addControl(new maplibregl.NavigationControl({showCompass:false}),'top-right');runFallbackMap.map=map;
-    await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(new Error('OpenFreeMap tải quá lâu')),12000);map.once('load',()=>{clearTimeout(timer);resolve();});map.once('error',e=>{if(!map.loaded()){clearTimeout(timer);reject(e?.error||new Error('OpenFreeMap load error'));}});});
+    await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(new Error('OpenFreeMap tải quá lâu')),30000);map.once('load',()=>{clearTimeout(timer);resolve();});map.once('error',e=>{if(!map.loaded()){clearTimeout(timer);reject(e?.error||new Error('OpenFreeMap load error'));}});});
     runSetSource(map,'airun-run-plan-src',[]);runSetSource(map,'airun-run-raw-src',[]);runSetSource(map,'airun-run-actual-src',[]);runAddLayers(map);
     const provider=$('runMapProvider');if(provider)provider.textContent='OpenFreeMap · MapLibre';
     requestAnimationFrame(()=>{map.resize();setTimeout(()=>map.resize(),180);});return map;
