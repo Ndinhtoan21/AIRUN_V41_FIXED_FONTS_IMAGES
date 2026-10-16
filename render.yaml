@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: airun-da-nang-ai
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: npm install --omit=dev
+    startCommand: node server.js
+    healthCheckPath: /healthz
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_MODEL
+        value: gpt-4.1-mini
+      - key: GRAPHHOPPER_API_KEY
+        sync: false
+      - key: MAPBOX_PUBLIC_TOKEN
+        sync: false
+      - key: FEEDBACK_WEBHOOK_URL
+        sync: false
+      - key: ADMIN_TOKEN
+        generateValue: true

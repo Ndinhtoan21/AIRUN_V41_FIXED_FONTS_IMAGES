@@ -205,6 +205,75 @@ dialog{border:0;border-radius:20px;padding:25px;width:min(680px,calc(100% - 30px
 .run-map-provider{position:absolute;right:14px;top:14px;z-index:7;padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.94);box-shadow:0 6px 18px rgba(15,48,38,.12);font:700 8px/1.2 "Be Vietnam Pro","Segoe UI",Arial,sans-serif;color:#315c50;backdrop-filter:blur(8px)}
 @media(max-width:1050px){.tracker-shell{grid-template-columns:minmax(360px,.88fr) minmax(0,1.12fr)}}
 @media(max-width:780px){.tracker-shell{grid-template-columns:1fr;min-height:auto}.tracker-map-wrap{min-height:58vh;max-height:620px;aspect-ratio:4/5}.tracker-dashboard{padding:18px}.tracker-distance{padding:22px 0 18px}.run-map-provider{right:9px;top:9px}}
+
+/* AIRUN V8 — AI Coach, phản hồi sau buổi chạy */
+.coach-card{margin-top:15px;padding:22px;position:relative;overflow:hidden;border-color:#cfe2d9}
+.coach-card:before{content:"";position:absolute;inset:0 0 auto 0;height:4px;background:linear-gradient(90deg,var(--green),var(--lime))}
+.coach-head{display:flex;align-items:center;gap:13px}
+.coach-mark{flex:none;width:42px;height:42px;border-radius:13px;display:grid;place-items:center;background:var(--green-dark);color:var(--lime);font-weight:900;font-size:14px;letter-spacing:.04em}
+.coach-title{flex:1;min-width:0}.coach-title .eyebrow{margin-bottom:4px}
+.coach-title h3{margin:0;font-size:19px;line-height:1.3;color:var(--ink)}
+.coach-pill{flex:none;font-size:11px;font-weight:800;padding:6px 10px;border-radius:999px;background:#edf5f1;color:var(--green);border:1px solid #d3e4dc;white-space:nowrap}
+.coach-pill.loading{background:#fff7e8;color:#9a5b10;border-color:#f3dfb8}
+.coach-pill.off{background:#f3f4f4;color:#66706c;border-color:#e2e5e4}
+.coach-pill.ok{background:#e9f8e7;color:#226b2c;border-color:#cbe9c6}
+.coach-summary{margin:14px 0 0;font-size:15px;line-height:1.6;color:#22382f}
+.coach-card.is-loading .coach-summary{color:var(--muted)}
+.coach-grid{display:grid;grid-template-columns:1.1fr 1fr 1fr 1fr;gap:10px;margin-top:15px}
+.coach-box{border:1px solid var(--line);border-radius:14px;padding:12px 13px;background:#fbfdfc}
+.coach-box small{display:block;font-size:10px;font-weight:900;letter-spacing:.1em;color:var(--green);margin-bottom:6px}
+.coach-box p,.coach-box li{font-size:13px;line-height:1.5;color:#2e4239;margin:0}
+.coach-box ul{margin:0;padding-left:17px}.coach-box li+li{margin-top:4px}
+.coach-box.when{background:#f1f8e3;border-color:#dcebbd}
+.coach-box.watch{background:#fff8f3;border-color:#f6e0cf}.coach-box.watch small{color:#b25a1c}
+.coach-score-comment{margin:12px 0 0;font-size:13px;color:#3d5249;background:#f4f8f5;border-left:3px solid var(--violet);padding:9px 12px;border-radius:0 10px 10px 0}
+.coach-chat{margin-top:14px;display:flex;flex-direction:column;gap:8px;max-height:340px;overflow:auto;padding:2px}
+.coach-msg{max-width:88%;font-size:14px;line-height:1.55;padding:10px 13px;border-radius:14px;white-space:pre-wrap}
+.coach-msg.user{align-self:flex-end;background:var(--green);color:#fff;border-bottom-right-radius:4px}
+.coach-msg.ai{align-self:flex-start;background:#eef5f1;color:#1d332a;border-bottom-left-radius:4px}
+.coach-msg.err{align-self:flex-start;background:#fff1ef;color:#8d3a32}
+.coach-suggest{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}
+.coach-suggest button{border:1px solid #d3e4dc;background:#fff;color:var(--green);border-radius:999px;padding:7px 12px;font-size:12px;font-weight:700}
+.coach-suggest button:hover{background:#edf5f1}
+.coach-form{display:flex;gap:8px;margin-top:10px}
+.coach-form input{flex:1;min-width:0;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font:inherit;font-size:14px;background:#fff}
+.coach-form input:focus{outline:2px solid #9fd8c4;border-color:var(--green)}
+.coach-form button{width:auto;padding:0 20px;font-size:13px}
+.coach-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px;font-size:11px;color:var(--muted)}
+.coach-link{border:0;background:transparent;color:var(--green);font-size:12px;font-weight:800;padding:4px 0;white-space:nowrap;cursor:pointer}
+.coach-card button:disabled,.feedback-card button:disabled{opacity:.55;cursor:not-allowed}
+.voice-toggle{display:flex;gap:8px;align-items:flex-start;margin-top:10px;font-size:12px;color:#3d5249}
+.voice-toggle input{margin-top:2px;accent-color:var(--green)}
+.run-ai{margin-top:13px;padding:18px 20px;display:flex;gap:13px;align-items:flex-start}
+.run-ai h3{margin:0 0 6px;font-size:17px}.run-ai p{margin:0;font-size:14px;line-height:1.55;color:#2e4239}
+.run-ai ul{margin:8px 0 0;padding-left:18px;font-size:13px;color:#2e4239}
+.feedback-card{margin-top:13px;padding:20px 22px}
+.feedback-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.feedback-head h3{margin:0 0 4px;font-size:18px}.feedback-head p{margin:0;font-size:13px;color:var(--muted)}
+.feedback-card fieldset{border:0;padding:0;margin:15px 0 0;display:flex;flex-wrap:wrap;gap:8px}
+.feedback-card legend{font-size:12px;font-weight:800;color:#2e4239;margin-bottom:8px;padding:0}
+.feedback-card fieldset label{flex:1;min-width:150px;cursor:pointer}
+.feedback-card fieldset input{position:absolute;opacity:0;pointer-events:none}
+.feedback-card fieldset span{display:block;border:1px solid var(--line);border-radius:12px;padding:11px 13px;font-size:13px;font-weight:800;color:#2e4239;background:#fff;text-align:center}
+.feedback-card fieldset span small{display:block;font-weight:500;font-size:11px;color:var(--muted)}
+.feedback-card fieldset input:checked+span{border-color:var(--green);background:#eaf6f0;color:var(--green);box-shadow:0 0 0 2px rgba(8,102,79,.15)}
+.feedback-card fieldset input:focus-visible+span{outline:2px solid var(--green)}
+.fb-route label{min-width:110px}
+.fb-scales{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:15px}
+.fb-scales label{font-size:12px;font-weight:800;color:#2e4239;border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.fb-scales output{float:right;color:var(--green);font-size:14px}
+.fb-scales input{width:100%;accent-color:var(--green);margin:8px 0 2px}
+.fb-scales small{display:flex;justify-content:space-between;font-weight:500;font-size:10px;color:var(--muted)}
+.fb-row{display:grid;grid-template-columns:2fr 1fr;gap:10px;margin-top:14px}
+.fb-row label span{display:block;font-size:12px;font-weight:800;color:#2e4239;margin-bottom:6px}
+.fb-row textarea,.fb-row input{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:12px;padding:10px 12px;font:inherit;font-size:13px;resize:vertical}
+.feedback-card>button{margin-top:14px;font-size:13px}
+.fb-status{margin:8px 0 0;font-size:12px;color:var(--muted);min-height:1em}
+.fb-status.ok{color:#226b2c}.fb-status.err{color:#a3392f}
+.journal-fb{display:inline-block;margin-left:6px;font-size:10px;font-weight:800;padding:2px 7px;border-radius:999px;background:#edf5f1;color:var(--green)}
+.journal-fb.strict{background:#fff4e2;color:#9a5b10}.journal-fb.lenient{background:#fdeceb;color:#a3392f}
+@media(max-width:1050px){.coach-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:780px){.coach-card{padding:17px}.coach-head{flex-wrap:wrap}.coach-pill{order:3}.coach-title h3{font-size:17px}.coach-grid{grid-template-columns:1fr}.fb-scales{grid-template-columns:1fr}.fb-row{grid-template-columns:1fr}.feedback-head{flex-direction:column}.coach-foot{flex-direction:column;align-items:flex-start}.coach-msg{max-width:94%}}
 </style>
 </head>
 <body>
@@ -246,9 +315,9 @@ dialog{border:0;border-radius:20px;padding:25px;width:min(680px,calc(100% - 30px
           <button id="heroGps" class="ghost-btn" type="button">⌖ Dùng vị trí hiện tại</button>
         </div>
         <div class="hero-trust">
-          <span>✓ Không cần API key</span>
+          <span>✓ AI Coach đọc số liệu thật</span>
           <span>✓ GPS xử lý ngay trên thiết bị</span>
-          <span>✓ Không có máy chủ lưu lộ trình</span>
+          <span>✓ Không lưu lộ trình GPS</span>
         </div>
       </div>
 
@@ -266,20 +335,20 @@ dialog{border:0;border-radius:20px;padding:25px;width:min(680px,calc(100% - 30px
 
         <div class="live-orbit" aria-label="Điều kiện hiện tại tại vị trí đang chọn">
           <div class="orbit-top">
-            <span id="liveBadge" class="source-badge demo">DỮ LIỆU DỰ PHÒNG</span>
+            <span id="liveBadge" class="source-badge loading">ĐANG TẢI DỮ LIỆU THẬT</span>
             <span id="heroUpdated">—</span>
           </div>
           <div class="orbit-main">
             <div class="weather-symbol" id="weatherSymbol" aria-hidden="true">◌</div>
-            <div><small id="heroArea">Hải Châu</small><strong><span id="heroTemp">29</span>°C</strong><p id="heroWeather">Đang đồng bộ dữ liệu trực tiếp…</p></div>
+            <div><small id="heroArea">Hải Châu</small><strong><span id="heroTemp">…</span>°C</strong><p id="heroWeather">Đang đồng bộ dữ liệu trực tiếp…</p></div>
           </div>
           <div class="orbit-metrics">
-            <div><small>AQI Mỹ</small><b id="heroAqi">64</b></div>
-            <div><small>PM2.5</small><b><span id="heroPm">18</span><i> µg/m³</i></b></div>
-            <div><small>Gió</small><b><span id="heroWind">9</span><i> km/h</i></b></div>
-            <div><small>UV</small><b id="heroUv">3</b></div>
+            <div><small>AQI Mỹ</small><b id="heroAqi">…</b></div>
+            <div><small>PM2.5</small><b><span id="heroPm">…</span><i> µg/m³</i></b></div>
+            <div><small>Gió</small><b><span id="heroWind">…</span><i> km/h</i></b></div>
+            <div><small>UV</small><b id="heroUv">…</b></div>
           </div>
-          <p class="orbit-note" id="heroLocationNote">Đang hiển thị số liệu minh họa tạm thời. Weather/Air trực tiếp sẽ thay thế ngay khi proxy phản hồi.</p>
+          <p class="orbit-note" id="heroLocationNote">AIRUN đang lấy thời tiết và AQI trực tiếp từ Open-Meteo…</p>
           <div class="system-status" aria-label="Trạng thái kết nối AIRUN">
             <div class="system-chip" data-state="idle" id="jsStatusChip"><i></i><span><small>ỨNG DỤNG</small><b id="jsStatus">Chưa khởi động</b></span></div>
             <div class="system-chip" data-state="idle" id="weatherStatusChip"><i></i><span><small>WEATHER API</small><b id="weatherApiStatus">Chưa kết nối</b></span></div>
@@ -352,7 +421,7 @@ dialog{border:0;border-radius:20px;padding:25px;width:min(680px,calc(100% - 30px
           <div class="plan-summary" id="planSummary" aria-live="polite">
             <div><small>KẾ HOẠCH</small><strong id="planSummaryDistance">4.29 km</strong><span id="planSummaryPace">pace 7:00/km</span></div>
             <div><small>THỜI LƯỢNG</small><strong id="planSummaryDuration">30 phút</strong><span id="planSummarySpeed">≈ 8.6 km/h</span></div>
-            <div><small>NGUỒN MÔI TRƯỜNG</small><strong id="planSummarySource">Dự phòng</strong><span id="planSummaryForecast">Đang đồng bộ forecast…</span></div>
+            <div><small>NGUỒN MÔI TRƯỜNG</small><strong id="planSummarySource">Đang tải</strong><span id="planSummaryForecast">Đang đồng bộ forecast…</span></div>
           </div>
           <div class="metric-grid">
             <div><span class="metric-icon air">AQ</span><small>AQI Mỹ</small><strong id="metricAqi">—</strong><em id="metricAqiLabel">Chưa có</em></div>
@@ -381,6 +450,35 @@ dialog{border:0;border-radius:20px;padding:25px;width:min(680px,calc(100% - 30px
           <button id="routeFromPlanBtn" class="primary route-plan-cta" type="button">⌁ Tạo cung chạy theo kế hoạch</button>
         </article>
       </div>
+
+      <article class="card coach-card" id="coachCard" aria-live="polite">
+        <div class="coach-head">
+          <span class="coach-mark" aria-hidden="true">AI</span>
+          <div class="coach-title"><p class="eyebrow">AIRUN COACH · AI ĐỌC SỐ LIỆU ĐANG HIỂN THỊ</p><h3 id="coachHeadline">AI Coach sẽ nói tình hình bằng lời khi có dữ liệu thật</h3></div>
+          <span id="coachPill" class="coach-pill">Chờ dữ liệu</span>
+        </div>
+        <p id="coachSummary" class="coach-summary">AIRUN gửi cho AI đúng các con số ở trên (thời tiết, AQI, UV, kế hoạch, điểm và dự báo theo giờ). AI tóm tắt, gợi ý giờ chạy, cách chạy và đồ cần mang.</p>
+        <div class="coach-grid" id="coachGrid" hidden>
+          <div class="coach-box when"><small>◷ NÊN CHẠY LÚC</small><p id="coachWhen">—</p></div>
+          <div class="coach-box"><small>⇣ ĐIỀU CHỈNH KẾ HOẠCH</small><ul id="coachAdjust"></ul></div>
+          <div class="coach-box"><small>🎒 MANG THEO</small><ul id="coachBring"></ul></div>
+          <div class="coach-box watch"><small>⚠ DỪNG LẠI NẾU</small><ul id="coachWatch"></ul></div>
+        </div>
+        <p id="coachScoreComment" class="coach-score-comment" hidden></p>
+        <div class="coach-chat" id="coachChat" hidden></div>
+        <div class="coach-suggest" id="coachSuggest">
+          <button type="button" data-coach-q="Nếu chạy sáng mai thì giờ nào tốt nhất?">Sáng mai giờ nào tốt?</button>
+          <button type="button" data-coach-q="Với điều kiện này mình nên chạy pace bao nhiêu và bao lâu?">Nên chạy pace bao nhiêu?</button>
+          <button type="button" data-coach-q="Mình bị hen nhẹ, có nên chạy lúc này không?">Mình bị hen nhẹ thì sao?</button>
+          <button type="button" data-coach-q="Nên chọn chạy ven biển hay ven sông Hàn với thời tiết này?">Ven biển hay ven sông?</button>
+        </div>
+        <form id="coachForm" class="coach-form" autocomplete="off">
+          <label class="sr-only" for="coachInput">Hỏi thêm AI Coach</label>
+          <input id="coachInput" maxlength="300" placeholder="Hỏi thêm AI Coach, ví dụ: chạy 10 km lúc 17h được không?">
+          <button id="coachSendBtn" class="primary" type="submit">Gửi</button>
+        </form>
+        <div class="coach-foot"><span id="coachBasis">Chỉ dùng số liệu trên trang · không gửi tọa độ GPS chính xác · không thay thế tư vấn y tế.</span><button id="coachRefreshBtn" type="button" class="coach-link">↻ Hỏi lại AI</button></div>
+      </article>
     </section>
 
     <section class="section-wrap map-section" id="mapSection">
@@ -412,7 +510,7 @@ dialog{border:0;border-radius:20px;padding:25px;width:min(680px,calc(100% - 30px
           </div>
           <div class="route-step route-origin"><span>2</span><div><small>ĐIỂM XUẤT PHÁT</small><h3 id="routeOriginName">Hải Châu</h3><p id="routeOriginNote">Dùng khu vực đã chọn. GPS sẽ chính xác hơn.</p></div></div>
           <button id="generateRouteBtn" class="primary route-generate" type="button">⌁ Tạo cung chạy phù hợp</button>
-          <div class="route-provider-row"><span id="routeProviderStatus" class="route-provider-status">OpenFreeMap đang sẵn sàng làm bản đồ dự phòng. Kết nối Mapbox + GraphHopper để có cung chạy nâng cao.</span><button id="routeMapSettingsBtn" class="soft-btn route-settings-btn" type="button">⚙ Kết nối bản đồ nâng cao</button></div>
+          <div class="route-provider-row"><span id="routeProviderStatus" class="route-provider-status">Đang kiểm tra dịch vụ tạo cung chạy trên máy chủ…</span></div>
           <div id="routeResult" class="route-result" hidden>
             <div class="route-result-head"><span id="routeSourcePill">CUNG GỢI Ý</span><b id="routeDistanceResult">— km</b></div>
             <h3 id="routeResultTitle">Cung chạy đi – về</h3>
@@ -435,17 +533,7 @@ dialog{border:0;border-radius:20px;padding:25px;width:min(680px,calc(100% - 30px
       </div>
     </section>
 
-    <div id="routingSetupModal" class="setup-modal" hidden role="dialog" aria-modal="true" aria-labelledby="routingSetupTitle">
-      <div class="setup-card">
-        <div class="setup-head"><div><span class="provider-badge">MAPBOX + GRAPHHOPPER</span><h3 id="routingSetupTitle">Kết nối bản đồ nâng cao</h3><p>Chỉ cần cấu hình một lần trên trình duyệt này. AIRUN sẽ dùng Mapbox để vẽ bản đồ và GraphHopper để tạo cung chạy vòng theo số km.</p></div><button id="closeRoutingSetupBtn" class="setup-close" type="button" aria-label="Đóng">×</button></div>
-        <div class="setup-grid">
-          <label><span>Mapbox public token <small>bắt đầu bằng pk.</small></span><input id="mapboxTokenInput" type="password" placeholder="pk.eyJ..." autocomplete="off" spellcheck="false"></label>
-          <label><span>GraphHopper API key <small>API Keys trong GraphHopper Dashboard</small></span><input id="graphhopperKeyInput" type="password" placeholder="Dán API key GraphHopper" autocomplete="off" spellcheck="false"></label>
-        </div>
-        <div class="setup-note"><b>Lưu ý cho bản demo:</b> Mapbox public token được thiết kế để dùng trên web; bạn nên giới hạn token cho domain AIRUN. GraphHopper key trong bản Static Site vẫn có thể nhìn thấy trong Network của trình duyệt, nên chỉ nên dùng cho demo/cuộc thi. Khi đưa AIRUN vào sử dụng thật, chuyển GraphHopper qua backend proxy.</div>
-        <div class="setup-actions"><button id="saveRoutingSetupBtn" class="primary" type="button">✓ Lưu & kiểm tra kết nối</button><button id="clearRoutingSetupBtn" class="soft-btn" type="button">Xóa cấu hình</button></div>
-      </div>
-    </div>
+
 
     <section class="section-wrap tracker-section" id="tracker">
       <div class="section-heading tracker-heading">
@@ -483,6 +571,7 @@ dialog{border:0;border-radius:20px;padding:25px;width:min(680px,calc(100% - 30px
             <button id="pauseRunBtn" class="run-secondary" type="button" disabled>Ⅱ Tạm dừng</button>
             <button id="finishRunBtn" class="run-finish" type="button" disabled>■ Kết thúc</button>
           </div>
+          <label class="voice-toggle"><input id="voiceCue" type="checkbox" checked><span>🔊 AI nhắc bằng giọng nói khi đang chạy (mỗi km và khi điều kiện thay đổi)</span></label>
           <p class="tracker-note">Theo dõi GPS trên web hoạt động tốt nhất khi AIRUN đang mở trên màn hình. AIRUN sẽ cố giữ màn hình sáng nếu trình duyệt hỗ trợ Screen Wake Lock.</p>
         </div>
 
@@ -501,6 +590,36 @@ dialog{border:0;border-radius:20px;padding:25px;width:min(680px,calc(100% - 30px
         <div><p class="eyebrow">BUỔI CHẠY GẦN NHẤT</p><h3 id="summaryTitle">Đã hoàn thành</h3><p id="summaryMeta">—</p></div>
         <div class="summary-metrics"><span><b id="summaryDistance">0.00 km</b>Quãng đường</span><span><b id="summaryTime">00:00</b>Thời gian</span><span><b id="summaryPace">—</b>Pace TB</span></div>
       </div>
+
+      <div class="run-ai card" id="runAiCard" hidden aria-live="polite">
+        <span class="coach-mark" aria-hidden="true">AI</span>
+        <div><p class="eyebrow">AI NHẬN XÉT BUỔI CHẠY</p><h3 id="runAiHeadline">—</h3><p id="runAiSummary"></p><ul id="runAiNext"></ul><p id="runAiScore" class="coach-score-comment" hidden></p></div>
+      </div>
+
+      <form class="feedback-card card" id="feedbackForm" autocomplete="off">
+        <div class="feedback-head"><div><p class="eyebrow">SAU BUỔI CHẠY · 30 GIÂY</p><h3>Khuyến nghị của AIRUN có hợp lý không?</h3><p id="feedbackContext">Đánh giá giúp nhóm phát hiện chỗ chấm điểm chưa đúng. Dùng được cả khi bạn không bật GPS.</p></div><span id="feedbackStats" class="coach-pill">Chưa có đánh giá</span></div>
+        <fieldset class="fb-verdict"><legend>Điểm và lời khuyên trước khi chạy</legend>
+          <label><input type="radio" name="fbVerdict" value="dung"><span>✓ Đúng với cảm nhận</span></label>
+          <label><input type="radio" name="fbVerdict" value="qua_khat_khe"><span>▲ Quá khắt khe<small>thực tế dễ chạy hơn</small></span></label>
+          <label><input type="radio" name="fbVerdict" value="qua_de_dai"><span>▼ Quá dễ dãi<small>thực tế khó chạy hơn</small></span></label>
+        </fieldset>
+        <div class="fb-scales">
+          <label>Cảm giác nóng <output id="fbHeatOut">3</output><input id="fbHeat" type="range" min="1" max="5" value="3"><small><span>Mát</span><span>Rất nóng</span></small></label>
+          <label>Khó thở / không khí <output id="fbBreathOut">2</output><input id="fbBreath" type="range" min="1" max="5" value="2"><small><span>Dễ chịu</span><span>Rất khó</span></small></label>
+          <label>Mức mệt <output id="fbEffortOut">3</output><input id="fbEffort" type="range" min="1" max="5" value="3"><small><span>Nhẹ</span><span>Kiệt sức</span></small></label>
+        </div>
+        <fieldset class="fb-route"><legend>Cung đường gợi ý</legend>
+          <label><input type="radio" name="fbRoute" value="phu_hop"><span>Phù hợp</span></label>
+          <label><input type="radio" name="fbRoute" value="chua_phu_hop"><span>Chưa phù hợp</span></label>
+          <label><input type="radio" name="fbRoute" value="khong_dung" checked><span>Không dùng</span></label>
+        </fieldset>
+        <div class="fb-row">
+          <label class="fb-note"><span>Ghi chú (tùy chọn)</span><textarea id="fbNote" rows="2" maxlength="400" placeholder="Ví dụ: đoạn ven biển gió mát hơn dự báo, 17h vẫn còn nắng gắt…"></textarea></label>
+          <label class="fb-tester"><span>Tên/mã người thử (tùy chọn)</span><input id="fbTester" maxlength="40" placeholder="VD: CLB chạy 01"></label>
+        </div>
+        <button id="feedbackSubmit" class="primary" type="submit">Gửi đánh giá & nhận nhận xét của AI</button>
+        <p class="fb-status" id="feedbackStatus" role="status"></p>
+      </form>
     </section>
 
     <section class="section-wrap city-stories" aria-labelledby="cityStoriesTitle">
@@ -569,8 +688,8 @@ dialog{border:0;border-radius:20px;padding:25px;width:min(680px,calc(100% - 30px
     </section>
 
     <section class="method-section">
-      <div><p class="eyebrow light">GIẢI THÍCH ĐƯỢC</p><h2>AIRUN không dùng một “điểm AI” bí ẩn.</h2><p>Điểm thuận lợi được tính từ AQI, PM2.5, nhiệt độ cảm nhận, mưa, gió, UV, cường độ và thời lượng. Mỗi yếu tố bất lợi đều được hiển thị để người chạy tự quyết định.</p></div>
-      <div class="method-flow"><span>GPS</span><i>→</i><span>Dữ liệu mở</span><i>→</i><span>Lọc nhiễu</span><i>→</i><span>Chấm điểm</span><i>→</i><span>Giải thích</span><i>→</i><span>Bạn quyết định</span></div>
+      <div><p class="eyebrow light">GIẢI THÍCH ĐƯỢC</p><h2>Điểm minh bạch, AI giải thích bằng lời.</h2><p>Điểm thuận lợi được tính bằng công thức công khai từ AQI, PM2.5, nhiệt độ cảm nhận, mưa, gió, UV, cường độ và thời lượng. AI Coach đọc đúng các số liệu đó, nói bằng lời dễ hiểu và trả lời câu hỏi — AI không tự đổi điểm. Phản hồi sau mỗi buổi chạy giúp hiệu chỉnh lại công thức.</p></div>
+      <div class="method-flow"><span>GPS</span><i>→</i><span>Dữ liệu mở</span><i>→</i><span>Lọc nhiễu</span><i>→</i><span>Chấm điểm</span><i>→</i><span>AI giải thích</span><i>→</i><span>Bạn chạy</span><i>→</i><span>Phản hồi để hiệu chỉnh</span></div>
     </section>
   </main>
 
@@ -591,9 +710,11 @@ dialog{border:0;border-radius:20px;padding:25px;width:min(680px,calc(100% - 30px
       <div><b>🌦 Thời tiết</b><p>Open-Meteo Weather API theo tọa độ GPS hoặc khu vực đã chọn. Đây là dữ liệu dự báo mô hình.</p></div>
       <div><b>🌿 Không khí</b><p>Open-Meteo Air Quality API cung cấp AQI Mỹ, PM2.5 và PM10 theo ô lưới dự báo.</p></div>
       <div><b>📍 GPS</b><p>GPS chỉ được bật khi bạn chủ động yêu cầu. Chế độ chạy dùng watchPosition để nhận các điểm liên tục và lọc điểm có độ chính xác kém.</p></div>
-      <div><b>🏃 Lộ trình</b><p>Bản đồ dự phòng dùng OpenFreeMap/MapLibre; dữ liệu đường nền có nguồn từ OpenStreetMap. Dịch vụ định tuyến tạo cung chạy hoạt động độc lập với lớp bản đồ hiển thị.</p></div>
-      <div><b>💾 Nhật ký</b><p>Dữ liệu được lưu bằng localStorage trên thiết bị. AIRUN không có máy chủ riêng nhận nhật ký cá nhân.</p></div>
-      <div><b>⚠ Dữ liệu dự phòng</b><p>Nếu API không truy cập được, AIRUN ưu tiên dữ liệu đã lưu gần đây; nếu không có sẽ hiển thị rõ là dữ liệu mô phỏng để giao diện không bị trống.</p></div>
+      <div><b>🏃 Lộ trình</b><p>Bản đồ dùng OpenFreeMap/MapLibre (dữ liệu OpenStreetMap). Cung chạy vòng được tạo qua máy chủ AIRUN; khóa GraphHopper nằm trong biến môi trường của máy chủ, trình duyệt không nhìn thấy.</p></div>
+      <div><b>✦ AI Coach</b><p>Khi bạn xem kết quả hoặc hỏi AI, AIRUN gửi lên máy chủ gói số liệu đang hiển thị (tên khu vực, thời tiết, AQI, kế hoạch, điểm). Không gửi tọa độ GPS chính xác. Khóa OpenAI chỉ nằm trên máy chủ.</p></div>
+      <div><b>☑ Phản hồi</b><p>Đánh giá sau buổi chạy (đúng / quá khắt khe / quá dễ dãi, cảm nhận nóng, khó thở) được gửi ẩn danh để nhóm hiệu chỉnh cách chấm điểm.</p></div>
+      <div><b>💾 Nhật ký</b><p>Nhật ký kế hoạch và buổi chạy được lưu bằng localStorage trên thiết bị. Chuỗi tọa độ GPS không được lưu hay gửi đi.</p></div>
+      <div><b>⚠ Khi API lỗi</b><p>AIRUN dùng dữ liệu thật đã lưu gần đây (ghi rõ thời điểm). Nếu không có, AIRUN để trống và không chấm điểm bằng số mô phỏng.</p></div>
     </div>
     <p class="dialog-note">GPS trên trình duyệt web có thể bị hệ điều hành hạn chế khi tắt màn hình hoặc chuyển ứng dụng. Để theo dõi ổn định, nên giữ AIRUN ở foreground hoặc cài dưới dạng PWA.</p>
     <button id="dialogOk" class="primary" type="button">Đã hiểu</button>
@@ -677,7 +798,10 @@ const runFallbackMap={map:null,loading:null,currentMarker:null,startMarker:null,
 
 function ward(key = selectedKey){ return WARDS.find(item => item.key === key) || WARDS[0]; }
 function safeJSON(raw, fallback){ try{return JSON.parse(raw)}catch{return fallback} }
-function localGet(key, fallback){ try{return safeJSON(localStorage.getItem(key), fallback)}catch{return fallback} }
+// V8: localStorage.getItem() trả null với người dùng mới → JSON.parse(null) = null (không lỗi) nên phải tự trả fallback.
+function localGet(key, fallback){ try{const raw=localStorage.getItem(key);if(raw===null||raw===undefined)return fallback;const value=safeJSON(raw,fallback);return value===null||value===undefined?fallback:value;}catch{return fallback} }
+const fmt=(value,digits=0,empty='—')=>value===null||value===undefined||value===''||!Number.isFinite(Number(value))?empty:round(value,digits);
+const hasNum=value=>value!==null&&value!==undefined&&value!==''&&Number.isFinite(Number(value));
 function localSet(key, value){ try{localStorage.setItem(key, JSON.stringify(value));return true}catch{return false} }
 function hasDom(){ return typeof document !== 'undefined'; }
 
@@ -698,7 +822,7 @@ function asNumber(value,fallback=null){const n=Number(value);return Number.isFin
 function runAsyncTask(name,task){
   Promise.resolve().then(task).catch(error=>{
     console.error(`AIRUN async ${name}:`,error);
-    setSystemStatus('js','warn','V7.0 · tác vụ phụ lỗi');
+    setSystemStatus('js','warn','V8.0 · tác vụ phụ lỗi');
     showToast(`${name} chưa hoàn tất. Các chức năng khác vẫn hoạt động.`);
   });
 }
@@ -706,13 +830,13 @@ function runAsyncTask(name,task){
 if(typeof window!=='undefined'){
   window.addEventListener('error',event=>{
     console.error('AIRUN global error:',event.error||event.message);
-    setSystemStatus('js','warn','V7.0 · có lỗi phụ');
+    setSystemStatus('js','warn','V8.0 · có lỗi phụ');
     setApiUpdateText(`Lỗi giao diện phụ: ${String(event.message||'không xác định').slice(0,80)}`);
   });
   window.addEventListener('unhandledrejection',event=>{
     console.error('AIRUN rejected promise:',event.reason);
     // Một tác vụ phụ (bản đồ/GPS refine/animation) không được làm người dùng nghĩ toàn app đã chết.
-    setSystemStatus('js','warn','V7.0 · tác vụ phụ lỗi');
+    setSystemStatus('js','warn','V8.0 · tác vụ phụ lỗi');
   });
 }
 
@@ -817,33 +941,43 @@ async function fetchEnvironmentAt(lat, lon, options = {}){
   const cacheId=options.cacheId||`geo:${Number(lat).toFixed(3)},${Number(lon).toFixed(3)}`;
   const location={lat:Number(lat),lon:Number(lon),label,accuracy:options.accuracy??null,mode:options.mode||'ward'};
   const onProgress=typeof options.onProgress==='function'?options.onProgress:null;
-  const backup=fallbackData(nearest.item,location);
-  const hourlyMap=new Map((backup.hourly||[]).map(row=>[row.time,{...row}]));
-  let current={...backup.current};
+  // V8: không trộn số mô phỏng vào dữ liệu thật. Trường nào chưa có từ API thì để null.
+  const hourlyMap=new Map();
+  let current={temp:null,feels:null,humidity:null,wind:null,rain:null,precip:null,uv:null,code:null,aqi:null,pm:null,pm10:null};
   let weatherOk=false,airOk=false,weatherMs=null,airMs=null;
 
   setSystemStatus('weather','loading','Đang kết nối…');
   setSystemStatus('air','loading','Đang kết nối…');
   setApiUpdateText(`Đang lấy dữ liệu trực tiếp cho ${label}…`);
 
+  const failedBackup=()=>({...fallbackData(nearest.item,location),failed:true});
   if(typeof navigator!=='undefined'&&!navigator.onLine){
     setSystemStatus('weather','warn','Ngoại tuyến');
     setSystemStatus('air','warn','Ngoại tuyến');
-    return backup;
+    const stale=getStaleCache(cacheId);
+    return stale?{...stale,source:'cached'}:failedBackup();
   }
 
   const safeLat=Number(lat).toFixed(5),safeLon=Number(lon).toFixed(5);
   const weatherUrl=`/api/weather/${safeLat}/${safeLon}`;
   const airUrl=`/api/air/${safeLat}/${safeLon}`;
+  const nowHour=vnIso().slice(0,13)+':00';
 
-  const buildResult=()=>({
-    cacheId,key,
-    source:weatherOk&&airOk?'live':(weatherOk||airOk?'partial':'demo'),
-    forecastSource:(weatherOk||airOk)?'partial':'demo',
-    updated:Date.now(),location,current:{...current},
-    hourly:[...hourlyMap.values()].sort((a,b)=>a.time.localeCompare(b.time)),
-    liveParts:{weather:weatherOk,air:airOk},latency:{weather:weatherMs,air:airMs}
-  });
+  const buildResult=()=>{
+    const hourly=[...hourlyMap.values()].sort((a,b)=>a.time.localeCompare(b.time));
+    // Khả năng mưa hiện tại lấy từ dự báo giờ hiện tại (không còn gán 100% chỉ vì có vài giọt mưa).
+    const row=hourlyMap.get(nowHour);
+    const cur={...current};
+    if(row&&hasNum(row.rain))cur.rain=row.rain;else if(hasNum(cur.precip))cur.rain=cur.precip>0.2?80:cur.precip>0?40:0;
+    if(!hasNum(cur.uv)&&row&&hasNum(row.uv))cur.uv=row.uv;
+    return {
+      cacheId,key,
+      source:weatherOk&&airOk?'live':(weatherOk||airOk?'partial':'demo'),
+      forecastSource:weatherOk&&airOk?'live':(weatherOk||airOk)?'partial':'demo',
+      updated:Date.now(),location,current:cur,hourly,
+      liveParts:{weather:weatherOk,air:airOk},latency:{weather:weatherMs,air:airMs}
+    };
+  };
   const publish=part=>{
     const data=buildResult();
     if(onProgress){try{onProgress(data,part);}catch(error){console.warn('AIRUN progress:',error);}}
@@ -858,21 +992,22 @@ async function fetchEnvironmentAt(lat, lon, options = {}){
     if(!json||json.error)throw new Error(json?.reason||'API_INVALID');
     return json;
   }
+  const mergeHour=(time,patch)=>{const old=hourlyMap.get(time)||{time};const next={...old};for(const [k,v] of Object.entries(patch)){if(hasNum(v))next[k]=Number(v);}hourlyMap.set(time,next);};
 
   const weatherTask=(async()=>{
     const started=performance.now();
     try{
       const w=await readProxy(weatherUrl),wc=w.current||{};
       current={...current,
-        temp:asNumber(wc.temperature_2m,current.temp),
-        feels:asNumber(wc.apparent_temperature,current.feels),
-        humidity:asNumber(wc.relative_humidity_2m,current.humidity),
-        wind:asNumber(wc.wind_speed_10m,current.wind),
-        code:asNumber(wc.weather_code,current.code),
-        rain:asNumber(wc.precipitation,null)!==null?(asNumber(wc.precipitation,0)>0?100:0):current.rain
+        temp:asNumber(wc.temperature_2m,null),
+        feels:asNumber(wc.apparent_temperature,null),
+        humidity:asNumber(wc.relative_humidity_2m,null),
+        wind:asNumber(wc.wind_speed_10m,null),
+        code:asNumber(wc.weather_code,null),
+        precip:asNumber(wc.precipitation,null)
       };
       const h=w.hourly||{},times=Array.isArray(h.time)?h.time:[];
-      times.forEach((time,index)=>{const old=hourlyMap.get(time)||{time};hourlyMap.set(time,{...old,time,temp:h.temperature_2m?.[index],feels:h.apparent_temperature?.[index],humidity:h.relative_humidity_2m?.[index],rain:h.precipitation_probability?.[index],wind:h.wind_speed_10m?.[index],code:h.weather_code?.[index]});});
+      times.forEach((time,index)=>mergeHour(time,{temp:h.temperature_2m?.[index],feels:h.apparent_temperature?.[index],humidity:h.relative_humidity_2m?.[index],rain:h.precipitation_probability?.[index],wind:h.wind_speed_10m?.[index],code:h.weather_code?.[index],uvW:h.uv_index?.[index]}));
       weatherOk=true;weatherMs=Math.max(1,Math.round(performance.now()-started));setSystemStatus('weather','ok',`${weatherMs} ms`);publish('weather');
     }catch(error){console.warn('AIRUN Weather proxy:',error);setSystemStatus('weather','error',apiErrorLabel(error));}
   })();
@@ -881,24 +1016,30 @@ async function fetchEnvironmentAt(lat, lon, options = {}){
     const started=performance.now();
     try{
       const a=await readProxy(airUrl),ac=a.current||{};
-      current={...current,aqi:asNumber(ac.us_aqi,current.aqi),pm:asNumber(ac.pm2_5,current.pm),pm10:asNumber(ac.pm10,current.pm10),uv:asNumber(ac.uv_index,current.uv)};
+      current={...current,aqi:asNumber(ac.us_aqi,null),pm:asNumber(ac.pm2_5,null),pm10:asNumber(ac.pm10,null),uv:asNumber(ac.uv_index,current.uv)};
       const h=a.hourly||{},times=Array.isArray(h.time)?h.time:[];
-      times.forEach((time,index)=>{const old=hourlyMap.get(time)||{time};hourlyMap.set(time,{...old,time,aqi:h.us_aqi?.[index],pm:h.pm2_5?.[index],pm10:h.pm10?.[index],uv:asNumber(h.uv_index?.[index],old.uv)});});
-      airOk=true;airMs=Math.max(1,Math.round(performance.now()-started));setSystemStatus('air','ok',`${airMs} ms`);publish('air');
+      times.forEach((time,index)=>mergeHour(time,{aqi:h.us_aqi?.[index],pm:h.pm2_5?.[index],pm10:h.pm10?.[index],uv:h.uv_index?.[index]}));
+      airOk=true;airMs=Math.max(1,Math.round(performance.now()-started));
+      setSystemStatus('air','ok',times.length?`${airMs} ms`:`${airMs} ms · chưa có dự báo giờ`);publish('air');
     }catch(error){console.warn('AIRUN Air proxy:',error);setSystemStatus('air','error',apiErrorLabel(error));}
   })();
 
   await Promise.allSettled([weatherTask,airTask]);
+  // UV theo giờ: ưu tiên Air API, nếu thiếu dùng UV của Weather API.
+  for(const row of hourlyMap.values()){if(!hasNum(row.uv)&&hasNum(row.uvW))row.uv=row.uvW;delete row.uvW;}
   const result=buildResult();
   if(weatherOk||airOk){
-    memoryCache.set(cacheId,result);savePersistentCache(result);
+    memoryCache.set(cacheId,result);
+    try{savePersistentCache(result);}catch(error){console.warn('AIRUN cache:',error);}
     const nowText=new Date().toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
     setApiUpdateText(`${weatherOk&&airOk?'Weather + Air trực tiếp':'Đã nhận một phần dữ liệu trực tiếp'} · ${nowText}`);
     publish('ready');
     return result;
   }
-  setApiUpdateText('Proxy chưa trả dữ liệu · đang dùng số liệu dự phòng');
-  return backup;
+  const stale=getStaleCache(cacheId);
+  if(stale){setApiUpdateText('API chưa phản hồi · đang dùng dữ liệu thật đã lưu gần đây');return {...stale,source:'cached'};}
+  setApiUpdateText('API chưa phản hồi · chỉ có số liệu mô phỏng (không dùng để quyết định)');
+  return failedBackup();
 }
 
 function fetchEnvironment(key, force = false, onProgress = null){
@@ -936,45 +1077,77 @@ function uvInfo(uv){
   return {label:'Cực cao',tone:'bad'};
 }
 
-function analyzeSnapshot(snapshot, plan){
-  let score = 10; const reasons = [];
-  const aqi=Number(snapshot.aqi??0),pm=Number(snapshot.pm??0),feels=Number(snapshot.feels??snapshot.temp??25),wind=Number(snapshot.wind??0),rain=Number(snapshot.rain??0),uv=Number(snapshot.uv??0);
+// V8: hiệu chỉnh theo phản hồi của chính người dùng (nút "quá khắt khe / quá dễ dãi" sau mỗi buổi chạy).
+function personalHeatAdjustment(){
+  try{
+    const rows=(typeof journalRows==='function'?journalRows():[]).filter(r=>r.feedback&&hasNum(r.feedback.feels)&&Number(r.feedback.feels)>=30);
+    const strict=rows.filter(r=>r.feedback.verdict==='qua_khat_khe').length,lenient=rows.filter(r=>r.feedback.verdict==='qua_de_dai').length;
+    if(strict+lenient<2)return {value:0,strict,lenient};
+    return {value:clamp((strict-lenient)*.3,-1,1),strict,lenient};
+  }catch{return {value:0,strict:0,lenient:0};}
+}
 
-  if(aqi<=50) reasons.push(`AQI Mỹ ${round(aqi)} ở mức tốt, ít cản trở hoạt động ngoài trời.`);
+function analyzeSnapshot(snapshot, plan, options = {}){
+  let score = 10; const reasons = [];
+  const has={aqi:hasNum(snapshot.aqi),pm:hasNum(snapshot.pm),feels:hasNum(snapshot.feels)||hasNum(snapshot.temp),wind:hasNum(snapshot.wind),rain:hasNum(snapshot.rain),uv:hasNum(snapshot.uv)};
+  const aqi=Number(snapshot.aqi??0),pm=Number(snapshot.pm??0),feels=Number(snapshot.feels??snapshot.temp??25),wind=Number(snapshot.wind??0),rain=Number(snapshot.rain??0),uv=Number(snapshot.uv??0);
+  const code=Number(snapshot.code);
+
+  if(!has.aqi) reasons.push('Chưa lấy được AQI cho giờ này nên AIRUN chưa tính chất lượng không khí vào điểm.');
+  else if(aqi<=50) reasons.push(`AQI Mỹ ${round(aqi)} ở mức tốt, ít cản trở hoạt động ngoài trời.`);
   else if(aqi<=100){score-=(aqi-50)/28;reasons.push(`AQI Mỹ ${round(aqi)} ở mức trung bình; nên chú ý cảm giác hô hấp.`);}
   else if(aqi<=150){score-=3+(aqi-100)/35;reasons.push(`AQI Mỹ ${round(aqi)} không thuận lợi cho nhóm nhạy cảm.`);}
   else{score-=6+Math.min(2,(aqi-150)/50);reasons.push(`AQI Mỹ ${round(aqi)} ở mức có hại; nên tránh chạy ngoài trời cường độ cao.`);}
 
-  if(pm>35.5){score-=1.5;reasons.push(`PM2.5 ${round(pm,1)} µg/m³ khá cao; cân nhắc đổi giờ hoặc chạy trong nhà.`);}
-  else if(pm>9){score-=Math.min(1,(pm-9)/30);reasons.push(`PM2.5 ${round(pm,1)} µg/m³ cần được theo dõi, nhất là khi chạy lâu.`);}
-  else reasons.push(`PM2.5 ${round(pm,1)} µg/m³ đang thấp trong dữ liệu hiện có.`);
+  if(has.pm){
+    if(pm>35.5){score-=1.5;reasons.push(`PM2.5 ${round(pm,1)} µg/m³ khá cao; cân nhắc đổi giờ hoặc chạy trong nhà.`);}
+    else if(pm>15){score-=Math.min(.8,(pm-15)/25);reasons.push(`PM2.5 ${round(pm,1)} µg/m³ cần được theo dõi, nhất là khi chạy lâu.`);}
+    else reasons.push(`PM2.5 ${round(pm,1)} µg/m³ đang thấp trong dữ liệu hiện có.`);
+  }
 
-  if(feels>34){score-=2.2+(feels-34)*.18;reasons.push(`Nhiệt cảm nhận ${round(feels)}°C làm tăng nguy cơ quá nóng và mất nước.`);}
-  else if(feels>30){score-=(feels-30)*.32;reasons.push(`Cảm giác ${round(feels)}°C khá nóng; nên giảm cường độ và mang thêm nước.`);}
-  else if(feels<14){score-=Math.min(1.5,(14-feels)*.15);reasons.push(`Cảm giác ${round(feels)}°C khá mát; cần khởi động kỹ.`);}
+  // V8: thang nhiệt hiệu chỉnh cho người chạy đã quen nắng nóng ẩm ở Đà Nẵng (BTC nhận xét V7 quá khắt khe).
+  let heatPenalty=0;
+  if(!has.feels) reasons.push('Chưa có nhiệt độ cho giờ này.');
+  else if(feels>=39){heatPenalty=3.6+(feels-39)*.45;reasons.push(`Nhiệt cảm nhận ${round(feels)}°C rất nóng; nguy cơ say nắng cao, nên đổi sang sáng sớm/tối muộn.`);}
+  else if(feels>35){heatPenalty=1.3+(feels-35)*.55;reasons.push(`Cảm giác ${round(feels)}°C nóng; nếu vẫn chạy, giảm pace, rút ngắn và uống nước mỗi 15–20 phút.`);}
+  else if(feels>30){heatPenalty=(feels-30)*.26;reasons.push(`Cảm giác ${round(feels)}°C hơi nóng nhưng vẫn chạy nhẹ được; mang nước và ưu tiên tuyến có gió/bóng râm.`);}
+  else if(feels<14){heatPenalty=Math.min(1.5,(14-feels)*.15);reasons.push(`Cảm giác ${round(feels)}°C khá mát; cần khởi động kỹ.`);}
   else reasons.push(`Nhiệt cảm nhận ${round(feels)}°C tương đối phù hợp cho vận động.`);
+  const personal=options.personal===false?{value:0}:personalHeatAdjustment();
+  if(heatPenalty>0&&feels>30&&feels<39&&personal.value){
+    const before=heatPenalty;heatPenalty=Math.max(0,heatPenalty-personal.value);
+    reasons.push(`Điều chỉnh theo phản hồi của bạn (${personal.strict} lần “quá khắt khe”, ${personal.lenient} lần “quá dễ dãi” khi trời nóng): ${personal.value>0?'+':''}${round(before-heatPenalty,1)} điểm.`);
+  }
+  score-=heatPenalty;
 
-  if(rain>=70){score-=2.4;reasons.push(`Khả năng mưa ${round(rain)}%; nên có phương án trong nhà hoặc hoãn chạy.`);}
-  else if(rain>=40){score-=1;reasons.push(`Khả năng mưa ${round(rain)}%; nên kiểm tra bầu trời trước khi xuất phát.`);}
-  if(wind>=35){score-=1.8;reasons.push(`Gió khoảng ${round(wind)} km/h có thể làm buổi chạy kém an toàn.`);}
-  else if(wind>=22){score-=.7;reasons.push(`Gió khoảng ${round(wind)} km/h; lưu ý ở cầu và ven biển.`);}
+  if([95,96,99].includes(code)){score-=3;reasons.push('Dự báo có dông; không nên chạy ngoài trời trong khung giờ này.');}
+  if(has.rain){
+    if(rain>=70){score-=2.2;reasons.push(`Khả năng mưa ${round(rain)}%; nên có phương án trong nhà hoặc hoãn chạy.`);}
+    else if(rain>=40){score-=.9;reasons.push(`Khả năng mưa ${round(rain)}%; nên kiểm tra bầu trời trước khi xuất phát.`);}
+  }
+  if(has.wind){
+    if(wind>=35){score-=1.8;reasons.push(`Gió khoảng ${round(wind)} km/h có thể làm buổi chạy kém an toàn.`);}
+    else if(wind>=22){score-=.7;reasons.push(`Gió khoảng ${round(wind)} km/h; lưu ý ở cầu và ven biển.`);}
+  }
 
-  if(uv>=8){score-=1.4;reasons.push(`UV ${round(uv,1)} rất cao; ưu tiên đổi giờ hoặc tăng bảo vệ nắng.`);}
-  else if(uv>=6){score-=.8;reasons.push(`UV ${round(uv,1)} cao; nên dùng mũ và chống nắng nếu chạy ban ngày.`);}
-  else if(uv>=3){score-=.25;reasons.push(`UV ${round(uv,1)} ở mức trung bình.`);}
+  if(has.uv){
+    if(uv>=8){score-=1.4;reasons.push(`UV ${round(uv,1)} rất cao; ưu tiên đổi giờ hoặc tăng bảo vệ nắng.`);}
+    else if(uv>=6){score-=.8;reasons.push(`UV ${round(uv,1)} cao; nên dùng mũ và chống nắng nếu chạy ban ngày.`);}
+    else if(uv>=3){score-=.25;reasons.push(`UV ${round(uv,1)} ở mức trung bình.`);}
+  }
 
   if(plan.intensity==='Cao'){
-    if(aqi>50){score-=1;reasons.push('Cường độ cao làm lượng không khí hít vào tăng, nên tiêu chuẩn không khí cần nghiêm ngặt hơn.');}
-    if(feels>29) score-=.7;
-  } else if(plan.intensity==='Vừa'&&(aqi>100||feels>32)) score-=.45;
-  if(plan.duration>=60&&feels>30){score-=.7;reasons.push(`Thời lượng ${plan.duration} phút trong điều kiện nóng cần bổ sung nước và nghỉ hợp lý.`);}
-  if(plan.sensitive&&aqi>50){score-=aqi>100?2.2:1;reasons.push('Bạn đã chọn nhóm nhạy cảm nên AIRUN áp dụng ngưỡng thận trọng hơn.');}
+    if(has.aqi&&aqi>50){score-=1;reasons.push('Cường độ cao làm lượng không khí hít vào tăng, nên tiêu chuẩn không khí cần nghiêm ngặt hơn.');}
+    if(feels>32) score-=.6;
+  } else if(plan.intensity==='Vừa'&&((has.aqi&&aqi>100)||feels>34)) score-=.4;
+  if(plan.duration>=60&&feels>31){score-=.6;reasons.push(`Thời lượng ${plan.duration} phút trong điều kiện nóng cần bổ sung nước và nghỉ hợp lý.`);}
+  if(plan.sensitive&&has.aqi&&aqi>50){score-=aqi>100?2.2:1;reasons.push('Bạn đã chọn nhóm nhạy cảm nên AIRUN áp dụng ngưỡng thận trọng hơn.');}
 
   score=round(clamp(score,0,10),1);
   let tone='good',title='Có thể cân nhắc chạy',text='Điều kiện khá thuận lợi. Hãy khởi động và quan sát thực tế trước khi xuất phát.',icon='✓';
-  if(score<5||aqi>150){tone='bad';title='Nên đổi kế hoạch';text='Ưu tiên chạy trong nhà, đổi giờ hoặc chọn thời điểm khác để giảm rủi ro.';icon='!';}
-  else if(score<7.5){tone='caution';title='Nên điều chỉnh';text='Cân nhắc chạy nhẹ hơn, ngắn hơn hoặc chuyển sang khung giờ thuận lợi hơn.';icon='◷';}
-  return {score,tone,title,text,icon,reasons:reasons.slice(0,6)};
+  if(score<5||(has.aqi&&aqi>150)||feels>=41){tone='bad';title='Nên đổi kế hoạch';text='Ưu tiên chạy trong nhà, đổi giờ hoặc chọn thời điểm khác để giảm rủi ro.';icon='!';}
+  else if(score<7.5){tone='caution';title='Nên điều chỉnh';text='Vẫn chạy được nếu chạy nhẹ hơn, ngắn hơn hoặc chuyển sang khung giờ thuận lợi hơn.';icon='◷';}
+  return {score,tone,title,text,icon,reasons:reasons.slice(0,7)};
 }
 
 function parsePace(value){
@@ -1016,24 +1189,34 @@ function updatePlanEstimate(){
   return estimate;
 }
 
+function upcomingHours(data,hours=30){
+  const nowHour=vnIso().slice(0,13)+':00';
+  return (data?.hourly||[]).filter(row=>row.time>=nowHour).slice(0,hours);
+}
 function bestTimeFor(data, plan){
-  const candidates=(data.hourly||[]).filter(row=>{const hour=Number(row.time.slice(11,13));return (hour>=5&&hour<=9)||(hour>=16&&hour<=21);}).slice(0,24);
+  // V8: chỉ xét các giờ CHƯA trôi qua (V7 có thể gợi ý 05:00 sáng nay khi đã 10:00).
+  const candidates=upcomingHours(data,30).filter(row=>{const hour=Number(row.time.slice(11,13));return (hour>=5&&hour<=9)||(hour>=16&&hour<=21);});
   if(!candidates.length) return null;
-  return candidates.map(row=>({row,result:analyzeSnapshot({...data.current,...row},plan)})).sort((a,b)=>b.result.score-a.result.score)[0];
+  return candidates.map(row=>({row,result:analyzeSnapshot({...data.current,...row},plan)})).sort((a,b)=>b.result.score-a.result.score||a.row.time.localeCompare(b.row.time))[0];
 }
 
 function weatherText(code){ return WEATHER_TEXT[code] || ['Thời tiết thay đổi','◌']; }
 function sourceLabel(source){
-  return source==='live'?'Dữ liệu trực tiếp':source==='partial'?'Dữ liệu trực tiếp một phần':source==='cached'?'Dữ liệu đã lưu gần đây':'Dữ liệu dự phòng';
+  return source==='live'?'Dữ liệu trực tiếp':source==='partial'?'Dữ liệu trực tiếp một phần':source==='cached'?'Dữ liệu thật đã lưu gần đây':'Chưa có dữ liệu thật';
 }
+const isNoData=data=>!data||data.source==='demo';
 
 function quickEnvironmentForWard(key = selectedKey){
   const item=ward(key);
-  return fallbackData(item);
+  const cached=memoryCache.get(`ward:${item.key}`)||getStaleCache(`ward:${item.key}`);
+  return cached?{...cached,source:cached.source==='live'||cached.source==='partial'?'cached':cached.source}:fallbackData(item);
 }
 
 function quickEnvironmentForGps(location){
   const near=nearestWard(location.lat,location.lon).item;
+  const cacheId=location.cacheId||`gps:${Number(location.lat).toFixed(3)},${Number(location.lon).toFixed(3)}`;
+  const cached=memoryCache.get(cacheId)||getStaleCache(cacheId);
+  if(cached)return {...cached,source:'cached',location:{lat:location.lat,lon:location.lon,label:location.label,accuracy:location.accuracy,mode:'gps'}};
   return fallbackData(near,{lat:location.lat,lon:location.lon,label:location.label,accuracy:location.accuracy,mode:'gps'});
 }
 
@@ -1048,8 +1231,8 @@ function renderEnvironmentInstant(data,{updating=false}={}){
     $('liveBadge').textContent='ĐANG CẬP NHẬT';
     $('liveBadge').className='source-badge loading';
     $('heroLocationNote').textContent=(data.location?.mode==='gps')
-      ? `Đã có vị trí GPS ±${round(data.location.accuracy||0)} m · đang đồng bộ thời tiết và AQI trực tiếp.`
-      : 'AIRUN đang hiển thị dữ liệu gần nhất/dự phòng trong khi đồng bộ Open-Meteo.';
+      ? `Đã có vị trí GPS ±${round(data.location.accuracy||0)} m · đang lấy thời tiết và AQI trực tiếp.`
+      : isNoData(data)?'Đang lấy thời tiết và AQI trực tiếp từ Open-Meteo…':'Đang hiển thị dữ liệu thật đã lưu gần đây trong lúc cập nhật.';
   }
 }
 
@@ -1063,47 +1246,75 @@ function renderEnvironmentData(data,{note=null}={}){
 }
 
 function renderHero(data){
-  const current=data.current,weather=weatherText(current.code),label=data.location?.label||ward(data.key).name;
-  $('heroArea').textContent=label;$('heroTemp').textContent=round(current.temp);$('heroWeather').textContent=weather[0];$('weatherSymbol').textContent=weather[1];
-  $('heroAqi').textContent=round(current.aqi);$('heroPm').textContent=round(current.pm,1);$('heroWind').textContent=round(current.wind,1);$('heroUv').textContent=round(current.uv,1);
+  const noData=isNoData(data);
+  const current=noData?{}:data.current,weather=noData?[data?.failed?'Không lấy được dữ liệu':'Đang tải…','◌']:weatherText(current.code),label=data.location?.label||ward(data.key).name;
+  const dash=data?.failed?'—':'…';
+  $('heroArea').textContent=label;$('heroTemp').textContent=fmt(current.temp,0,dash);$('heroWeather').textContent=weather[0];$('weatherSymbol').textContent=weather[1];
+  $('heroAqi').textContent=fmt(current.aqi,0,dash);$('heroPm').textContent=fmt(current.pm,1,dash);$('heroWind').textContent=fmt(current.wind,1,dash);$('heroUv').textContent=fmt(current.uv,1,dash);
   $('heroUpdated').textContent=new Date(data.updated).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});
-  $('liveBadge').textContent=sourceLabel(data.source).toUpperCase();$('liveBadge').className=`source-badge ${data.source==='live'?'':data.source}`;
-  if(data.location?.mode==='gps') $('heroLocationNote').textContent=`GPS ±${round(data.location.accuracy||0)} m · dữ liệu được lấy theo tọa độ hiện tại của thiết bị.`;
-  else if(data.source==='demo') $('heroLocationNote').textContent='Đang dùng dữ liệu dự phòng tức thời. AIRUN sẽ tự thay bằng dữ liệu trực tiếp khi Open-Meteo phản hồi.';
-  else if(data.source==='cached') $('heroLocationNote').textContent='Đang dùng dữ liệu đã lưu gần đây trong lúc chờ cập nhật mới.';
+  $('liveBadge').textContent=noData?(data.failed?'CHƯA CÓ DỮ LIỆU THẬT':'ĐANG TẢI DỮ LIỆU THẬT'):sourceLabel(data.source).toUpperCase();
+  $('liveBadge').className=`source-badge ${data.source==='live'?'':noData?(data.failed?'demo':'loading'):data.source}`;
+  if(data.location?.mode==='gps'&&!noData) $('heroLocationNote').textContent=`GPS ±${round(data.location.accuracy||0)} m · dữ liệu được lấy theo tọa độ hiện tại của thiết bị.`;
+  else if(noData) $('heroLocationNote').textContent=data.failed?'Không kết nối được Open-Meteo. AIRUN không hiển thị số mô phỏng để tránh hiểu nhầm; bấm “Kiểm tra kết nối ngay” để thử lại.':'AIRUN đang lấy thời tiết và AQI trực tiếp; số liệu sẽ hiện sau 1–3 giây.';
+  else if(data.source==='cached') $('heroLocationNote').textContent='Đang dùng dữ liệu thật đã lưu gần đây trong lúc chờ cập nhật mới.';
+  else if(data.source==='partial') $('heroLocationNote').textContent=`Mới nhận được ${data.liveParts?.weather?'thời tiết':'chất lượng không khí'}; phần còn lại đang được thử lại.`;
   else $('heroLocationNote').textContent='Đang dùng tọa độ đại diện của khu vực. Bấm “Dùng vị trí hiện tại” để chính xác hơn.';
 }
 
 function renderResult(data,snapshot,result){
-  const info=aqiInfo(snapshot.aqi),uv=uvInfo(snapshot.uv),best=bestTimeFor(data,currentPlan());
   const label=data.location?.label||ward(data.key).name;
-  $('resultSource').textContent=`${sourceLabel(data.source)} · ${label} · ${snapshot.time?.slice(11,16)||'hiện tại'}`;
+  const estimate=updatePlanEstimate();
+  const metricIds=['metricAqi','metricPm','metricTemp','metricWind','metricRain','metricUv'];
+  if(isNoData(data)){
+    const failed=Boolean(data.failed);
+    activeResult=null;activeSnapshot=null;
+    $('resultSource').textContent=failed?`Chưa có dữ liệu thật · ${label}`:`Đang lấy dữ liệu thật · ${label}`;
+    $('resultStatusPill').textContent=failed?'Chưa chấm điểm':'Đang tải';$('resultStatusPill').className='result-pill neutral';
+    $('decisionPanel').className='decision-panel neutral';$('decisionIcon').textContent='◌';
+    $('decisionTitle').textContent=failed?'Chưa thể đánh giá':'Đang đọc dữ liệu thật';
+    $('decisionText').textContent=failed?'Open-Meteo chưa phản hồi. AIRUN không chấm điểm bằng số liệu mô phỏng; hãy thử “Cập nhật dữ liệu” sau ít phút.':'AIRUN chỉ chấm điểm khi có thời tiết và AQI trực tiếp.';
+    $('scoreValue').textContent='—';$('scoreRing').style.setProperty('--score','0%');
+    metricIds.forEach(id=>{const n=$(id);if(n)n.textContent=failed?'—':'…';});
+    $('metricAqiLabel').textContent='Chưa có';$('metricFeels').textContent='Cảm giác —';$('metricHumidity').textContent='Độ ẩm —';$('metricUvLabel').textContent='Chưa có';
+    if($('planSummarySource'))$('planSummarySource').textContent=failed?'Chưa có':'Đang tải';
+    if($('planSummaryForecast'))$('planSummaryForecast').textContent=failed?'Open-Meteo chưa phản hồi':'Đang đồng bộ forecast…';
+    $('reasonList').innerHTML=`<li>${failed?'Không có dữ liệu thật để giải thích.':'Đang chờ dữ liệu trực tiếp…'}</li>`;
+    $('bestTime').textContent=failed?'Chưa có dự báo giờ':'Đang tính…';$('bestTimeReason').textContent='AIRUN so sánh các giờ chạy phổ biến trong dự báo trực tiếp.';
+    $('mapAreaAqi').textContent='AQI —';$('mapAreaTemp').textContent='—°C';$('mapAreaScore').textContent='—/10';
+    renderKit({},currentPlan());
+    if(typeof renderCoachWaiting==='function')renderCoachWaiting(failed);
+    return;
+  }
+  const info=hasNum(snapshot.aqi)?aqiInfo(snapshot.aqi):{label:'Chưa có'},uv=hasNum(snapshot.uv)?uvInfo(snapshot.uv):{label:'Chưa có'},best=bestTimeFor(data,currentPlan());
+  const missing=[];if(!hasNum(snapshot.aqi))missing.push('AQI');if(!hasNum(snapshot.feels))missing.push('nhiệt độ');
+  $('resultSource').textContent=`${sourceLabel(data.source)} · ${label} · ${snapshot.time?.slice(11,16)||'hiện tại'}${missing.length?` · thiếu ${missing.join(', ')}`:''}`;
   $('resultStatusPill').textContent=result.title;$('resultStatusPill').className=`result-pill ${result.tone}`;
   $('decisionPanel').className=`decision-panel ${result.tone}`;$('decisionIcon').textContent=result.icon;$('decisionTitle').textContent=result.title;$('decisionText').textContent=result.text;
   $('scoreValue').textContent=result.score;$('scoreRing').style.setProperty('--score',`${result.score*10}%`);
-  $('metricAqi').textContent=round(snapshot.aqi);$('metricAqiLabel').textContent=info.label;$('metricPm').textContent=round(snapshot.pm,1);
-  $('metricTemp').textContent=`${round(snapshot.temp)}°`;$('metricFeels').textContent=`Cảm giác ${round(snapshot.feels)}°`;$('metricWind').textContent=round(snapshot.wind,1);
-  $('metricRain').textContent=`${round(snapshot.rain)}%`;$('metricHumidity').textContent=`Độ ẩm ${round(snapshot.humidity)}%`;
-  $('metricUv').textContent=round(snapshot.uv,1);$('metricUvLabel').textContent=uv.label;
-  const estimate=updatePlanEstimate();
+  $('metricAqi').textContent=fmt(snapshot.aqi);$('metricAqiLabel').textContent=info.label;$('metricPm').textContent=fmt(snapshot.pm,1);
+  $('metricTemp').textContent=hasNum(snapshot.temp)?`${round(snapshot.temp)}°`:'—';$('metricFeels').textContent=`Cảm giác ${hasNum(snapshot.feels)?round(snapshot.feels)+'°':'—'}`;$('metricWind').textContent=fmt(snapshot.wind,1);
+  $('metricRain').textContent=hasNum(snapshot.rain)?`${round(snapshot.rain)}%`:'—';$('metricHumidity').textContent=`Độ ẩm ${hasNum(snapshot.humidity)?round(snapshot.humidity)+'%':'—'}`;
+  $('metricUv').textContent=fmt(snapshot.uv,1);$('metricUvLabel').textContent=uv.label;
   if($('planSummarySource'))$('planSummarySource').textContent=sourceLabel(data.source);
   if($('planSummaryForecast')){
     const fs=data.forecastSource||data.source;
-    $('planSummaryForecast').textContent=fs==='live'?'Forecast trực tiếp đã sẵn sàng':fs==='partial'?'Forecast trực tiếp một phần':fs==='cached'?'Forecast từ cache':'Forecast dự phòng';
+    $('planSummaryForecast').textContent=fs==='live'?'Forecast trực tiếp đã sẵn sàng':fs==='partial'?'Forecast trực tiếp một phần':fs==='cached'?'Forecast đã lưu gần đây':'Chưa có forecast';
   }
   $('reasonList').innerHTML=result.reasons.map(reason=>`<li>${escapeHTML(reason)}</li>`).join('');
-  if(best){$('bestTime').textContent=`${best.row.time.slice(11,16)} · ${best.result.score}/10`;$('bestTimeReason').textContent='Trong các khung giờ chạy phổ biến, đây là thời điểm có điểm thuận lợi cao nhất trong dự báo hiện có.';}
+  if(best){$('bestTime').textContent=`${best.row.time.slice(11,16)}${best.row.time.slice(0,10)!==vnIso().slice(0,10)?' ngày mai':''} · ${best.result.score}/10`;$('bestTimeReason').textContent='Trong các khung giờ chạy phổ biến sắp tới (5–9h, 16–21h), đây là thời điểm có điểm thuận lợi cao nhất trong dự báo trực tiếp.';}
   else{$('bestTime').textContent='Chưa có dự báo giờ';$('bestTimeReason').textContent='Hãy thử cập nhật lại dữ liệu.';}
-  $('mapAreaAqi').textContent=`AQI ${round(snapshot.aqi)}`;$('mapAreaTemp').textContent=`${round(snapshot.temp)}°C`;$('mapAreaScore').textContent=`${result.score}/10`;
+  $('mapAreaAqi').textContent=`AQI ${fmt(snapshot.aqi)}`;$('mapAreaTemp').textContent=`${fmt(snapshot.temp)}°C`;$('mapAreaScore').textContent=`${result.score}/10`;
   renderKit(snapshot,currentPlan());
+  if(typeof scheduleCoach==='function')scheduleCoach();
 }
 
 function renderKit(snapshot,plan){
   const items=['Giày chạy và trang phục thoáng','Điện thoại đủ pin hoặc thẻ liên hệ khẩn cấp'];
-  const water=Math.max(250,Math.round((plan.duration*(snapshot.feels>31?10:7))/50)*50); items.push(`Khoảng ${water} ml nước cho kế hoạch ${plan.duration} phút`);
-  if(snapshot.rain>=40) items.push('Áo mưa mỏng hoặc phương án chạy trong nhà');
-  if(snapshot.feels>=31||snapshot.uv>=6) items.push('Mũ và kem chống nắng; ưu tiên bóng râm nếu chạy ban ngày');
-  if(snapshot.aqi>100) items.push('Ưu tiên đổi giờ; tránh chạy cường độ cao khi chất lượng không khí kém');
+  const feels=Number(snapshot.feels??0),rain=Number(snapshot.rain??0),uv=Number(snapshot.uv??0),aqi=Number(snapshot.aqi??0);
+  const water=Math.max(250,Math.round((plan.duration*(feels>31?10:7))/50)*50); items.push(`Khoảng ${water} ml nước cho kế hoạch ${plan.duration} phút`);
+  if(rain>=40) items.push('Áo mưa mỏng hoặc phương án chạy trong nhà');
+  if(feels>=31||uv>=6) items.push('Mũ và kem chống nắng; ưu tiên bóng râm nếu chạy ban ngày');
+  if(aqi>100) items.push('Ưu tiên đổi giờ; tránh chạy cường độ cao khi chất lượng không khí kém');
   if(Number(plan.time.slice(0,2))>=18||Number(plan.time.slice(0,2))<6) items.push('Phụ kiện phản quang hoặc đèn nhỏ');
   $('kitList').innerHTML=items.map(item=>`<li>${escapeHTML(item)}</li>`).join('');
 }
@@ -1380,34 +1591,29 @@ async function useGPS({scroll=true}={}){
 }
 
 
+// V8: cấu hình dịch vụ do MÁY CHỦ cung cấp qua /api/config. Không còn nhập/lưu key trong trình duyệt.
+const SERVER_CFG={loaded:false,server:false,ai:false,routing:false,mapboxToken:'',feedback:false,version:null};
+async function loadServerConfig(){
+  try{
+    const response=await fetch('/api/config',{cache:'no-store',headers:{Accept:'application/json'}});
+    const data=await response.json();
+    Object.assign(SERVER_CFG,{loaded:true,server:Boolean(data.server),ai:Boolean(data.ai),routing:Boolean(data.routing),mapboxToken:String(data.mapboxToken||''),feedback:Boolean(data.feedback),version:data.version||null,aiModel:data.aiModel||null});
+  }catch{Object.assign(SERVER_CFG,{loaded:true,server:false});}
+  // Xóa khóa cũ mà V7 từng lưu trong trình duyệt.
+  try{localStorage.removeItem(ROUTE_CONFIG_KEYS.graphhopper);localStorage.removeItem(ROUTE_CONFIG_KEYS.mapbox);}catch{}
+  syncRouteProviderStatus();
+  if(typeof syncCoachAvailability==='function')syncCoachAvailability();
+  return SERVER_CFG;
+}
 function routeConfig(){
-  let mapbox='',graphhopper='';
-  try{mapbox=localStorage.getItem(ROUTE_CONFIG_KEYS.mapbox)||'';graphhopper=localStorage.getItem(ROUTE_CONFIG_KEYS.graphhopper)||'';}catch{}
-  return {mapbox:mapbox.trim(),graphhopper:graphhopper.trim()};
+  return {mapbox:SERVER_CFG.mapboxToken.startsWith('pk.')?SERVER_CFG.mapboxToken:'',graphhopper:SERVER_CFG.routing};
 }
 function syncRouteProviderStatus(message=''){
   if(!hasDom())return;const node=$('routeProviderStatus'),cfg=routeConfig();if(!node)return;
   if(message){node.textContent=message;return;}
-  if(cfg.mapbox&&cfg.graphhopper){node.textContent='Mapbox + GraphHopper đã cấu hình · sẵn sàng tạo cung chạy vòng.';node.className='route-provider-status ready';}
-  else if(cfg.mapbox||cfg.graphhopper){node.textContent=`Đã có ${cfg.mapbox?'Mapbox':'GraphHopper'} · còn thiếu ${cfg.mapbox?'GraphHopper':'Mapbox'}.`;node.className='route-provider-status warn';}
-  else{node.textContent='OpenFreeMap đang sẵn sàng làm bản đồ dự phòng. Kết nối Mapbox + GraphHopper để có cung chạy nâng cao.';node.className='route-provider-status';}
-}
-function openRoutingSetup(){
-  const modal=$('routingSetupModal'),cfg=routeConfig();if(!modal)return;
-  $('mapboxTokenInput').value=cfg.mapbox;$('graphhopperKeyInput').value=cfg.graphhopper;modal.hidden=false;setTimeout(()=>$('mapboxTokenInput')?.focus(),50);
-}
-function closeRoutingSetup(){const modal=$('routingSetupModal');if(modal)modal.hidden=true;}
-async function saveRoutingSetup(){
-  const mapbox=$('mapboxTokenInput').value.trim(),graphhopper=$('graphhopperKeyInput').value.trim();
-  if(mapbox&&!mapbox.startsWith('pk.')){showToast('Mapbox public token thường bắt đầu bằng pk.');return;}
-  try{if(mapbox)localStorage.setItem(ROUTE_CONFIG_KEYS.mapbox,mapbox);else localStorage.removeItem(ROUTE_CONFIG_KEYS.mapbox);if(graphhopper)localStorage.setItem(ROUTE_CONFIG_KEYS.graphhopper,graphhopper);else localStorage.removeItem(ROUTE_CONFIG_KEYS.graphhopper);}catch{}
-  syncRouteProviderStatus();
-  if(mapbox){try{await ensureMapbox();syncRouteProviderStatus(graphhopper?'✓ Mapbox đã tải · GraphHopper đã lưu.':'✓ Mapbox đã tải · thêm GraphHopper để tạo round trip.');}catch(error){syncRouteProviderStatus(`Mapbox chưa tải được · ${apiErrorLabel(error)}`);}}
-  closeRoutingSetup();showToast('Đã lưu cấu hình bản đồ trên trình duyệt này.');
-}
-function clearRoutingSetup(){
-  try{localStorage.removeItem(ROUTE_CONFIG_KEYS.mapbox);localStorage.removeItem(ROUTE_CONFIG_KEYS.graphhopper);}catch{}
-  syncRouteProviderStatus();$('mapboxTokenInput').value='';$('graphhopperKeyInput').value='';showToast('Đã xóa cấu hình Mapbox/GraphHopper khỏi trình duyệt.');
+  if(!SERVER_CFG.loaded){node.textContent='Đang kiểm tra dịch vụ tạo cung chạy trên máy chủ…';node.className='route-provider-status';return;}
+  if(cfg.graphhopper){node.textContent=`✓ Máy chủ AIRUN tạo cung vòng bằng GraphHopper (khóa giữ trên máy chủ)${cfg.mapbox?' · bản đồ Mapbox':' · bản đồ OpenFreeMap'}.`;node.className='route-provider-status ready';}
+  else{node.textContent='Cung chạy được ghép theo mạng đường đi bộ OpenStreetMap (Valhalla) · bản đồ OpenFreeMap. Không cần nhập khóa.';node.className='route-provider-status';}
 }
 function loadExternalAsset(type,url,id){
   return new Promise((resolve,reject)=>{
@@ -1508,17 +1714,13 @@ async function renderMapLibreRoute(route){
 }
 
 async function fetchGraphHopperRoundTrip(origin,targetKm,seed=0){
-  const key=routeConfig().graphhopper;if(!key)throw new Error('Chưa có GraphHopper API key');
-  const qs=new URLSearchParams();qs.append('point',`${origin.lat},${origin.lon}`);qs.set('profile','foot');qs.set('locale','vi');qs.set('algorithm','round_trip');qs.set('round_trip.distance',String(Math.max(800,Math.round(targetKm*1000))));qs.set('round_trip.seed',String(seed));qs.set('points_encoded','false');qs.set('instructions','false');qs.set('calc_points','true');qs.set('elevation','true');qs.set('key',key);
-  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),9000);
+  if(!routeConfig().graphhopper)throw new Error('Máy chủ chưa cấu hình GraphHopper');
+  const qs=new URLSearchParams({lat:String(Number(origin.lat).toFixed(5)),lon:String(Number(origin.lon).toFixed(5)),km:String(Math.max(.8,targetKm).toFixed(2)),seed:String(seed)});
+  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12000);
   try{
-    const res=await fetch(`https://graphhopper.com/api/1/route?${qs.toString()}`,{cache:'no-store',signal:controller.signal});const data=await res.json();
-    if(!res.ok||!data?.paths?.length)throw new Error(data?.message||data?.hints?.[0]?.message||`GraphHopper HTTP ${res.status}`);
-    const path=data.paths[0];let pts=[];
-    if(path.points&&Array.isArray(path.points.coordinates))pts=path.points.coordinates.map(c=>({lon:Number(c[0]),lat:Number(c[1]),ele:Number(c[2])||null}));
-    else if(typeof path.points==='string')pts=decodePolyline5(path.points);
-    if(pts.length<4)throw new Error('GraphHopper không trả đủ tọa độ');
-    return {points:pts,distanceKm:Number(path.distance)/1000,durationMs:Number(path.time)||null,source:'graphhopper',seed};
+    const res=await fetch(`/api/route?${qs}`,{cache:'no-store',signal:controller.signal});const data=await res.json();
+    if(!res.ok||data.error||!Array.isArray(data.points))throw new Error(data?.reason||`Route HTTP ${res.status}`);
+    return {points:data.points,distanceKm:Number(data.distanceKm),durationMs:data.durationMs||null,source:'graphhopper',seed};
   }finally{clearTimeout(timer);}
 }
 function decodePolyline5(str){
@@ -1667,7 +1869,7 @@ async function generateSuggestedRoute({regenerate=false}={}){
   setRouteStatus(`Đang tạo cung vòng khoảng ${target.toFixed(1)} km từ ${origin.label}…`);
   let route=null,networkError=null;
   if(cfg.graphhopper){
-    try{route=await fetchGraphHopperRoundTrip(origin,target,routePlanner.seed);if(route?.points?.length>5)syncRouteProviderStatus('✓ GraphHopper đã tạo round trip · Mapbox sẽ vẽ nếu có token.');}
+    try{route=await fetchGraphHopperRoundTrip(origin,target,routePlanner.seed);if(route?.points?.length>5)syncRouteProviderStatus('✓ Máy chủ đã tạo cung vòng bằng GraphHopper.');}
     catch(error){networkError=error;console.warn('AIRUN GraphHopper:',error);syncRouteProviderStatus(`GraphHopper lỗi · ${apiErrorLabel(error)} · đang thử tuyến dự phòng.`);route=null;}
   }
   if(!route){
@@ -1680,7 +1882,7 @@ async function generateSuggestedRoute({regenerate=false}={}){
   $('routeResult').hidden=false;$('routeDistanceResult').textContent=`${route.distanceKm.toFixed(2)} km`;$('routeEta').textContent=`≈ ${Math.round(etaMin)} phút`;$('routeEnvScore').textContent=score!==null?`${score}/10`:'—';
   $('routeSourcePill').textContent=route.source==='graphhopper'?'GRAPHHOPPER ROUND TRIP':route.source==='network'?'THEO ĐƯỜNG THỰC TẾ':'PHÁC THẢO THAM KHẢO';
   $('routeResultTitle').textContent=route.source==='graphhopper'?'Cung chạy vòng theo mạng đường bộ':route.source==='network'?'Cung vòng dễ theo dõi':'Vùng chạy ước tính';
-  $('routeResultText').textContent=route.source==='graphhopper'?`GraphHopper tạo cung vòng từ đúng điểm xuất phát. Mục tiêu ${target.toFixed(1)} km; thực tế ${route.distanceKm.toFixed(2)} km. Bấm “Tạo cung khác” để đổi seed và nhận một vòng khác.`:route.source==='network'?`Cung vòng dự phòng được ghép theo mạng đường đi bộ, gần mục tiêu ${target.toFixed(1)} km.`:'Dịch vụ định tuyến chưa phản hồi. Đường nét đứt chỉ minh họa phạm vi quãng đường, không dùng để dẫn đường.';
+  $('routeResultText').textContent=route.source==='graphhopper'?`GraphHopper tạo cung vòng từ đúng điểm xuất phát. Mục tiêu ${target.toFixed(1)} km; thực tế ${route.distanceKm.toFixed(2)} km. Bấm “Tạo cung khác” để nhận một vòng khác.`:route.source==='network'?`Cung vòng dự phòng được ghép theo mạng đường đi bộ, gần mục tiêu ${target.toFixed(1)} km.`:'Dịch vụ định tuyến chưa phản hồi. Đường nét đứt chỉ minh họa phạm vi quãng đường, không dùng để dẫn đường.';
   const diff=route.distanceKm-target;
   setRouteStatus(route.source==='graphhopper'?`GraphHopper: ${route.distanceKm.toFixed(2)} km · chênh ${diff>=0?'+':''}${diff.toFixed(2)} km so với mục tiêu.`:route.source==='network'?`Đã tạo cung dự phòng ${route.distanceKm.toFixed(2)} km.`:`Chưa lấy được đường phố thực tế${networkError?' · '+apiErrorLabel(networkError):''}. Đang hiển thị phác thảo.`,route.source==='approx'?'error':'ok');
   const open=$('openOsm');if(open)open.href=`https://www.google.com/maps?q=${origin.lat},${origin.lon}`;
@@ -1697,8 +1899,8 @@ async function compareAreas(){
   const button=$('compareBtn');setBusy(button,true,'Đang so sánh…');$('compareGrid').innerHTML='<div class="empty-state">Đang tải dữ liệu cho 5 khu vực…</div>';
   const keys=[selectedKey,'SonTra','NguHanhSon','HoaXuan','HoiAn'].filter((key,index,array)=>array.indexOf(key)===index).slice(0,5);while(keys.length<5){const extra=WARDS.find(item=>!keys.includes(item.key));keys.push(extra.key);}
   try{
-    const plan=currentPlan();const rows=await Promise.all(keys.map(async key=>{const data=await fetchEnvironment(key);const snap=snapshotFor(data,plan.time);return {key,data,snap,result:analyzeSnapshot(snap,plan)};}));rows.sort((a,b)=>b.result.score-a.result.score);
-    $('compareGrid').innerHTML=rows.map((row,index)=>`<article class="compare-card ${index===0?'best':''}"><span class="compare-rank">${index===0?'ĐIỂM CAO NHẤT TRONG 5 KHU VỰC':`VỊ TRÍ ${index+1}/5`}</span><h3>${escapeHTML(ward(row.key).name)}</h3><div class="compare-score"><strong>${row.result.score}</strong><span>/10 thuận lợi</span></div><div class="compare-stats"><span>AQI ${round(row.snap.aqi)}</span><span>${round(row.snap.temp)}°C</span><span>PM2.5 ${round(row.snap.pm,1)}</span><span>UV ${round(row.snap.uv,1)}</span></div><button type="button" data-compare-key="${row.key}">Chọn khu vực này</button></article>`).join('');
+    const plan=currentPlan();const all=await Promise.all(keys.map(async key=>{const data=await fetchEnvironment(key);const snap=snapshotFor(data,plan.time);return {key,data,snap,result:analyzeSnapshot(snap,plan)};}));const rows=all.filter(row=>!isNoData(row.data));if(!rows.length)throw new Error('NO_LIVE_DATA');rows.sort((a,b)=>b.result.score-a.result.score);
+    $('compareGrid').innerHTML=rows.map((row,index)=>`<article class="compare-card ${index===0?'best':''}"><span class="compare-rank">${index===0?`ĐIỂM CAO NHẤT TRONG ${rows.length} KHU VỰC`:`VỊ TRÍ ${index+1}/${rows.length}`}</span><h3>${escapeHTML(ward(row.key).name)}</h3><div class="compare-score"><strong>${row.result.score}</strong><span>/10 thuận lợi</span></div><div class="compare-stats"><span>AQI ${fmt(row.snap.aqi)}</span><span>${fmt(row.snap.temp)}°C</span><span>PM2.5 ${fmt(row.snap.pm,1)}</span><span>UV ${fmt(row.snap.uv,1)}</span></div><button type="button" data-compare-key="${row.key}">Chọn khu vực này</button></article>`).join('');
     $('compareGrid').querySelectorAll('[data-compare-key]').forEach(node=>node.addEventListener('click',()=>runAsyncTask('Chọn khu vực',()=>selectWard(node.dataset.compareKey,{scroll:true,analyze:true}))));
   }catch{$('compareGrid').innerHTML='<div class="empty-state">Chưa thể so sánh lúc này. Hãy kiểm tra mạng và thử lại.</div>';}
   finally{setBusy(button,false);}
@@ -1920,8 +2122,11 @@ async function refreshTrackerEnvironment(point){
     const near=nearestWard(point.lat,point.lon);const label=`${near.item.name} · GPS`;
     const data=await fetchEnvironmentAt(point.lat,point.lon,{key:near.item.key,label,cacheId:`track:${point.lat.toFixed(3)},${point.lon.toFixed(3)}`,accuracy:point.accuracy,mode:'gps',force:true});
     const plan={...currentPlan(),time:vnIso().slice(11,16)};const result=analyzeSnapshot(data.current,plan);tracker.lastEnvResult=result;
-    $('trackerAqi').textContent=round(data.current.aqi);$('trackerTemp').textContent=`${round(data.current.temp)}°C`;$('trackerWind').textContent=`${round(data.current.wind)} km/h`;$('trackerAdvice').textContent=`${result.score}/10`;
+    if(isNoData(data))throw new Error('NO_LIVE_DATA');
+    tracker.lastEnv={...data.current,source:data.source};
+    $('trackerAqi').textContent=fmt(data.current.aqi);$('trackerTemp').textContent=`${fmt(data.current.temp)}°C`;$('trackerWind').textContent=`${fmt(data.current.wind)} km/h`;$('trackerAdvice').textContent=`${result.score}/10`;
     trackerAlert(result.tone,result.title,`${result.text} · ${sourceLabel(data.source)}.`,result.icon);
+    if(typeof requestLiveCue==='function')requestLiveCue(data,result);
   }catch{trackerAlert('caution','GPS vẫn đang ghi.','Chưa cập nhật được dữ liệu môi trường; quãng đường và pace vẫn tiếp tục hoạt động.','◷');}
 }
 
@@ -1962,7 +2167,7 @@ function handleTrackPosition(position){
   const rawSpeed=Number.isFinite(c.speed)&&c.speed>=0?c.speed*3.6:segmentSpeed;
   tracker.speedSamples.push(clamp(rawSpeed,0,32));if(tracker.speedSamples.length>5)tracker.speedSamples.shift();
   tracker.currentSpeed=tracker.speedSamples.reduce((a,b)=>a+b,0)/tracker.speedSamples.length;
-  updateRunMap(point,true);updateTrackerMetrics();refreshTrackerEnvironment(point);
+  updateRunMap(point,true);updateTrackerMetrics();refreshTrackerEnvironment(point);checkKmCue();
   if(tracker.points.length>=2)setRunMapHint('',false);
 }
 
@@ -1994,7 +2199,7 @@ async function startRun(){
 
     const first=await requestGPSPosition(stage=>trackerAlert('',stage,'Nếu đang ở trong nhà, vị trí có thể mất vài giây để xuất hiện.','⌖'),{maximumAge:5000});
     resetTrackerData();
-    tracker.startedAt=Date.now();trackerSetState('running');
+    tracker.startedAt=Date.now();trackerSetState('running');coach.lastKmCue=0;coach.lastLiveAt=0;speak('Bắt đầu chạy. Chúc bạn có buổi chạy tốt.');
     button.disabled=true;button.textContent='▶ Đang chạy';
     $('pauseRunBtn').disabled=false;$('finishRunBtn').disabled=false;$('pauseRunBtn').textContent='Ⅱ Tạm dừng';
 
@@ -2047,8 +2252,12 @@ async function finishRun(){
   $('startRunBtn').disabled=false;$('startRunBtn').textContent='▶ Chạy mới';$('pauseRunBtn').disabled=true;$('finishRunBtn').disabled=true;
   const seconds=trackerElapsedSeconds(),pace=tracker.distanceKm>=.05?(seconds/60)/tracker.distanceKm:null;const near=tracker.lastPoint?nearestWard(tracker.lastPoint.lat,tracker.lastPoint.lon).item:ward();
   $('runSummary').hidden=false;$('summaryTitle').textContent=tracker.points.length>=2?'Buổi chạy đã hoàn thành':'Phiên GPS đã kết thúc';$('summaryMeta').textContent=`${new Date().toLocaleString('vi-VN')} · ${near.name} · ${tracker.points.length} điểm GPS hợp lệ`;$('summaryDistance').textContent=`${tracker.distanceKm.toFixed(2)} km`;$('summaryTime').textContent=formatDuration(seconds);$('summaryPace').textContent=pace?`${formatPace(pace)} /km`:'—';
-  if(tracker.points.length>=2&&seconds>=10){saveRunToJournal({seconds,pace,area:near.name});showToast('Đã lưu tóm tắt buổi chạy trên thiết bị.');}
+  let runId=null;
+  if(tracker.points.length>=2&&seconds>=10){runId=saveRunToJournal({seconds,pace,area:near.name});showToast('Đã lưu buổi chạy · hãy đánh giá khuyến nghị ở bên dưới.');}
   else showToast('Chưa đủ điểm GPS để lưu thành một buổi chạy.');
+  lastRunInfo={id:runId,at:Date.now(),seconds,distanceKm:tracker.distanceKm,pace:pace?formatPace(pace):'',area:near.name,score:tracker.lastEnvResult?.score??activeResult?.score??null,env:tracker.lastEnv?{...tracker.lastEnv,time:vnIso()}:null};
+  syncFeedbackContext();speak(`Đã kết thúc. ${tracker.distanceKm.toFixed(1)} ki lô mét. Hãy đánh giá khuyến nghị của AIRUN nhé.`);
+  setTimeout(()=>$('feedbackForm')?.scrollIntoView({behavior:'smooth',block:'start'}),600);
   trackerAlert(tracker.lastEnvResult?.tone||'good','Đã kết thúc.',`Quãng đường ${tracker.distanceKm.toFixed(2)} km · ${formatDuration(seconds)}. Toàn bộ chuỗi tọa độ không được lưu vào nhật ký.`,'✓');
 }
 
@@ -2059,7 +2268,7 @@ function journalRows(){
 }
 
 function saveRunToJournal({seconds,pace,area}){
-  const rows=journalRows();rows.unshift({id:Date.now(),type:'run',at:new Date().toISOString(),area,distance:round(tracker.distanceKm,2),durationSec:round(seconds),pace:pace?formatPace(pace):'',aqi:tracker.lastEnvResult?$('trackerAqi').textContent:'',score:tracker.lastEnvResult?.score??'',source:'gps'});localSet(STORAGE.journal,rows.slice(0,50));renderJournal();
+  const rows=journalRows();rows.unshift({id:Date.now(),type:'run',at:new Date().toISOString(),area,distance:round(tracker.distanceKm,2),durationSec:round(seconds),pace:pace?formatPace(pace):'',aqi:tracker.lastEnvResult?$('trackerAqi').textContent:'',score:tracker.lastEnvResult?.score??'',source:'gps',feels:tracker.lastEnv?.feels??''});localSet(STORAGE.journal,rows.slice(0,80));renderJournal();return rows[0].id;
 }
 
 function saveJournal(){
@@ -2067,28 +2276,38 @@ function saveJournal(){
   if(!selectedDecision){showToast('Hãy chọn quyết định của bạn trước khi lưu.');return;}
   const rows=journalRows(),plan=currentPlan(),label=activeData?.location?.label||ward().name;
   const estimate=planEstimate(plan);
-  rows.unshift({id:Date.now(),type:'plan',at:new Date().toISOString(),area:label,time:plan.time,duration:plan.duration,pace:formatPace(estimate.pace),distance:round(estimate.distance,2),intensity:plan.intensity,sensitive:plan.sensitive,decision:selectedDecision,score:activeResult.score,aqi:round(activeSnapshot.aqi),temp:round(activeSnapshot.temp),note:$('note').value.trim(),source:activeData.source});
+  rows.unshift({id:Date.now(),type:'plan',at:new Date().toISOString(),area:label,time:plan.time,duration:plan.duration,pace:formatPace(estimate.pace),distance:round(estimate.distance,2),intensity:plan.intensity,sensitive:plan.sensitive,decision:selectedDecision,score:activeResult.score,aqi:fmt(activeSnapshot.aqi,0,''),temp:fmt(activeSnapshot.temp,0,''),feels:fmt(activeSnapshot.feels,0,''),note:$('note').value.trim(),source:activeData.source});
   localSet(STORAGE.journal,rows.slice(0,50));$('note').value='';renderJournal();showToast('Đã lưu kế hoạch vào nhật ký trên thiết bị.');
 }
 
+const FB_LABEL={dung:'✓ Khuyến nghị đúng',qua_khat_khe:'▲ Quá khắt khe',qua_de_dai:'▼ Quá dễ dãi'};
+function feedbackBadge(fb){if(!fb)return '';const cls=fb.verdict==='qua_khat_khe'?'strict':fb.verdict==='qua_de_dai'?'lenient':'';return `<span class="journal-fb ${cls}">${escapeHTML(FB_LABEL[fb.verdict]||'Đã đánh giá')}</span>`;}
 function renderJournal(){
   const rows=journalRows();
   $('journalList').innerHTML=rows.length?rows.map(row=>{
-    const date=new Date(row.at);const isRun=row.type==='run';
-    const title=isRun?`🏃 Buổi chạy GPS · ${escapeHTML(row.area)}`:`${escapeHTML(row.area)} · ${escapeHTML(row.decision||'Kế hoạch')}`;
-    const desc=isRun?`${row.distance??0} km · ${formatDuration(row.durationSec||0)}${row.pace?` · pace ${escapeHTML(row.pace)}/km`:''}`:`${escapeHTML(row.time||'')} · ${row.duration||0} phút · ${row.distance??'—'} km${row.pace?` · pace ${escapeHTML(row.pace)}/km`:''} · ${escapeHTML(row.intensity||'')} · AQI ${row.aqi??'—'}${row.note?` · ${escapeHTML(row.note)}`:''}`;
-    const metric=isRun?`${row.distance??0} km`:`${row.score??'—'}/10`;const metricLabel=isRun?'quãng đường':'thuận lợi';
-    return `<article class="journal-item"><div class="journal-date"><b>${date.toLocaleDateString('vi-VN',{day:'2-digit'})}</b><span>${date.toLocaleDateString('vi-VN',{month:'2-digit',year:'numeric'})}</span></div><div class="journal-main"><b>${title}</b><p>${desc}</p></div><div class="journal-score"><b>${metric}</b><span>${metricLabel}</span></div><button class="journal-delete" type="button" data-delete="${row.id}" aria-label="Xóa mục này">×</button></article>`;
+    const date=new Date(row.at);const isRun=row.type==='run',isFb=row.type==='feedback';
+    const title=isRun?`🏃 Buổi chạy GPS · ${escapeHTML(row.area)}`:isFb?`☑ Đánh giá sau buổi chạy · ${escapeHTML(row.area)}`:`${escapeHTML(row.area)} · ${escapeHTML(row.decision||'Kế hoạch')}`;
+    const fbText=row.feedback?` · nóng ${row.feedback.heat}/5 · khó thở ${row.feedback.breath}/5${row.feedback.note?` · ${escapeHTML(row.feedback.note)}`:''}`:'';
+    const desc=isRun?`${row.distance??0} km · ${formatDuration(row.durationSec||0)}${row.pace?` · pace ${escapeHTML(row.pace)}/km`:''}${fbText}`
+      :isFb?`${escapeHTML(row.time||'')} · ${row.duration||0} phút · cảm giác ${row.feels??'—'}°C · AQI ${row.aqi??'—'}${fbText}`
+      :`${escapeHTML(row.time||'')} · ${row.duration||0} phút · ${row.distance??'—'} km${row.pace?` · pace ${escapeHTML(row.pace)}/km`:''} · ${escapeHTML(row.intensity||'')} · AQI ${row.aqi??'—'}${row.note?` · ${escapeHTML(row.note)}`:''}`;
+    const metric=isRun?`${row.distance??0} km`:`${row.score===''||row.score==null?'—':row.score}/10`;const metricLabel=isRun?'quãng đường':'điểm AIRUN';
+    return `<article class="journal-item"><div class="journal-date"><b>${date.toLocaleDateString('vi-VN',{day:'2-digit'})}</b><span>${date.toLocaleDateString('vi-VN',{month:'2-digit',year:'numeric'})}</span></div><div class="journal-main"><b>${title}</b>${feedbackBadge(row.feedback)}<p>${desc}</p></div><div class="journal-score"><b>${metric}</b><span>${metricLabel}</span></div><button class="journal-delete" type="button" data-delete="${row.id}" aria-label="Xóa mục này">×</button></article>`;
   }).join(''):'<div class="empty-state">Chưa có dữ liệu được lưu.</div>';
-  $('journalList').querySelectorAll('[data-delete]').forEach(button=>button.addEventListener('click',()=>{localSet(STORAGE.journal,rows.filter(row=>row.id!==Number(button.dataset.delete)));renderJournal();}));
+  $('journalList').querySelectorAll('[data-delete]').forEach(button=>button.addEventListener('click',()=>{localSet(STORAGE.journal,rows.filter(row=>row.id!==Number(button.dataset.delete)));renderJournal();if(typeof updateFeedbackStats==='function')updateFeedbackStats();}));
 }
 
 function csvCell(value){let text=String(value??'');if(/^[=+\-@]/.test(text))text=`'${text}`;return `"${text.replace(/"/g,'""')}"`;}
 function exportJournal(){
   const rows=journalRows();if(!rows.length){showToast('Nhật ký đang trống.');return;}
-  const header=['Loại','Thời điểm','Khu vực','Giờ/Khoảng thời gian','Thời lượng giây','Quãng đường km','Pace','Cường độ','Quyết định','Điểm','AQI','Nhiệt độ','Nguồn','Ghi chú'];
-  const body=rows.map(row=>row.type==='run'?['Buổi chạy GPS',new Date(row.at).toLocaleString('vi-VN'),row.area,'',row.durationSec,row.distance,row.pace,'','','',row.aqi,'','GPS', '']:['Kế hoạch',new Date(row.at).toLocaleString('vi-VN'),row.area,row.time,(row.duration||0)*60,'','',row.intensity,row.decision,row.score,row.aqi,row.temp,sourceLabel(row.source),row.note]);
-  const lines=[header,...body].map(row=>row.map(csvCell).join(','));const url=URL.createObjectURL(new Blob(['\uFEFF'+lines.join('\r\n')],{type:'text/csv;charset=utf-8'})),link=document.createElement('a');link.href=url;link.download=`AIRUN_Nhat_ky_${new Date().toISOString().slice(0,10)}.csv`;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  const header=['Loại','Thời điểm','Khu vực','Giờ dự kiến','Thời lượng (giây)','Quãng đường km','Pace','Cường độ','Quyết định','Điểm AIRUN','AQI','Nhiệt độ','Cảm giác °C','Nguồn','Ghi chú','Đánh giá khuyến nghị','Nóng 1-5','Khó thở 1-5','Mệt 1-5','Cung đường','Ghi chú phản hồi','Người thử'];
+  const fbCols=fb=>fb?[FB_LABEL[fb.verdict]||'',fb.heat,fb.breath,fb.effort,fb.route,fb.note,fb.tester]:['','','','','','',''];
+  const body=rows.map(row=>row.type==='run'
+    ?['Buổi chạy GPS',new Date(row.at).toLocaleString('vi-VN'),row.area,'',row.durationSec,row.distance,row.pace,'','',row.score,row.aqi,'',row.feels??'','GPS','',...fbCols(row.feedback)]
+    :row.type==='feedback'
+    ?['Đánh giá (không GPS)',new Date(row.at).toLocaleString('vi-VN'),row.area,row.time,(row.duration||0)*60,'','',row.intensity,'',row.score,row.aqi,row.temp,row.feels,sourceLabel(row.source),'',...fbCols(row.feedback)]
+    :['Kế hoạch',new Date(row.at).toLocaleString('vi-VN'),row.area,row.time,(row.duration||0)*60,row.distance,row.pace,row.intensity,row.decision,row.score,row.aqi,row.temp,row.feels??'',sourceLabel(row.source),row.note,...fbCols(row.feedback)]);
+  const lines=[header,...body].map(row=>row.map(csvCell).join(','));const url=URL.createObjectURL(new Blob(['﻿'+lines.join('\r\n')],{type:'text/csv;charset=utf-8'})),link=document.createElement('a');link.href=url;link.download=`AIRUN_Nhat_ky_${new Date().toISOString().slice(0,10)}.csv`;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
 
 function initDialogs(){
@@ -2112,7 +2331,7 @@ function initPWA(){const button=$('installBtn');if(button)button.hidden=true;}
 
 async function runDiagnostics(){
   const button=$('diagnosticBtn');setBusy(button,true,'Đang kiểm tra…');
-  setSystemStatus('js','ok','V7.3 OpenFreeMap Stable');updateConnection();
+  setSystemStatus('js','ok','V8.0 · AI Coach');updateConnection();
   try{
     const permission=await geolocationPermissionState();
     setSystemStatus('gps',permission==='denied'?'error':permission==='granted'?'ok':'warn',permission==='denied'?'Bị chặn':permission==='granted'?'Đã cấp quyền':'Chưa cấp quyền');
@@ -2138,8 +2357,6 @@ function bindEvents(){
   document.querySelectorAll('[data-route-km]').forEach(button=>button.addEventListener('click',()=>{routePlanner.usePlan=false;routePlanner.targetKm=Number(button.dataset.routeKm);syncRoutePlanCard();}));
   on('routeUsePlan','click',()=>{routePlanner.usePlan=true;routePlanner.targetKm=planEstimate().distance;syncRoutePlanCard();});
   on('generateRouteBtn','click',()=>runAsyncTask('Tạo cung chạy',()=>generateSuggestedRoute()));on('regenerateRouteBtn','click',()=>runAsyncTask('Tạo cung khác',()=>generateSuggestedRoute({regenerate:true})));
-  on('routeMapSettingsBtn','click',openRoutingSetup);on('closeRoutingSetupBtn','click',closeRoutingSetup);on('saveRoutingSetupBtn','click',()=>runAsyncTask('Lưu cấu hình bản đồ',saveRoutingSetup));on('clearRoutingSetupBtn','click',clearRoutingSetup);
-  const setupModal=$('routingSetupModal');if(setupModal)setupModal.addEventListener('click',event=>{if(event.target===setupModal)closeRoutingSetup();});
   syncRouteProviderStatus();on('useSuggestedRouteBtn','click',useSuggestedRoute);
   on('routeFromPlanBtn','click',()=>{routePlanner.usePlan=true;routePlanner.targetKm=planEstimate().distance;syncRoutePlanCard();$('mapSection').scrollIntoView({behavior:'smooth'});setTimeout(()=>runAsyncTask('Tạo cung chạy',()=>generateSuggestedRoute()),450);});
   on('clearJournalBtn','click',()=>{if(journalRows().length&&confirm('Xóa toàn bộ nhật ký trên thiết bị này?')){localSet(STORAGE.journal,[]);renderJournal();showToast('Đã xóa nhật ký.');}});
@@ -2153,12 +2370,268 @@ function bindEvents(){
   window.addEventListener('beforeunload',event=>{if(tracker.status==='running'){event.preventDefault();event.returnValue='';}});
 }
 
+/* ===================== V8 · AI COACH ===================== */
+const coach={timer:null,inflight:null,lastSig:'',cache:new Map(),chat:[],lastLiveAt:0,lastKmCue:0,mode:'idle'};
+let lastRunInfo=null;
+
+function coachSetPill(text,tone=''){const n=$('coachPill');if(!n)return;n.textContent=text;n.className=`coach-pill ${tone}`;}
+function coachList(id,items){const n=$(id);if(!n)return;const list=(Array.isArray(items)?items:[items]).filter(Boolean).slice(0,4);n.innerHTML=list.length?list.map(x=>`<li>${escapeHTML(x)}</li>`).join(''):'<li>—</li>';}
+function syncCoachAvailability(){
+  const ai=SERVER_CFG.ai;const send=$('coachSendBtn');if(send)send.disabled=false;
+  const basis=$('coachBasis');
+  if(basis)basis.textContent=ai?`AI chỉ dùng số liệu trên trang · không gửi tọa độ GPS chính xác · không thay thế tư vấn y tế.`:'Máy chủ chưa bật AI (thiếu OPENAI_API_KEY) · đang dùng phần giải thích tự động từ công thức.';
+  if(activeResult&&activeData&&!isNoData(activeData))scheduleCoach(true);
+}
+
+function renderCoachWaiting(failed=false){
+  const card=$('coachCard');if(!card)return;
+  card.classList.remove('is-loading');$('coachGrid').hidden=true;$('coachScoreComment').hidden=true;
+  $('coachHeadline').textContent=failed?'Chưa có dữ liệu thật để AI đọc':'AI Coach đang chờ dữ liệu thật';
+  $('coachSummary').textContent=failed?'Open-Meteo chưa phản hồi nên AIRUN không nhờ AI đọc số mô phỏng. Hãy thử cập nhật lại sau ít phút.':'Khi thời tiết và AQI trực tiếp về, AI sẽ tóm tắt tình hình và gợi ý cụ thể.';
+  coachSetPill(failed?'Chưa có dữ liệu':'Chờ dữ liệu','off');coach.lastSig='';
+}
+
+function coachNum(v,d=0){return hasNum(v)?round(v,d):null;}
+function coachSnapshot(s){
+  if(!s)return null;
+  return {time:s.time?String(s.time).replace('T',' '):null,weather:hasNum(s.code)?weatherText(s.code)[0]:null,temp_c:coachNum(s.temp),feels_like_c:coachNum(s.feels),humidity_pct:coachNum(s.humidity),rain_prob_pct:coachNum(s.rain),wind_kmh:coachNum(s.wind,1),uv_index:coachNum(s.uv,1),us_aqi:coachNum(s.aqi),aqi_level:hasNum(s.aqi)?aqiInfo(s.aqi).label:null,pm25_ugm3:coachNum(s.pm,1)};
+}
+function feedbackHistory(){
+  const rows=journalRows().filter(r=>r.feedback);
+  const c=v=>rows.filter(r=>r.feedback.verdict===v).length;
+  return {total:rows.length,dung:c('dung'),qua_khat_khe:c('qua_khat_khe'),qua_de_dai:c('qua_de_dai'),
+    recent:rows.slice(0,4).map(r=>({date:String(r.at).slice(0,10),verdict:r.feedback.verdict,feels_c:r.feedback.feels??null,airun_score:r.score??r.feedback.score??null,heat_1_5:r.feedback.heat,breath_1_5:r.feedback.breath,note:(r.feedback.note||'').slice(0,120)}))};
+}
+function coachContext(){
+  const plan=currentPlan(),est=planEstimate(plan),data=activeData,snap=activeSnapshot,res=activeResult;
+  const best=data&&!isNoData(data)?bestTimeFor(data,plan):null;
+  const area=ward(data?.key||selectedKey);
+  return {
+    app:'AIRUN Đà Nẵng',now_local:vnIso().replace('T',' '),
+    location:{name:data?.location?.label||area.name,mode:data?.location?.mode==='gps'?'GPS (chỉ gửi tên khu vực)':'khu vực chọn sẵn',area_note:area.desc},
+    data_source:sourceLabel(data?.source),data_updated:data?.updated?new Date(data.updated).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'}):null,
+    plan:{start_time:plan.time,duration_min:plan.duration,pace_min_per_km:formatPace(est.pace),distance_km:round(est.distance,2),intensity:plan.intensity,sensitive_group:plan.sensitive},
+    at_planned_time:coachSnapshot(snap),
+    now:coachSnapshot({...(data?.current||{}),time:vnIso()}),
+    airun_score:res?{score:res.score,verdict:res.title,reasons:res.reasons,scale:'0–10, càng cao càng thuận lợi. Công thức cố định; AI không đổi điểm.'}:null,
+    best_upcoming_time:best?{time:best.row.time.replace('T',' '),score:best.result.score}:null,
+    next_hours:data&&!isNoData(data)?upcomingHours(data,18).map(r=>({time:r.time.slice(5).replace('T',' '),feels_c:coachNum(r.feels),temp_c:coachNum(r.temp),rain_pct:coachNum(r.rain),wind_kmh:coachNum(r.wind),uv:coachNum(r.uv,1),aqi:coachNum(r.aqi),pm25:coachNum(r.pm,1),weather:hasNum(r.code)?weatherText(r.code)[0]:null,airun_score:analyzeSnapshot({...data.current,...r},plan).score})):[],
+    suggested_route:routePlanner.current?{distance_km:round(routePlanner.current.distanceKm,2),type:routePlanner.current.source==='graphhopper'?'cung vòng GraphHopper':routePlanner.current.source==='network'?'cung vòng theo đường đi bộ':'phác thảo'}:null,
+    user_feedback_history:feedbackHistory()
+  };
+}
+function coachSignature(){
+  const plan=currentPlan(),d=activeData;
+  return JSON.stringify([d?.location?.label,d?.key,d?.source==='cached'?'cached':'live',plan.time,plan.duration,plan.intensity,plan.sensitive,plan.pace,activeSnapshot?.time,activeResult?.score,coachNum(activeSnapshot?.aqi),coachNum(activeSnapshot?.feels)]);
+}
+
+/* Giải thích tự động (khi máy chủ chưa bật AI hoặc AI lỗi) — vẫn dựa đúng trên số liệu. */
+function ruleCoach(){
+  const plan=currentPlan(),s=activeSnapshot||{},r=activeResult,best=activeData?bestTimeFor(activeData,plan):null;
+  const feels=Number(s.feels??s.temp),est=planEstimate(plan);
+  const parts=[];
+  if(hasNum(s.feels))parts.push(`cảm giác ${round(s.feels)}°C`);if(hasNum(s.aqi))parts.push(`AQI ${round(s.aqi)} (${aqiInfo(s.aqi).label.toLowerCase()})`);if(hasNum(s.uv))parts.push(`UV ${round(s.uv,1)}`);if(hasNum(s.rain))parts.push(`mưa ${round(s.rain)}%`);if(hasNum(s.wind))parts.push(`gió ${round(s.wind)} km/h`);
+  const adjust=[];
+  if(feels>=35)adjust.push(`Chậm lại khoảng 45–60 giây/km so với pace ${formatPace(est.pace)} và rút còn ${Math.max(20,Math.round(plan.duration*.7))} phút.`);
+  else if(feels>31)adjust.push(`Chạy nhẹ hơn pace ${formatPace(est.pace)} khoảng 20–30 giây/km, chọn tuyến ven biển/ven sông có gió.`);
+  if(hasNum(s.aqi)&&s.aqi>100)adjust.push('Giảm cường độ, tránh chạy biến tốc vì AQI cao.');
+  if(hasNum(s.rain)&&s.rain>=40)adjust.push('Chuẩn bị phương án chạy trong nhà nếu trời chuyển mưa.');
+  if(!adjust.length)adjust.push(`Giữ kế hoạch ${est.distance.toFixed(1)} km với pace ${formatPace(est.pace)}/km.`);
+  const bring=[...document.querySelectorAll('#kitList li')].map(li=>li.textContent).slice(2,5);
+  return {headline:r?.title||'Đã có dữ liệu',summary:`Lúc ${String(s.time||'').slice(11,16)||'bạn chọn'} ở ${activeData?.location?.label||ward().name}: ${parts.join(', ')}. AIRUN chấm ${r?.score??'—'}/10.`,
+    when:best?`${best.row.time.slice(11,16)}${best.row.time.slice(0,10)!==vnIso().slice(0,10)?' ngày mai':''} có điểm cao nhất (${best.result.score}/10) trong các khung giờ chạy phổ biến sắp tới.`:'Chưa có dự báo theo giờ.',
+    adjust,bring:bring.length?bring:['Nước uống','Điện thoại đủ pin'],watch:['Chóng mặt, buồn nôn, tim đập bất thường hoặc khó thở → dừng, vào bóng râm, uống nước.'],score_comment:''};
+}
+
+function renderCoachResult(result,{source='ai',model=''}={}){
+  const card=$('coachCard');if(!card||!result)return;
+  card.classList.remove('is-loading');
+  $('coachHeadline').textContent=result.headline||activeResult?.title||'AI Coach';
+  $('coachSummary').textContent=result.summary||'';
+  $('coachWhen').textContent=result.when||'—';
+  coachList('coachAdjust',result.adjust);coachList('coachBring',result.bring);coachList('coachWatch',result.watch);
+  $('coachGrid').hidden=false;
+  const sc=$('coachScoreComment');if(sc){sc.hidden=!result.score_comment;sc.textContent=result.score_comment?`Về điểm số: ${result.score_comment}`:'';}
+  if(source==='ai')coachSetPill(`AI · ${model||'OpenAI'}`,'ok');
+  else coachSetPill(SERVER_CFG.ai?'Giải thích tự động (AI lỗi)':'Giải thích tự động','off');
+}
+
+async function postCoach(mode,context,messages){
+  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),30000);
+  try{
+    const res=await fetch('/api/coach',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mode,context,messages}),signal:controller.signal});
+    const data=await res.json().catch(()=>({}));
+    if(!res.ok||data.error)throw new Error(data.reason||`HTTP ${res.status}`);
+    return data;
+  }finally{clearTimeout(timer);}
+}
+
+function scheduleCoach(force=false){
+  if(!$('coachCard'))return;
+  if(!activeResult||!activeData||isNoData(activeData)){renderCoachWaiting(Boolean(activeData?.failed));return;}
+  clearTimeout(coach.timer);
+  coach.timer=setTimeout(()=>{void runCoach(force);},force?50:1100);
+}
+async function runCoach(force=false){
+  if(!activeResult||!activeData||isNoData(activeData))return;
+  const sig=coachSignature();
+  if(!force&&sig===coach.lastSig)return;
+  coach.lastSig=sig;
+  // Dữ liệu "đã lưu" chỉ dùng tạm: chờ dữ liệu trực tiếp rồi mới gọi AI.
+  if(!SERVER_CFG.ai||activeData.source==='cached'){renderCoachResult(ruleCoach(),{source:'rule'});if(activeData.source==='cached'&&SERVER_CFG.ai)coachSetPill('Chờ dữ liệu trực tiếp…','loading');return;}
+  if(coach.cache.has(sig)){const c=coach.cache.get(sig);renderCoachResult(c.result,{source:'ai',model:c.model});return;}
+  const card=$('coachCard');card.classList.add('is-loading');coachSetPill('AI đang đọc số liệu…','loading');
+  $('coachSummary').textContent='AI đang đọc thời tiết, AQI, UV, kế hoạch và dự báo theo giờ…';
+  try{
+    const data=await postCoach('plan',coachContext());
+    if(sig!==coach.lastSig)return; // người dùng đã đổi kế hoạch trong lúc chờ
+    coach.cache.set(sig,{result:data.result,model:data.model});
+    renderCoachResult(data.result,{source:'ai',model:data.model});
+  }catch(error){
+    console.warn('AIRUN coach:',error);
+    if(sig!==coach.lastSig)return;
+    renderCoachResult(ruleCoach(),{source:'rule'});
+    coachSetPill('AI tạm lỗi · giải thích tự động','off');
+    coach.lastSig='';
+  }
+}
+
+function appendChat(role,text){
+  const box=$('coachChat');if(!box)return null;box.hidden=false;
+  const el=document.createElement('div');el.className=`coach-msg ${role}`;el.textContent=text;box.appendChild(el);box.scrollTop=box.scrollHeight;return el;
+}
+async function askCoach(question){
+  const q=String(question||'').trim().slice(0,300);if(!q)return;
+  if(!activeResult||!activeData||isNoData(activeData)){showToast('Hãy chờ dữ liệu thật về rồi hỏi AI nhé.');return;}
+  appendChat('user',q);coach.chat.push({role:'user',content:q});
+  const input=$('coachInput');if(input)input.value='';
+  const btn=$('coachSendBtn');if(btn)btn.disabled=true;
+  if(!SERVER_CFG.ai){const t='Máy chủ AIRUN chưa bật AI (thiếu OPENAI_API_KEY) nên chưa trả lời được câu hỏi tự do. Phần giải thích ở trên vẫn dựa đúng trên số liệu.';appendChat('err',t);if(btn)btn.disabled=false;return;}
+  const pending=appendChat('ai','AI đang trả lời…');
+  try{
+    const data=await postCoach('chat',coachContext(),coach.chat.slice(-8));
+    const answer=String(data.result?.answer||'').trim()||'AI chưa có câu trả lời.';
+    pending.textContent=answer;coach.chat.push({role:'assistant',content:answer});
+  }catch(error){pending.className='coach-msg err';pending.textContent=`AI chưa trả lời được: ${error.message}`;coach.chat.pop();}
+  finally{if(btn)btn.disabled=false;}
+}
+
+/* ---- Khi đang chạy: nhắc ngắn bằng giọng nói ---- */
+function speak(text){
+  try{
+    if(!$('voiceCue')?.checked||!('speechSynthesis' in window)||!text)return;
+    const u=new SpeechSynthesisUtterance(text);u.lang='vi-VN';u.rate=1.02;
+    const vi=speechSynthesis.getVoices().find(v=>/^vi/i.test(v.lang));if(vi)u.voice=vi;
+    speechSynthesis.cancel();speechSynthesis.speak(u);
+  }catch(error){console.warn('AIRUN voice:',error);}
+}
+function liveRuleCue(env,result){
+  const km=tracker.distanceKm,pace=km>=.2?(trackerElapsedSeconds()/60)/km:null;
+  let cue=`Bạn đã chạy ${km.toFixed(1)} ki lô mét${pace?`, pace trung bình ${formatPace(pace).replace(':',' phút ')} giây`:''}.`;
+  const f=Number(env?.feels);if(f>=35)cue+=' Trời rất nóng, hãy chạy chậm lại và uống nước.';else if(f>31)cue+=' Trời khá nóng, nhớ uống nước.';
+  if(hasNum(env?.aqi)&&env.aqi>100)cue+=' Không khí kém, giảm cường độ.';
+  if(result?.tone==='bad')cue+=' Điều kiện đang bất lợi, cân nhắc kết thúc sớm.';
+  return cue;
+}
+async function requestLiveCue(data,result,reason='env'){
+  if(tracker.status!=='running')return;
+  const env=data?.current||tracker.lastEnv||{};
+  const now=Date.now();
+  if(SERVER_CFG.ai&&now-coach.lastLiveAt>3*60*1000){
+    coach.lastLiveAt=now;
+    try{
+      const secs=trackerElapsedSeconds(),km=tracker.distanceKm;
+      const context={...coachContext(),run_now:{reason,distance_km:round(km,2),elapsed_min:round(secs/60,1),avg_pace:km>=.2?formatPace((secs/60)/km):null,current_speed_kmh:round(tracker.currentSpeed||0,1),planned_distance_km:round(planEstimate().distance,2),conditions_now:coachSnapshot({...env,time:vnIso()}),airun_score_now:result?.score??tracker.lastEnvResult?.score??null}};
+      const res=await postCoach('live',context);
+      const cue=String(res.result?.cue||'').trim();
+      if(cue&&tracker.status==='running'){trackerAlert(result?.tone||tracker.lastEnvResult?.tone||'good','AI Coach:',cue,'✦');speak(cue);return;}
+    }catch(error){console.warn('AIRUN live cue:',error);}
+  }
+  if(reason==='km'){const cue=liveRuleCue(env,result||tracker.lastEnvResult);speak(cue);}
+}
+function checkKmCue(){
+  const km=Math.floor(tracker.distanceKm);
+  if(km>=1&&km>coach.lastKmCue){coach.lastKmCue=km;void requestLiveCue({current:tracker.lastEnv},tracker.lastEnvResult,'km');}
+}
+
+/* ---- Phản hồi sau buổi chạy ---- */
+function updateFeedbackStats(server=null){
+  const h=feedbackHistory();const node=$('feedbackStats');if(!node)return;
+  const parts=[];if(h.total)parts.push(`Bạn: ${h.dung} đúng · ${h.qua_khat_khe} khắt khe · ${h.qua_de_dai} dễ dãi`);
+  if(server&&server.total)parts.push(`Tất cả: ${server.total} lượt`);
+  node.textContent=parts.join(' · ')||'Chưa có đánh giá';
+}
+function feedbackConditions(){
+  const env=lastRunInfo&&Date.now()-lastRunInfo.at<3*3600*1000&&lastRunInfo.env?lastRunInfo.env:activeSnapshot||{};
+  return {feels:coachNum(env.feels),temp:coachNum(env.temp),aqi:coachNum(env.aqi),pm:coachNum(env.pm,1),uv:coachNum(env.uv,1),rain:coachNum(env.rain),wind:coachNum(env.wind,1),time:String(env.time||vnIso()).slice(0,16),source:activeData?.source||''};
+}
+function syncFeedbackContext(){
+  const node=$('feedbackContext');if(!node)return;
+  if(lastRunInfo&&Date.now()-lastRunInfo.at<3*3600*1000)node.textContent=`Buổi chạy ${lastRunInfo.distanceKm.toFixed(2)} km · ${formatDuration(lastRunInfo.seconds)} ở ${lastRunInfo.area}. AIRUN đã chấm ${lastRunInfo.score??'—'}/10 trước/trong buổi chạy.`;
+  else if(activeResult)node.textContent=`Đánh giá kế hoạch hiện tại: ${activeData?.location?.label||ward().name}, lúc ${currentPlan().time}, AIRUN chấm ${activeResult.score}/10 (“${activeResult.title}”). Dùng được cả khi bạn không bật GPS.`;
+}
+async function submitFeedback(event){
+  event.preventDefault();
+  const form=$('feedbackForm'),status=$('feedbackStatus'),btn=$('feedbackSubmit');
+  const verdict=form.querySelector('input[name="fbVerdict"]:checked')?.value;
+  if(!verdict){status.textContent='Hãy chọn: Đúng / Quá khắt khe / Quá dễ dãi.';status.className='fb-status err';return;}
+  const recentRun=lastRunInfo&&Date.now()-lastRunInfo.at<3*3600*1000?lastRunInfo:null;
+  const plan=currentPlan();
+  const conditions=feedbackConditions();
+  const payload={id:String(Date.now()),verdict,route:form.querySelector('input[name="fbRoute"]:checked')?.value||'khong_dung',heat:Number($('fbHeat').value),breath:Number($('fbBreath').value),effort:Number($('fbEffort').value),note:$('fbNote').value.trim(),tester:$('fbTester').value.trim(),
+    area:recentRun?.area||activeData?.location?.label||ward().name,hasGps:Boolean(recentRun),score:recentRun?.score??activeResult?.score??null,scoreTitle:activeResult?.title||'',conditions,
+    run:recentRun?{distanceKm:round(recentRun.distanceKm,2),durationSec:recentRun.seconds,pace:recentRun.pace||''}:{},plan:{durationMin:plan.duration,intensity:plan.intensity,sensitive:plan.sensitive,paceMin:round(planEstimate(plan).pace,2)}};
+  // 1) Lưu vào nhật ký trên máy (để hiệu chỉnh cá nhân + xuất CSV làm minh chứng)
+  const fb={verdict,route:payload.route,heat:payload.heat,breath:payload.breath,effort:payload.effort,note:payload.note,tester:payload.tester,feels:conditions.feels,aqi:conditions.aqi,uv:conditions.uv,score:payload.score};
+  const rows=journalRows();const target=recentRun?rows.find(r=>r.id===recentRun.id):null;
+  if(target)target.feedback=fb;else rows.unshift({id:Date.now(),type:'feedback',at:new Date().toISOString(),area:payload.area,score:payload.score??'',aqi:conditions.aqi??'',temp:conditions.temp??'',feels:conditions.feels??'',time:plan.time,duration:plan.duration,intensity:plan.intensity,feedback:fb,source:activeData?.source||''});
+  localSet(STORAGE.journal,rows.slice(0,80));renderJournal();
+  btn.disabled=true;status.textContent='Đang gửi…';status.className='fb-status';
+  // 2) Gửi về máy chủ để nhóm tổng hợp
+  let server=null;
+  if(SERVER_CFG.server&&SERVER_CFG.feedback){
+    try{const res=await fetch('/api/feedback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const data=await res.json();if(res.ok&&data.ok)server=data.summary;}catch(error){console.warn('AIRUN feedback:',error);}
+  }
+  status.textContent=server?'✓ Đã lưu trên máy và gửi về nhóm AIRUN. Cảm ơn bạn!':'✓ Đã lưu trong nhật ký trên máy (chưa gửi được lên máy chủ).';status.className='fb-status ok';
+  updateFeedbackStats(server);
+  // 3) Điểm của các lần sau tự hiệu chỉnh theo phản hồi → cập nhật lại kết quả hiện tại
+  if(activeData&&!isNoData(activeData))renderEnvironmentData(activeData);
+  // 4) AI nhận xét buổi chạy
+  await requestRunReview(payload);
+  btn.disabled=false;form.reset();['fbHeat','fbBreath','fbEffort'].forEach(id=>{const o=$(id+'Out');if(o)o.textContent=$(id).value;});
+}
+async function requestRunReview(payload){
+  const card=$('runAiCard');if(!card)return;
+  const show=(r,label)=>{card.hidden=false;$('runAiHeadline').textContent=r.headline||'Nhận xét buổi chạy';$('runAiSummary').textContent=r.summary||'';const ul=$('runAiNext');ul.innerHTML=(r.next_time||[]).slice(0,3).map(x=>`<li>${escapeHTML(x)}</li>`).join('');const sr=$('runAiScore');sr.hidden=!r.score_review;sr.textContent=r.score_review?`Về điểm số: ${r.score_review}`:'';card.querySelector('.eyebrow').textContent=label;};
+  const verdictText={dung:'đúng với cảm nhận',qua_khat_khe:'quá khắt khe',qua_de_dai:'quá dễ dãi'}[payload.verdict];
+  if(!SERVER_CFG.ai){
+    show({headline:`Bạn đánh giá khuyến nghị ${verdictText}`,summary:`Đã ghi nhận: nóng ${payload.heat}/5, khó thở ${payload.breath}/5, mệt ${payload.effort}/5${payload.run?.distanceKm?`, ${payload.run.distanceKm} km`:''}. Những lần sau AIRUN dùng phản hồi này để hiệu chỉnh điểm khi trời nóng.`,next_time:[]},'GHI NHẬN PHẢN HỒI');return;
+  }
+  card.hidden=false;$('runAiHeadline').textContent='AI đang nhận xét buổi chạy…';$('runAiSummary').textContent='';$('runAiNext').innerHTML='';
+  try{
+    const ctx={...coachContext(),finished_run:{verdict_on_airun_advice:verdictText,heat_1_5:payload.heat,breath_1_5:payload.breath,effort_1_5:payload.effort,route_feedback:payload.route,note:payload.note,run:payload.run,conditions_during_run:payload.conditions,airun_score_before:payload.score}};
+    const data=await postCoach('run',ctx);show(data.result,'AI NHẬN XÉT BUỔI CHẠY');
+  }catch(error){show({headline:`Đã ghi nhận: khuyến nghị ${verdictText}`,summary:`AI chưa phản hồi (${error.message}). Phản hồi của bạn vẫn được lưu để hiệu chỉnh điểm.`,next_time:[]},'GHI NHẬN PHẢN HỒI');}
+}
+
+function bindCoachEvents(){
+  on('coachForm','submit',event=>{event.preventDefault();void askCoach($('coachInput').value);});
+  document.querySelectorAll('[data-coach-q]').forEach(b=>b.addEventListener('click',()=>void askCoach(b.dataset.coachQ)));
+  on('coachRefreshBtn','click',()=>{coach.cache.clear();coach.lastSig='';scheduleCoach(true);});
+  on('feedbackForm','submit',event=>void submitFeedback(event));
+  ['fbHeat','fbBreath','fbEffort'].forEach(id=>on(id,'input',()=>{const o=$(id+'Out');if(o)o.textContent=$(id).value;}));
+  document.querySelectorAll('input[name="fbVerdict"]').forEach(r=>r.addEventListener('change',syncFeedbackContext));
+  on('voiceCue','change',event=>{if(event.target.checked)speak('Đã bật nhắc bằng giọng nói.');});
+  updateFeedbackStats();syncFeedbackContext();
+  if(SERVER_CFG.server)fetch('/api/feedback/summary',{cache:'no-store'}).then(r=>r.json()).then(s=>updateFeedbackStats(s)).catch(()=>{});
+}
+
 let airunInitialized=false;
 async function init(){
   if(airunInitialized)return;airunInitialized=true;
   if(await clearLegacyServiceWorkerControl()) return;
-  if(typeof window!=='undefined')window.__AIRUN_APP_READY='v72';
-  setSystemStatus('js','ok','V7.3 OpenFreeMap Stable');
+  if(typeof window!=='undefined')window.__AIRUN_APP_READY='v80';
+  setSystemStatus('js','ok','V8.0 · AI Coach');
   safeCall('khu vực',()=>{$('area').innerHTML=WARDS.map(item=>`<option value="${item.key}">${escapeHTML(item.name)}</option>`).join('');});
   safeCall('khôi phục cài đặt',restorePlanSettings);
   safeCall('chọn khu vực',()=>{$('area').value=selectedKey;});
@@ -2173,6 +2646,8 @@ async function init(){
   safeCall('hộp thoại',initDialogs);
   safeCall('PWA',initPWA);
   safeCall('tracker',updateTrackerMetrics);
+  safeCall('AI Coach',bindCoachEvents);
+  loadServerConfig().catch(()=>{});
 
   const lastGps=localGet('airun-v54-last-gps',null);
   if(lastGps&&Date.now()-Number(lastGps.at||0)<60*60*1000)setSystemStatus('gps','warn',`Gần nhất ±${round(lastGps.accuracy||0)} m`);
@@ -2197,14 +2672,14 @@ if(typeof module!=='undefined'&&module.exports){module.exports={WARDS,aqiInfo,uv
   <script>
   (()=>{
     setTimeout(()=>{
-      if(window.__AIRUN_APP_READY==='v61')return;
+      if(window.__AIRUN_APP_READY)return; // V8: V7 so sánh với 'v61' nên luôn báo lỗi giả
       const connection=document.getElementById('connectionText');
       const chip=document.getElementById('jsStatusChip');
       const label=document.getElementById('jsStatus');
       const button=document.getElementById('diagnosticBtn');
       if(connection)connection.textContent='JavaScript chính chưa khởi động · GPS/API chưa thể hoạt động';
       if(chip)chip.dataset.state='error';
-      if(label)label.textContent='AIRUN V7.3 chưa khởi động';
+      if(label)label.textContent='AIRUN V8 chưa khởi động';
       if(button){
         button.textContent='Sửa cache & tải lại';
         button.onclick=async()=>{
