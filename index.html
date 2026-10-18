@@ -870,8 +870,8 @@ const routePlanner={targetKm:null,usePlan:true,seed:0,current:null,busy:false};
 const ROUTE_CONFIG_KEYS={mapbox:'airun-v70-mapbox-token',graphhopper:'airun-v70-graphhopper-key'};
 const advancedMap={map:null,loaded:false,loading:null,startMarker:null,kmMarkers:[],routeReady:false};
 const routeFallbackMap={map:null,loading:null,startMarker:null,kmMarkers:[],routeReady:false,lastFitSignature:''};
-const runAdvancedMap={map:null,loading:null,currentMarker:null,startMarker:null,lastFitSignature:'',resizeTimer:null};
-const runFallbackMap={map:null,loading:null,currentMarker:null,startMarker:null,lastFitSignature:'',resizeTimer:null};
+const runAdvancedMap={map:null,ready:false,userAt:0,loading:null,currentMarker:null,startMarker:null,lastFitSignature:'',resizeTimer:null};
+const runFallbackMap={map:null,ready:false,userAt:0,loading:null,currentMarker:null,startMarker:null,lastFitSignature:'',resizeTimer:null};
 
 function ward(key = selectedKey){ return WARDS.find(item => item.key === key) || WARDS[0]; }
 function safeJSON(raw, fallback){ try{return JSON.parse(raw)}catch{return fallback} }
@@ -2120,17 +2120,17 @@ function runAddLayers(map){
 }
 function makeRunMarker(cls){const el=document.createElement('div');el.className=cls;return el;}
 async function ensureRunMapbox(){
-  if(!runMapboxConfigured())return null;if(runAdvancedMap.map){requestAnimationFrame(()=>runAdvancedMap.map.resize());return runAdvancedMap.map;}if(runAdvancedMap.loading)return runAdvancedMap.loading;
+  if(!runMapboxConfigured())return null;if(runAdvancedMap.map){return runAdvancedMap.map;}if(runAdvancedMap.loading)return runAdvancedMap.loading;
   runAdvancedMap.loading=(async()=>{await loadExternalAsset('style','https://api.mapbox.com/mapbox-gl-js/v3.30.0/mapbox-gl.css','airun-mapbox-css');await loadExternalAsset('script','https://api.mapbox.com/mapbox-gl-js/v3.30.0/mapbox-gl.js','airun-mapbox-js');if(!window.mapboxgl)throw new Error('Mapbox GL JS chưa sẵn sàng');mapboxgl.accessToken=routeConfig().mapbox;
     const container=$('runMapboxMap'),wrap=$('trackerMapWrap'),fallback=$('runMapFrame'),free=$('runMapLibreMap');container.hidden=false;if(free)free.hidden=true;wrap?.classList.add('mapbox-active');wrap?.classList.remove('maplibre-active');if(fallback){fallback.style.visibility='hidden';fallback.removeAttribute('src');}const base=gpsLocation||ward();
     const map=new mapboxgl.Map({container:'runMapboxMap',style:'mapbox://styles/mapbox/outdoors-v12',center:[base.lon,base.lat],zoom:14.8,attributionControl:true});map.addControl(new mapboxgl.NavigationControl({showCompass:false}),'top-right');runAdvancedMap.map=map;
     await new Promise((resolve,reject)=>{map.once('load',resolve);map.once('error',e=>{if(!map.loaded())reject(e?.error||new Error('Mapbox load error'));});});
-    runSetSource(map,'airun-run-plan-src',[]);runSetSource(map,'airun-run-raw-src',[]);runSetSource(map,'airun-run-actual-src',[]);runAddLayers(map);const provider=$('runMapProvider');if(provider)provider.textContent='Mapbox · GPS trực tiếp';requestAnimationFrame(()=>{map.resize();setTimeout(()=>map.resize(),180);});return map;
-  })().catch(error=>{console.warn('AIRUN run Mapbox:',error);runAdvancedMap.map=null;const c=$('runMapboxMap'),w=$('trackerMapWrap'),f=$('runMapFrame');if(c)c.hidden=true;w?.classList.remove('mapbox-active');if(f){f.style.visibility='hidden';f.removeAttribute('src');}const provider=$('runMapProvider');if(provider)provider.textContent='Đang chuyển sang OpenFreeMap…';void refreshRunMapLibre({fit:true});return null;}).finally(()=>{runAdvancedMap.loading=null;});return runAdvancedMap.loading;
+    runSetSource(map,'airun-run-plan-src',[]);runSetSource(map,'airun-run-raw-src',[]);runSetSource(map,'airun-run-actual-src',[]);runAddLayers(map);runAdvancedMap.ready=true;bindRunMapGestures(map,runAdvancedMap,container);const provider=$('runMapProvider');if(provider)provider.textContent='Mapbox · GPS trực tiếp';requestAnimationFrame(()=>{map.resize();setTimeout(()=>map.resize(),180);});return map;
+  })().catch(error=>{console.warn('AIRUN run Mapbox:',error);runAdvancedMap.map=null;runAdvancedMap.ready=false;const c=$('runMapboxMap'),w=$('trackerMapWrap'),f=$('runMapFrame');if(c)c.hidden=true;w?.classList.remove('mapbox-active');if(f){f.style.visibility='hidden';f.removeAttribute('src');}const provider=$('runMapProvider');if(provider)provider.textContent='Đang chuyển sang OpenFreeMap…';void refreshRunMapLibre({fit:true});return null;}).finally(()=>{runAdvancedMap.loading=null;});return runAdvancedMap.loading;
 }
 
 async function ensureRunMapLibre(){
-  if(runFallbackMap.map){requestAnimationFrame(()=>runFallbackMap.map.resize());return runFallbackMap.map;}
+  if(runFallbackMap.map){return runFallbackMap.map;}
   if(runFallbackMap.loading)return runFallbackMap.loading;
   runFallbackMap.loading=(async()=>{
     await ensureMapLibreAssets();
@@ -2141,16 +2141,32 @@ async function ensureRunMapLibre(){
     const map=new maplibregl.Map({container:'runMapLibreMap',style:'https://tiles.openfreemap.org/styles/liberty',center:[base.lon,base.lat],zoom:14.8,attributionControl:true});
     map.addControl(new maplibregl.NavigationControl({showCompass:false}),'top-right');runFallbackMap.map=map;
     await waitMapLoad(map,'run');
-    runSetSource(map,'airun-run-plan-src',[]);runSetSource(map,'airun-run-raw-src',[]);runSetSource(map,'airun-run-actual-src',[]);runAddLayers(map);
+    runSetSource(map,'airun-run-plan-src',[]);runSetSource(map,'airun-run-raw-src',[]);runSetSource(map,'airun-run-actual-src',[]);runAddLayers(map);runFallbackMap.ready=true;bindRunMapGestures(map,runFallbackMap,container);
     const provider=$('runMapProvider');if(provider)provider.textContent='OpenFreeMap · MapLibre';
     requestAnimationFrame(()=>{map.resize();setTimeout(()=>map.resize(),180);});return map;
   })().catch(error=>{
-    console.warn('AIRUN OpenFreeMap fallback:',error);runFallbackMap.map=null;
+    console.warn('AIRUN OpenFreeMap fallback:',error);runFallbackMap.map=null;runFallbackMap.ready=false;
     const c=$('runMapLibreMap'),w=$('trackerMapWrap'),f=$('runMapFrame');if(c)c.hidden=true;w?.classList.remove('maplibre-active');if(f){f.style.visibility='hidden';f.removeAttribute('src');}
     const provider=$('runMapProvider');if(provider)provider.textContent='Bản đồ dự phòng chưa tải được';
     setRunMapHint('Không tải được Mapbox/OpenFreeMap. GPS vẫn ghi được quãng đường; hãy kiểm tra mạng hoặc kết nối lại Mapbox.',true);
     return null;
   }).finally(()=>{runFallbackMap.loading=null;});return runFallbackMap.loading;
+}
+// V8.1: bản đồ GPS không bị "đơ" — không chặn cập nhật khi nền đang tải, không resize liên tục, tôn trọng thao tác kéo/zoom.
+const RUN_MAP_USER_PAUSE_MS=20000;
+function runMapUserBusy(state){return Date.now()-Number(state.userAt||0)<RUN_MAP_USER_PAUSE_MS;}
+function runMapShouldFollow(state){return typeof tracker!=='undefined'&&tracker.status==='running';}
+function bindRunMapGestures(map,state,container){
+  const mark=e=>{if(e&&e.originalEvent)state.userAt=Date.now();};
+  ['dragstart','zoomstart','rotatestart','pitchstart','touchstart','wheel'].forEach(type=>map.on(type,mark));
+  try{if(container&&typeof ResizeObserver!=='undefined'){let w=0,h=0;new ResizeObserver(entries=>{const r=entries[0]?.contentRect;if(!r||(Math.round(r.width)===w&&Math.round(r.height)===h))return;w=Math.round(r.width);h=Math.round(r.height);if(w>0&&h>0)map.resize();}).observe(container);}}catch{}
+}
+function followRunPoint(map,state,raw){
+  if(!raw||!runMapShouldFollow(state)||runMapUserBusy(state)||map.isMoving?.())return;
+  const lat=Number(raw.lat),lon=Number(raw.lon);if(!Number.isFinite(lat)||!Number.isFinite(lon))return;
+  const b=map.getBounds(),n=b.getNorth(),s=b.getSouth(),e=b.getEast(),w=b.getWest(),mh=(n-s)*.25,mw=(e-w)*.25;
+  if(lat<n-mh&&lat>s+mh&&lon<e-mw&&lon>w+mw)return;
+  map.easeTo({center:[lon,lat],duration:700});
 }
 function fitRunMapLibre(map,points,force=false){
   const pts=(points||[]).filter(p=>Number.isFinite(+p.lat)&&Number.isFinite(+p.lon));if(!pts.length)return;
@@ -2159,18 +2175,18 @@ function fitRunMapLibre(map,points,force=false){
   const b=new maplibregl.LngLatBounds();pts.forEach(p=>b.extend([p.lon,p.lat]));map.fitBounds(b,{padding:{top:52,bottom:68,left:52,right:52},duration:520,maxZoom:15.7});
 }
 async function refreshRunMapLibre({fit=false}={}){
-  const map=await ensureRunMapLibre();if(!map||!map.loaded())return false;map.resize();
+  const map=await ensureRunMapLibre();if(!map||!runFallbackMap.ready)return false;
   const planned=tracker.plannedRoute?.points||[],rawPts=tracker.rawPoints||[],actual=tracker.points||[];
   runSetSource(map,'airun-run-plan-src',planned);runSetSource(map,'airun-run-raw-src',rawPts);runSetSource(map,'airun-run-actual-src',actual);
   const raw=tracker.rawPoint||gpsLocation;
   if(raw){if(!runFallbackMap.currentMarker)runFallbackMap.currentMarker=new maplibregl.Marker({element:makeRunMarker('airun-run-marker')}).addTo(map);runFallbackMap.currentMarker.setLngLat([raw.lon,raw.lat]);}
   if(actual.length){const first=actual[0];if(!runFallbackMap.startMarker)runFallbackMap.startMarker=new maplibregl.Marker({element:makeRunMarker('airun-run-start-marker')}).addTo(map);runFallbackMap.startMarker.setLngLat([first.lon,first.lat]);}
-  const fitPts=planned.length?planned:(actual.length?actual:(raw?[raw]:[]));if(fit||!runFallbackMap.lastFitSignature)fitRunMapLibre(map,fitPts,true);return true;
+  const fitPts=planned.length?planned:(actual.length?actual:(raw?[raw]:[]));if(!runFallbackMap.lastFitSignature||(fit&&!runMapShouldFollow(runFallbackMap)&&!runMapUserBusy(runFallbackMap)))fitRunMapLibre(map,fitPts,true);else followRunPoint(map,runFallbackMap,raw);return true;
 }
 function scheduleRunFallbackResize(fit=false){clearTimeout(runFallbackMap.resizeTimer);runFallbackMap.resizeTimer=setTimeout(()=>{if(runFallbackMap.map){runFallbackMap.map.resize();void refreshRunMapLibre({fit});}},220);}
 
 function fitRunMapbox(map,points,force=false){const pts=(points||[]).filter(p=>Number.isFinite(+p.lat)&&Number.isFinite(+p.lon));if(!pts.length)return;const sig=pts.length+':'+pts[0].lat.toFixed(5)+':'+pts[0].lon.toFixed(5)+':'+pts[pts.length-1].lat.toFixed(5)+':'+pts[pts.length-1].lon.toFixed(5);if(!force&&runAdvancedMap.lastFitSignature===sig)return;runAdvancedMap.lastFitSignature=sig;if(pts.length===1){map.easeTo({center:[pts[0].lon,pts[0].lat],zoom:15.5,duration:400});return;}const b=new mapboxgl.LngLatBounds();pts.forEach(p=>b.extend([p.lon,p.lat]));map.fitBounds(b,{padding:{top:52,bottom:68,left:52,right:52},duration:520,maxZoom:15.7});}
-async function refreshRunMapbox({fit=false}={}){if(!runMapboxConfigured())return false;const map=await ensureRunMapbox();if(!map||!map.loaded())return false;map.resize();const planned=tracker.plannedRoute?.points||[],rawPts=tracker.rawPoints||[],actual=tracker.points||[];runSetSource(map,'airun-run-plan-src',planned);runSetSource(map,'airun-run-raw-src',rawPts);runSetSource(map,'airun-run-actual-src',actual);const raw=tracker.rawPoint||gpsLocation;if(raw){if(!runAdvancedMap.currentMarker)runAdvancedMap.currentMarker=new mapboxgl.Marker({element:makeRunMarker('airun-run-marker')}).addTo(map);runAdvancedMap.currentMarker.setLngLat([raw.lon,raw.lat]);}if(actual.length){const first=actual[0];if(!runAdvancedMap.startMarker)runAdvancedMap.startMarker=new mapboxgl.Marker({element:makeRunMarker('airun-run-start-marker')}).addTo(map);runAdvancedMap.startMarker.setLngLat([first.lon,first.lat]);}const fitPts=planned.length?planned:(actual.length?actual:(raw?[raw]:[]));if(fit||!runAdvancedMap.lastFitSignature)fitRunMapbox(map,fitPts,true);return true;}
+async function refreshRunMapbox({fit=false}={}){if(!runMapboxConfigured())return false;const map=await ensureRunMapbox();if(!map||!runAdvancedMap.ready)return false;const planned=tracker.plannedRoute?.points||[],rawPts=tracker.rawPoints||[],actual=tracker.points||[];runSetSource(map,'airun-run-plan-src',planned);runSetSource(map,'airun-run-raw-src',rawPts);runSetSource(map,'airun-run-actual-src',actual);const raw=tracker.rawPoint||gpsLocation;if(raw){if(!runAdvancedMap.currentMarker)runAdvancedMap.currentMarker=new mapboxgl.Marker({element:makeRunMarker('airun-run-marker')}).addTo(map);runAdvancedMap.currentMarker.setLngLat([raw.lon,raw.lat]);}if(actual.length){const first=actual[0];if(!runAdvancedMap.startMarker)runAdvancedMap.startMarker=new mapboxgl.Marker({element:makeRunMarker('airun-run-start-marker')}).addTo(map);runAdvancedMap.startMarker.setLngLat([first.lon,first.lat]);}const fitPts=planned.length?planned:(actual.length?actual:(raw?[raw]:[]));if(!runAdvancedMap.lastFitSignature||(fit&&!runMapShouldFollow(runAdvancedMap)&&!runMapUserBusy(runAdvancedMap)))fitRunMapbox(map,fitPts,true);else followRunPoint(map,runAdvancedMap,raw);return true;}
 function scheduleRunMapResize(fit=false){clearTimeout(runAdvancedMap.resizeTimer);runAdvancedMap.resizeTimer=setTimeout(()=>{if(runAdvancedMap.map){runAdvancedMap.map.resize();void refreshRunMapbox({fit});}},220);}
 
 function runMapBoundsAround(lat,lon){
