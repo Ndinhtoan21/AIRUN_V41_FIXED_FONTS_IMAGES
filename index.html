@@ -1310,7 +1310,8 @@ function renderHourStrip(data,plan){
     $('time').value=btn.dataset.hour;savePlanSettings();analyzePlan(false);
     showToast(`Đã đổi giờ chạy sang ${btn.dataset.hour}${btn.textContent.includes('★')?' (giờ tốt nhất)':''}.`);
   }));
-  const sel=box.querySelector('.sel')||box.querySelector('.best');if(sel)sel.scrollIntoView({block:'nearest',inline:'center'});
+  // Chỉ cuộn ngang trong dải giờ — không dùng scrollIntoView vì nó kéo cả trang xuống.
+  const sel=box.querySelector('.sel')||box.querySelector('.best');if(sel)box.scrollLeft=Math.max(0,sel.offsetLeft-box.offsetLeft-box.clientWidth/2+sel.offsetWidth/2);
 }
 
 function renderHeroVerdict(data){
