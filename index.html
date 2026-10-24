@@ -338,6 +338,53 @@ a.quick-strip,.quick-strip>a{padding:6px 13px;display:grid;grid-template-columns
 @media(max-width:1050px){.friendly-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:780px){.quick-strip>a{padding:8px}.decision-panel h2{font-size:20px!important}.hour-bar{flex-basis:36px;height:104px}.cond b{font-size:15px}}
 @media(max-width:420px){.friendly-grid{gap:7px}.cond{padding:10px;gap:7px}.cond-ic{font-size:19px}}
+
+/* AIRUN V8.3 — chia tab, trang chủ gọn */
+.view{display:none}.view.active{display:block}
+.view>.section-wrap:first-child{padding-top:40px}
+#mainNav a[data-tab]{padding:8px 13px;border-radius:999px;text-decoration:none;font-weight:800}
+#mainNav a[data-tab].active{background:#e6f3ec;color:var(--green)}
+.tabbar{display:none}
+.view[data-view="home"] .hero{min-height:560px}
+.home-cards{padding-top:28px!important}
+.home-grid{display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:14px}
+.home-card{background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:var(--soft-shadow);padding:18px 20px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.home-card small{font-size:11px;font-weight:900;letter-spacing:.1em;color:var(--green)}
+.home-card strong{font-size:20px;line-height:1.3;color:var(--ink)}
+.home-card p{margin:0;font-size:13px;line-height:1.55;color:#4d6159}
+.hc-link{margin-top:auto;padding-top:8px;font-size:13px;font-weight:800;color:var(--green);text-decoration:none}
+.hc-link:hover{text-decoration:underline}
+.hc-ai{background:linear-gradient(180deg,#f4fbf6,#fff)}
+.hc-run{background:#0f3a2f;border-color:#0f3a2f}.hc-run small{color:var(--lime)}.hc-run strong{color:#fff}.hc-run p{color:#cfe3da}.hc-run .hc-link{color:var(--lime)}
+.home-hours{display:flex;align-items:flex-end;gap:4px;height:74px;margin:4px 0 2px}
+.home-hours .hh{flex:1;height:100%;position:relative;background:#eef3f1;border-radius:7px;overflow:hidden;display:flex;align-items:flex-end;justify-content:center}
+.home-hours .hh i{position:absolute;left:0;right:0;bottom:0;height:var(--h);border-radius:6px 6px 0 0}
+.home-hours .hh.good i{background:#3aa356}.home-hours .hh.caution i{background:#e0a21c}.home-hours .hh.bad i{background:#d1453b}
+.home-hours .hh em{position:relative;font-style:normal;font-size:10px;font-weight:800;color:#fff;padding-bottom:3px;text-shadow:0 1px 2px rgba(0,0,0,.35)}
+.home-hours .hh.best{outline:2px solid var(--ink);outline-offset:1px}
+.coach-card-page{margin-top:0}
+body.is-running .run-dot{display:block}
+@media(max-width:1050px){.home-grid{grid-template-columns:1fr 1fr}.hc-best{grid-column:1/-1}}
+@media(max-width:780px){
+  body{padding-bottom:calc(68px + env(safe-area-inset-bottom))}
+  .menu-btn,#mainNav{display:none!important}
+  .tabbar{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:95;background:rgba(255,255,255,.97);backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom));box-shadow:0 -6px 20px rgba(15,48,38,.08)}
+  .tabbar a{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px 2px;border-radius:12px;text-decoration:none;color:#6a7c75}
+  .tabbar a span{font-size:19px;line-height:1.1}
+  .tabbar a b{font-size:10.5px;font-weight:800}
+  .tabbar a.active{color:var(--green);background:#e9f5ef}
+  .run-dot{display:none;position:absolute;top:4px;right:calc(50% - 16px);width:9px;height:9px;border-radius:50%;background:#e5483d;box-shadow:0 0 0 2px #fff;animation:airunPulse 1.4s infinite}
+  .back-top{bottom:calc(80px + env(safe-area-inset-bottom))!important}
+  .toast{bottom:calc(84px + env(safe-area-inset-bottom))!important}
+  .view[data-view="home"] .hero{min-height:auto;padding-bottom:40px}
+  .view[data-view="home"] .hero-photo-card{display:none}
+  .view[data-view="home"] .hero h1{font-size:34px}
+  .view[data-view="home"] .hero-visual .live-orbit{margin:8px 0 0}
+  .view[data-view="home"] .quick-strip{display:none}
+  .home-grid{grid-template-columns:1fr}
+  .view>.section-wrap:first-child{padding-top:22px}
+}
+@keyframes airunPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.25)}}
 </style>
 </head>
 <body>
@@ -353,35 +400,32 @@ a.quick-strip,.quick-strip>a{padding:6px 13px;display:grid;grid-template-columns
   </div>
 
   <header class="nav" id="top">
-    <a class="brand" href="#top" aria-label="AIRUN Đà Nẵng, về đầu trang">
+    <a class="brand" href="#/home" aria-label="AIRUN Đà Nẵng, về trang chủ">
       <span class="brand-mark" aria-hidden="true">A</span>
       <span><strong>AIRUN</strong><small>ĐÀ NẴNG</small><em>GPS · AIR · RUN SMART</em></span>
     </a>
     <button id="menuBtn" class="menu-btn" type="button" aria-expanded="false" aria-controls="mainNav">☰ <span>Menu</span></button>
     <nav id="mainNav" aria-label="Điều hướng chính">
-      <a href="#planner">Kế hoạch</a>
-      <a href="#mapSection">Cung chạy</a>
-      <a href="#tracker">Chạy GPS</a>
-      <a href="#journal">Nhật ký</a>
+      <a href="#/home" data-tab="home">Trang chủ</a>
+      <a href="#/plan" data-tab="plan">Kế hoạch</a>
+      <a href="#/coach" data-tab="coach">AI Coach</a>
+      <a href="#/run" data-tab="run">Chạy</a>
+      <a href="#/journal" data-tab="journal">Nhật ký</a>
     </nav>
     <button id="installBtn" class="install-btn" type="button" hidden>＋ Cài AIRUN</button>
   </header>
 
   <main>
+    <div class="view" data-view="home" id="view-home">
     <section class="hero" aria-labelledby="heroTitle">
       <div class="hero-glow" aria-hidden="true"></div>
       <div class="hero-content">
         <p class="eyebrow light">GPS · WEATHER · AIR QUALITY</p>
         <h1 id="heroTitle">Chạy thông minh hơn<br><span>giữa Đà Nẵng.</span></h1>
-        <p class="hero-lead">AIRUN giúp bạn chọn mục tiêu, kiểm tra điều kiện, gợi ý cung chạy phù hợp rồi theo dõi GPS khi bắt đầu chạy.</p>
+        <p class="hero-lead">Xem ngay hôm nay chạy lúc nào là hợp, hỏi AI Coach, rồi bấm chạy với GPS.</p>
         <div class="hero-actions">
-          <a class="primary light-btn" href="#planner">✦ Lên kế hoạch chạy</a>
+          <a class="primary light-btn" href="#/plan">✦ Kiểm tra kế hoạch</a>
           <button id="heroGps" class="ghost-btn" type="button">⌖ Dùng vị trí hiện tại</button>
-        </div>
-        <div class="hero-trust">
-          <span>✓ AI Coach đọc số liệu thật</span>
-          <span>✓ GPS xử lý ngay trên thiết bị</span>
-          <span>✓ Không lưu lộ trình GPS</span>
         </div>
       </div>
 
@@ -429,14 +473,37 @@ a.quick-strip,.quick-strip>a{padding:6px 13px;display:grid;grid-template-columns
         </div>
       </div>
     </section>
-
     <nav class="quick-strip" aria-label="Các bước dùng AIRUN">
-      <a href="#planner"><span>1</span><b>Kiểm tra điều kiện</b><small>Hôm nay chạy lúc nào là hợp?</small></a>
-      <a href="#coachCard"><span>2</span><b>Hỏi AI Coach</b><small>Giải thích bằng lời, hỏi thêm được</small></a>
-      <a href="#mapSection"><span>3</span><b>Chọn cung &amp; chạy GPS</b><small>Cung đúng số km, ghi quãng đường</small></a>
-      <a href="#feedbackForm"><span>4</span><b>Đánh giá sau khi chạy</b><small>Giúp AIRUN chấm điểm đúng hơn</small></a>
+      <a href="#/plan"><span>1</span><b>Kiểm tra điều kiện</b><small>Hôm nay chạy lúc nào là hợp?</small></a>
+      <a href="#/coach"><span>2</span><b>Hỏi AI Coach</b><small>Giải thích bằng lời, hỏi thêm được</small></a>
+      <a href="#/run"><span>3</span><b>Chọn cung &amp; chạy GPS</b><small>Cung đúng số km, ghi quãng đường</small></a>
+      <a href="#/run-feedback"><span>4</span><b>Đánh giá sau khi chạy</b><small>Giúp AIRUN chấm điểm đúng hơn</small></a>
     </nav>
-
+    <section class="section-wrap home-cards" aria-label="Tóm tắt hôm nay">
+      <div class="home-grid">
+        <article class="home-card hc-best">
+          <small>◷ GIỜ CHẠY TỐT NHẤT</small>
+          <strong id="homeBest">Đang tính…</strong>
+          <div class="home-hours" id="homeHours" aria-hidden="true"></div>
+          <p id="homePlanLine">Theo kế hoạch 30 phút, chạy nhẹ.</p>
+          <a class="hc-link" href="#/plan">Xem &amp; đổi kế hoạch →</a>
+        </article>
+        <article class="home-card hc-ai">
+          <small>✦ AI COACH NÓI</small>
+          <strong id="homeAiHead">Đang đọc số liệu…</strong>
+          <p id="homeAiText">AI Coach sẽ tóm tắt thời tiết, không khí và gợi ý cách chạy.</p>
+          <a class="hc-link" href="#/coach">Hỏi AI Coach →</a>
+        </article>
+        <article class="home-card hc-run">
+          <small>▶ CHẠY NGAY</small>
+          <strong id="homeRunHead">Sẵn sàng chạy</strong>
+          <p id="homeRunText">Chọn số km, AIRUN tạo một vòng chạy rồi ghi quãng đường bằng GPS.</p>
+          <a class="hc-link" href="#/run">Mở trang chạy →</a>
+        </article>
+      </div>
+    </section>
+    </div>
+    <div class="view" data-view="plan" id="view-plan">
     <section class="section-wrap planner-section" id="planner">
       <div class="section-heading">
         <div><p class="eyebrow">BƯỚC 1 · KIỂM TRA ĐIỀU KIỆN</p><h2>Hôm nay chạy lúc nào là hợp?</h2><p class="step-lead">Chọn giờ và thời lượng, AIRUN đọc thời tiết + không khí thật rồi trả lời ngắn gọn.</p></div>
@@ -528,10 +595,23 @@ a.quick-strip,.quick-strip>a{padding:6px 13px;display:grid;grid-template-columns
         </article>
       </div>
 
-      <article class="card coach-card" id="coachCard" aria-live="polite">
+    </section>
+    <section class="section-wrap compare-section" id="compare">
+      <div class="section-heading">
+        <div><p class="eyebrow">SO SÁNH NHANH</p><h2>Ở đâu dễ chạy hơn vào giờ bạn chọn?</h2><p>AIRUN dùng cùng kế hoạch và cùng thời điểm để so sánh năm khu vực.</p></div>
+        <button id="compareBtn" class="soft-btn" type="button">So sánh trực tiếp</button>
+      </div>
+      <div class="compare-grid" id="compareGrid" aria-live="polite"><div class="empty-state">Bấm “So sánh trực tiếp” để bắt đầu.</div></div>
+      <p class="source-line">Nguồn trực tiếp: Open-Meteo Weather API và Air Quality API. AQI là dữ liệu mô hình theo ô lưới, không phải cảm biến đặt tại từng phường.</p>
+    </section>
+    </div>
+    <div class="view" data-view="coach" id="view-coach">
+    <section class="section-wrap coach-section" id="coachSection">
+      <div class="section-heading"><div><p class="eyebrow">AI COACH</p><h2>Hỏi AI trước khi chạy</h2><p class="step-lead" id="coachContextLine">AI đọc đúng số liệu thời tiết, không khí và kế hoạch của bạn.</p></div><a class="soft-btn" href="#/plan">⚙ Đổi kế hoạch</a></div>
+      <article class="card coach-card coach-card-page" id="coachCard" aria-live="polite">
         <div class="coach-head">
           <span class="coach-mark" aria-hidden="true">AI</span>
-          <div class="coach-title"><p class="eyebrow">BƯỚC 2 · AI COACH NÓI GÌ?</p><h3 id="coachHeadline">AI Coach sẽ nói tình hình bằng lời khi có dữ liệu thật</h3></div>
+          <div class="coach-title"><p class="eyebrow">AI ĐỌC SỐ LIỆU CỦA BẠN</p><h3 id="coachHeadline">AI Coach sẽ nói tình hình bằng lời khi có dữ liệu thật</h3></div>
           <span id="coachPill" class="coach-pill">Chờ dữ liệu</span>
         </div>
         <p id="coachSummary" class="coach-summary">AIRUN gửi cho AI đúng các con số ở trên (thời tiết, AQI, UV, kế hoạch, điểm và dự báo theo giờ). AI tóm tắt, gợi ý giờ chạy, cách chạy và đồ cần mang.</p>
@@ -557,7 +637,8 @@ a.quick-strip,.quick-strip>a{padding:6px 13px;display:grid;grid-template-columns
         <div class="coach-foot"><span id="coachBasis">Chỉ dùng số liệu trên trang · không gửi tọa độ GPS chính xác · không thay thế tư vấn y tế.</span><button id="coachRefreshBtn" type="button" class="coach-link">↻ Hỏi lại AI</button></div>
       </article>
     </section>
-
+    </div>
+    <div class="view" data-view="run" id="view-run">
     <section class="section-wrap map-section" id="mapSection">
       <div class="section-heading">
         <div><p class="eyebrow">BƯỚC 3 · CHỌN CUNG CHẠY</p><h2>Một vòng chạy đúng số km, xuất phát và về lại chỗ bạn.</h2><p>AIRUN lấy vị trí hiện tại nếu có. Nếu chưa dùng GPS, AIRUN bắt đầu từ khu vực bạn đã chọn.</p></div>
@@ -609,9 +690,6 @@ a.quick-strip,.quick-strip>a{padding:6px 13px;display:grid;grid-template-columns
         </aside>
       </div>
     </section>
-
-
-
     <section class="section-wrap tracker-section" id="tracker">
       <div class="section-heading tracker-heading">
         <div><p class="eyebrow">BƯỚC 3 · CHẠY VỚI GPS</p><h2>Bấm “Bắt đầu chạy”, AIRUN ghi quãng đường và nhắc bạn.</h2><p>Nếu bạn chưa tạo cung gợi ý, GPS vẫn hoạt động bình thường. Điểm GPS yếu vẫn hiện trên bản đồ nhưng không được cộng sai vào quãng đường.</p></div>
@@ -698,40 +776,15 @@ a.quick-strip,.quick-strip>a{padding:6px 13px;display:grid;grid-template-columns
         <p class="fb-status" id="feedbackStatus" role="status"></p>
       </form>
     </section>
-
-    <section class="section-wrap city-stories" aria-labelledby="cityStoriesTitle">
-      <div class="section-heading city-heading">
-        <div><p class="eyebrow">CHẠY GIỮA ĐÀ NẴNG</p><h2>Không chỉ là dữ liệu trên màn hình.</h2><p>AIRUN đặt dữ liệu vào bối cảnh những không gian chạy thực tế của thành phố.</p></div>
-      </div>
-      <div class="story-grid">
-        <article class="story-card card">
-          <img src="https://images.unsplash.com/photo-1701396173275-835886dd72ce?auto=format&fit=crop&fm=jpg&q=72&w=900"
-               srcset="https://images.unsplash.com/photo-1701396173275-835886dd72ce?auto=format&fit=crop&fm=jpg&q=70&w=600 600w, https://images.unsplash.com/photo-1701396173275-835886dd72ce?auto=format&fit=crop&fm=jpg&q=72&w=1000 1000w" sizes="(max-width: 780px) calc(100vw - 24px), 50vw"
-               data-fallback="assets/route-riverside.svg" onerror="this.onerror=null;this.src=this.dataset.fallback"
-               alt="Ảnh thật Cầu Rồng Đà Nẵng bên sông Hàn" width="1200" height="800" loading="lazy" decoding="async">
-          <div><span class="story-kicker">VEN SÔNG HÀN</span><h3>Đẹp, bằng phẳng nhưng gió có thể đổi nhanh</h3><p>Các đoạn ven sông phù hợp duy trì nhịp; khi gió mạnh, AIRUN sẽ hạ điểm thuận lợi và nhắc bạn giảm cường độ.</p></div>
-        </article>
-        <article class="story-card card">
-          <img src="https://images.unsplash.com/photo-1623048192720-5a4471cc3f31?auto=format&fit=crop&fm=jpg&q=72&w=900"
-               srcset="https://images.unsplash.com/photo-1623048192720-5a4471cc3f31?auto=format&fit=crop&fm=jpg&q=70&w=600 600w, https://images.unsplash.com/photo-1623048192720-5a4471cc3f31?auto=format&fit=crop&fm=jpg&q=72&w=1000 1000w" sizes="(max-width: 780px) calc(100vw - 24px), 50vw"
-               data-fallback="assets/route-coast.svg" onerror="this.onerror=null;this.src=this.dataset.fallback"
-               alt="Ảnh thật có người tại bãi biển Mỹ Khê Đà Nẵng" width="1200" height="800" loading="lazy" decoding="async">
-          <div><span class="story-kicker">BIỂN MỸ KHÊ</span><h3>Thoáng mát, nhưng nắng và UV cần được để ý</h3><p>Buổi sáng sớm và chiều muộn thường dễ chịu hơn. AIRUN đưa UV, nhiệt cảm nhận và mưa vào cùng một phân tích.</p></div>
-        </article>
-      </div>
-    </section>
-
-
-    <section class="section-wrap compare-section" id="compare">
+    </div>
+    <div class="view" data-view="journal" id="view-journal">
+    <section class="section-wrap journal-section" id="journal">
       <div class="section-heading">
-        <div><p class="eyebrow">SO SÁNH NHANH</p><h2>Ở đâu dễ chạy hơn vào giờ bạn chọn?</h2><p>AIRUN dùng cùng kế hoạch và cùng thời điểm để so sánh năm khu vực.</p></div>
-        <button id="compareBtn" class="soft-btn" type="button">So sánh trực tiếp</button>
+        <div><p class="eyebrow">NHẬT KÝ TRÊN THIẾT BỊ</p><h2>Nhìn lại quyết định và buổi chạy</h2><p>Kế hoạch và tóm tắt buổi chạy được lưu trong trình duyệt hiện tại; AIRUN không gửi chúng lên máy chủ riêng.</p></div>
+        <div class="journal-actions"><button id="exportBtn" class="soft-btn" type="button">↓ Xuất CSV</button><button id="clearJournalBtn" class="text-btn danger" type="button">Xóa nhật ký</button></div>
       </div>
-      <div class="compare-grid" id="compareGrid" aria-live="polite"><div class="empty-state">Bấm “So sánh trực tiếp” để bắt đầu.</div></div>
-      <p class="source-line">Nguồn trực tiếp: Open-Meteo Weather API và Air Quality API. AQI là dữ liệu mô hình theo ô lưới, không phải cảm biến đặt tại từng phường.</p>
+      <div id="journalList" class="journal-list"><div class="empty-state">Chưa có dữ liệu được lưu.</div></div>
     </section>
-
-
     <section class="section-wrap tools-section" id="tools">
       <div class="section-heading"><div><p class="eyebrow">RUN TOOLKIT</p><h2>Những tiện ích nhỏ nhưng hữu dụng</h2></div></div>
       <div class="tools-grid">
@@ -755,21 +808,54 @@ a.quick-strip,.quick-strip>a{padding:6px 13px;display:grid;grid-template-columns
         </article>
       </div>
     </section>
-
-    <section class="section-wrap journal-section" id="journal">
-      <div class="section-heading">
-        <div><p class="eyebrow">NHẬT KÝ TRÊN THIẾT BỊ</p><h2>Nhìn lại quyết định và buổi chạy</h2><p>Kế hoạch và tóm tắt buổi chạy được lưu trong trình duyệt hiện tại; AIRUN không gửi chúng lên máy chủ riêng.</p></div>
-        <div class="journal-actions"><button id="exportBtn" class="soft-btn" type="button">↓ Xuất CSV</button><button id="clearJournalBtn" class="text-btn danger" type="button">Xóa nhật ký</button></div>
+    <section class="section-wrap city-stories" aria-labelledby="cityStoriesTitle">
+      <div class="section-heading city-heading">
+        <div><p class="eyebrow">CHẠY GIỮA ĐÀ NẴNG</p><h2>Không chỉ là dữ liệu trên màn hình.</h2><p>AIRUN đặt dữ liệu vào bối cảnh những không gian chạy thực tế của thành phố.</p></div>
       </div>
-      <div id="journalList" class="journal-list"><div class="empty-state">Chưa có dữ liệu được lưu.</div></div>
+      <div class="story-grid">
+        <article class="story-card card">
+          <img src="https://images.unsplash.com/photo-1701396173275-835886dd72ce?auto=format&fit=crop&fm=jpg&q=72&w=900"
+               srcset="https://images.unsplash.com/photo-1701396173275-835886dd72ce?auto=format&fit=crop&fm=jpg&q=70&w=600 600w, https://images.unsplash.com/photo-1701396173275-835886dd72ce?auto=format&fit=crop&fm=jpg&q=72&w=1000 1000w" sizes="(max-width: 780px) calc(100vw - 24px), 50vw"
+               data-fallback="assets/route-riverside.svg" onerror="this.onerror=null;this.src=this.dataset.fallback"
+               alt="Ảnh thật Cầu Rồng Đà Nẵng bên sông Hàn" width="1200" height="800" loading="lazy" decoding="async">
+          <div><span class="story-kicker">VEN SÔNG HÀN</span><h3>Đẹp, bằng phẳng nhưng gió có thể đổi nhanh</h3><p>Các đoạn ven sông phù hợp duy trì nhịp; khi gió mạnh, AIRUN sẽ hạ điểm thuận lợi và nhắc bạn giảm cường độ.</p></div>
+        </article>
+        <article class="story-card card">
+          <img src="https://images.unsplash.com/photo-1623048192720-5a4471cc3f31?auto=format&fit=crop&fm=jpg&q=72&w=900"
+               srcset="https://images.unsplash.com/photo-1623048192720-5a4471cc3f31?auto=format&fit=crop&fm=jpg&q=70&w=600 600w, https://images.unsplash.com/photo-1623048192720-5a4471cc3f31?auto=format&fit=crop&fm=jpg&q=72&w=1000 1000w" sizes="(max-width: 780px) calc(100vw - 24px), 50vw"
+               data-fallback="assets/route-coast.svg" onerror="this.onerror=null;this.src=this.dataset.fallback"
+               alt="Ảnh thật có người tại bãi biển Mỹ Khê Đà Nẵng" width="1200" height="800" loading="lazy" decoding="async">
+          <div><span class="story-kicker">BIỂN MỸ KHÊ</span><h3>Thoáng mát, nhưng nắng và UV cần được để ý</h3><p>Buổi sáng sớm và chiều muộn thường dễ chịu hơn. AIRUN đưa UV, nhiệt cảm nhận và mưa vào cùng một phân tích.</p></div>
+        </article>
+      </div>
     </section>
-
     <section class="method-section">
       <div><p class="eyebrow light">GIẢI THÍCH ĐƯỢC</p><h2>Điểm minh bạch, AI giải thích bằng lời.</h2><p>Điểm thuận lợi được tính bằng công thức công khai từ AQI, PM2.5, nhiệt độ cảm nhận, mưa, gió, UV, cường độ và thời lượng. AI Coach đọc đúng các số liệu đó, nói bằng lời dễ hiểu và trả lời câu hỏi — AI không tự đổi điểm. Phản hồi sau mỗi buổi chạy giúp hiệu chỉnh lại công thức.</p></div>
       <div class="method-flow"><span>GPS</span><i>→</i><span>Dữ liệu mở</span><i>→</i><span>Lọc nhiễu</span><i>→</i><span>Chấm điểm</span><i>→</i><span>AI giải thích</span><i>→</i><span>Bạn chạy</span><i>→</i><span>Phản hồi để hiệu chỉnh</span></div>
     </section>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
   </main>
 
+  <nav class="tabbar" aria-label="Các tab AIRUN">
+    <a href="#/home" data-tab="home"><span aria-hidden="true">⌂</span><b>Trang chủ</b></a>
+    <a href="#/plan" data-tab="plan"><span aria-hidden="true">◷</span><b>Kế hoạch</b></a>
+    <a href="#/coach" data-tab="coach"><span aria-hidden="true">✦</span><b>AI Coach</b></a>
+    <a href="#/run" data-tab="run"><span aria-hidden="true">▶</span><b>Chạy</b><i class="run-dot" aria-hidden="true"></i></a>
+    <a href="#/journal" data-tab="journal"><span aria-hidden="true">☰</span><b>Nhật ký</b></a>
+  </nav>
   <footer>
     <div class="footer-brand"><span class="brand-mark small">A</span><div><b>AIRUN ĐÀ NẴNG</b><small>GPS · AIR · RUN SMART</small></div></div>
     <p>AIRUN là công cụ hỗ trợ tham khảo. Không dùng thay cho khuyến cáo y tế, cảnh báo thiên tai hay số liệu quan trắc chính thức. Ảnh chạy bộ và ảnh Đà Nẵng sử dụng từ Unsplash theo giấy phép của nền tảng.</p>
@@ -1417,7 +1503,7 @@ function renderResult(data,snapshot,result){
     $('reasonList').innerHTML=`<li>${failed?'Không có dữ liệu thật để giải thích.':'Đang chờ dữ liệu trực tiếp…'}</li>`;
     $('bestTime').textContent=failed?'Chưa có dự báo giờ':'Đang tính…';$('bestTimeReason').textContent='AIRUN so sánh các giờ chạy phổ biến trong dự báo trực tiếp.';
     $('mapAreaAqi').textContent='AQI —';$('mapAreaTemp').textContent='—°C';$('mapAreaScore').textContent='—/10';
-    renderKit({},currentPlan());renderFriendlyGrid(null);renderHourStrip(null);
+    renderKit({},currentPlan());renderFriendlyGrid(null);renderHourStrip(null);if(typeof renderHomeSummary==='function')renderHomeSummary(data,null,null);
     if(typeof renderCoachWaiting==='function')renderCoachWaiting(failed);
     return;
   }
@@ -1427,6 +1513,7 @@ function renderResult(data,snapshot,result){
   $('resultStatusPill').textContent=result.title;$('resultStatusPill').className=`result-pill ${result.tone}`;
   $('decisionPanel').className=`decision-panel ${result.tone}`;$('decisionIcon').textContent=verdictEmoji(result);$('decisionTitle').textContent=result.title;$('decisionText').textContent=result.text;
   renderFriendlyGrid(snapshot);renderHourStrip(data,currentPlan());
+  if(typeof renderHomeSummary==='function')renderHomeSummary(data,snapshot,result);
   if($('decisionWhen')){const t=snapshot.time||'';$('decisionWhen').textContent=`NẾU CHẠY LÚC ${t.slice(11,16)||currentPlan().time}${t&&t.slice(0,10)!==vnIso().slice(0,10)?' NGÀY MAI':' HÔM NAY'}`;}
   $('scoreValue').textContent=result.score;$('scoreRing').style.setProperty('--score',`${result.score*10}%`);
   $('metricAqi').textContent=fmt(snapshot.aqi);$('metricAqiLabel').textContent=info.label;$('metricPm').textContent=fmt(snapshot.pm,1);
@@ -2103,10 +2190,12 @@ function trackerElapsedSeconds(){
 function gpsLevel(accuracy){if(!Number.isFinite(accuracy))return 0;if(accuracy<=10)return 4;if(accuracy<=20)return 3;if(accuracy<=40)return 2;if(accuracy<=70)return 1;return 0;}
 function updateGpsBars(accuracy){$('gpsBars').className=`gps-bars level-${gpsLevel(accuracy)}`;}
 function trackerSetState(status){
+  try{document.body.classList.toggle('is-running',status==='running'||status==='paused');setTimeout(()=>{if(typeof renderHomeRun==='function')renderHomeRun();},0);}catch{}
   tracker.status=status;const node=$('trackerStatus');node.className=`tracker-state ${status}`;
   node.innerHTML=status==='running'?'<i></i> Đang ghi GPS':status==='paused'?'<i></i> Đang tạm dừng':status==='finished'?'<i></i> Đã kết thúc':'<i></i> Chưa bắt đầu';
 }
 function updateTrackerMetrics(){
+  try{if(currentView==='home')renderHomeRun();}catch{}
   $('trackerDistance').textContent=tracker.distanceKm.toFixed(2);const seconds=trackerElapsedSeconds();$('trackerTime').textContent=formatDuration(seconds);
   $('trackerPace').textContent=tracker.distanceKm>=.05?formatPace((seconds/60)/tracker.distanceKm):'—';$('trackerSpeed').textContent=round(tracker.currentSpeed,1).toFixed(1);$('routePointCount').textContent=tracker.points.length;
 }
@@ -2485,6 +2574,7 @@ function renderJournal(){
     const metric=isRun?`${row.distance??0} km`:`${row.score===''||row.score==null?'—':row.score}/10`;const metricLabel=isRun?'quãng đường':'điểm AIRUN';
     return `<article class="journal-item"><div class="journal-date"><b>${date.toLocaleDateString('vi-VN',{day:'2-digit'})}</b><span>${date.toLocaleDateString('vi-VN',{month:'2-digit',year:'numeric'})}</span></div><div class="journal-main"><b>${title}</b>${feedbackBadge(row.feedback)}<p>${desc}</p></div><div class="journal-score"><b>${metric}</b><span>${metricLabel}</span></div><button class="journal-delete" type="button" data-delete="${row.id}" aria-label="Xóa mục này">×</button></article>`;
   }).join(''):'<div class="empty-state">Chưa có dữ liệu được lưu.</div>';
+  if(typeof renderHomeRun==='function')renderHomeRun();
   $('journalList').querySelectorAll('[data-delete]').forEach(button=>button.addEventListener('click',()=>{localSet(STORAGE.journal,rows.filter(row=>row.id!==Number(button.dataset.delete)));renderJournal();if(typeof updateFeedbackStats==='function')updateFeedbackStats();}));
 }
 
@@ -2643,6 +2733,7 @@ function renderCoachResult(result,{source='ai',model=''}={}){
   coachList('coachAdjust',result.adjust);coachList('coachBring',result.bring);coachList('coachWatch',result.watch);
   $('coachGrid').hidden=false;
   const sc=$('coachScoreComment');if(sc){sc.hidden=!result.score_comment;sc.textContent=result.score_comment?`Về điểm số: ${result.score_comment}`:'';}
+  renderHomeAi(result,source);
   if(source==='ai')coachSetPill(`AI · ${model||'OpenAI'}`,'ok');
   else coachSetPill(SERVER_CFG.ai?'Giải thích tự động (AI lỗi)':'Giải thích tự động','off');
 }
@@ -2817,6 +2908,81 @@ function bindCoachEvents(){
   if(SERVER_CFG.server)fetch('/api/feedback/summary',{cache:'no-store'}).then(r=>r.json()).then(s=>updateFeedbackStats(s)).catch(()=>{});
 }
 
+/* ===================== V8.3 · ĐIỀU HƯỚNG THEO TAB ===================== */
+const VIEWS=['home','plan','coach','run','journal'];
+let currentView='home';
+function viewOfElement(el){return el?.closest?.('.view')?.dataset.view||null;}
+function resizeVisibleMaps(name){
+  setTimeout(()=>{
+    try{[routeFallbackMap.map,advancedMap.map,runFallbackMap.map,runAdvancedMap.map].forEach(m=>{if(m&&m.getContainer?.().offsetWidth)m.resize();});}catch{}
+    if(name==='run'){try{scheduleRunFallbackResize(false);scheduleRunMapResize(false);}catch{}}
+    if(name==='plan'||name==='run'){try{updateMapSide();}catch{}}
+  },60);
+}
+function activateView(name,{scroll=true}={}){
+  if(!VIEWS.includes(name))name='home';
+  const changed=name!==currentView;currentView=name;
+  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.dataset.view===name));
+  document.querySelectorAll('[data-tab]').forEach(t=>{const on=t.dataset.tab===name;t.classList.toggle('active',on);if(on)t.setAttribute('aria-current','page');else t.removeAttribute('aria-current');});
+  document.body.dataset.view=name;
+  if(scroll&&changed)window.scrollTo({top:0,behavior:'auto'});
+  if(changed)resizeVisibleMaps(name);
+  $('mainNav')?.classList.remove('open');
+}
+// Các đoạn code cũ dùng el.scrollIntoView() để "nhảy tới" một phần → tự mở đúng tab trước khi cuộn.
+(function patchScrollIntoView(){
+  if(typeof Element==='undefined'||Element.prototype.__airunPatched)return;
+  const original=Element.prototype.scrollIntoView;
+  Element.prototype.scrollIntoView=function(...args){
+    const v=viewOfElement(this);
+    if(v&&v!==currentView)activateView(v,{scroll:false});
+    return original.apply(this,args);
+  };
+  Element.prototype.__airunPatched=true;
+})();
+function handleRoute(){
+  const h=decodeURIComponent(location.hash||'');
+  if(h==='#/run-feedback'){activateView('run');setTimeout(()=>$('feedbackForm')?.scrollIntoView({behavior:'smooth',block:'start'}),80);return;}
+  if(h.startsWith('#/')){activateView(h.slice(2));return;}
+  const target=h.length>1?document.getElementById(h.slice(1)):null;
+  const v=viewOfElement(target);
+  if(v){activateView(v,{scroll:false});setTimeout(()=>target.scrollIntoView({block:'start'}),40);return;}
+  activateView('home',{scroll:false});
+}
+function initTabs(){
+  window.addEventListener('hashchange',handleRoute);
+  handleRoute();
+}
+
+/* ---- Thẻ tóm tắt ở trang chủ ---- */
+function renderHomeSummary(data,snapshot,result){
+  const plan=currentPlan(),est=planEstimate(plan);
+  if($('homePlanLine'))$('homePlanLine').textContent=`Kế hoạch: ${plan.time} · ${plan.duration} phút · ${est.distance.toFixed(1)} km · ${plan.intensity.toLowerCase()}.`;
+  const best=$('homeBest'),hours=$('homeHours');
+  if(!data||isNoData(data)||!result){if(best)best.textContent=data?.failed?'Chưa có dữ liệu thật':'Đang tính…';if(hours)hours.innerHTML='';return;}
+  const b=bestTimeFor(data,plan);
+  if(best)best.textContent=b?`${b.row.time.slice(11,16)}${b.row.time.slice(0,10)!==vnIso().slice(0,10)?' ngày mai':' hôm nay'} · ${b.result.score}/10`:'Chưa có dự báo giờ';
+  if(hours){
+    const rows=upcomingHours(data,40).filter(r=>{const h=Number(r.time.slice(11,13));return h>=5&&h<=21;}).slice(0,10);
+    hours.innerHTML=rows.map(r=>{const res=analyzeSnapshot({...data.current,...r},plan);const isBest=b&&r.time===b.row.time;return `<span class="hh ${res.tone}${isBest?' best':''}" title="${Number(r.time.slice(11,13))}h: ${res.score}/10"><i style="--h:${Math.max(14,res.score*10)}%"></i><em>${Number(r.time.slice(11,13))}h</em></span>`;}).join('');
+  }
+  const line=$('coachContextLine');
+  if(line)line.textContent=`Đang xem: ${data.location?.label||ward().name} · ${plan.time} · ${plan.duration} phút · ${plan.intensity} — AIRUN chấm ${result.score}/10 (“${result.title}”).`;
+}
+function renderHomeAi(result,source){
+  const h=$('homeAiHead'),t=$('homeAiText');if(!h||!t||!result)return;
+  h.textContent=result.headline||'AI Coach';
+  const first=String(result.summary||'').split(/(?<=[.!?])\s+/)[0]||'';
+  t.textContent=(first.length>170?first.slice(0,167)+'…':first)+(source==='ai'?'':' (giải thích tự động)');
+}
+function renderHomeRun(){
+  const head=$('homeRunHead'),text=$('homeRunText');if(!head||!text)return;
+  if(tracker.status==='running'||tracker.status==='paused'){head.textContent=`Đang chạy · ${tracker.distanceKm.toFixed(2)} km`;text.textContent='Buổi chạy đang được ghi. Mở trang chạy để xem bản đồ.';return;}
+  const last=journalRows().find(r=>r.type==='run');
+  if(last){head.textContent=`Lần gần nhất: ${last.distance} km`;text.textContent=`${new Date(last.at).toLocaleDateString('vi-VN')} · ${formatDuration(last.durationSec||0)}${last.pace?` · pace ${last.pace}/km`:''} · ${last.area}`;}
+  else{head.textContent='Sẵn sàng chạy';text.textContent='Chọn số km, AIRUN tạo một vòng chạy rồi ghi quãng đường bằng GPS.';}
+}
+
 let airunInitialized=false;
 async function init(){
   if(airunInitialized)return;airunInitialized=true;
@@ -2838,6 +3004,7 @@ async function init(){
   safeCall('PWA',initPWA);
   safeCall('tracker',updateTrackerMetrics);
   safeCall('AI Coach',bindCoachEvents);
+  safeCall('tab',initTabs);
   loadServerConfig().catch(()=>{});
 
   const lastGps=localGet('airun-v54-last-gps',null);
