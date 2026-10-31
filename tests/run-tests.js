@@ -6,9 +6,8 @@ const path = require('path');
 const vm = require('vm');
 const { cleanFeedback, parseJSONLoose } = require('../server.js');
 
-// 1) Lấy script chính trong index.html và chạy trong sandbox (không có DOM).
-const html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
-const code = html.match(/<script id="airun-inline-app">([\s\S]*?)<\/script>/)[1];
+// 1) Lấy script chính (js/app.js) và chạy trong sandbox (không có DOM).
+const code = fs.readFileSync(path.join(__dirname, '..', 'js', 'app.js'), 'utf8');
 const sandbox = { module: { exports: {} }, console, Intl, Date, Math, Number, JSON, setTimeout, clearTimeout, localStorage: { getItem: () => null, setItem() {}, removeItem() {} } };
 vm.createContext(sandbox); vm.runInContext(code, sandbox);
 const app = sandbox.module.exports;

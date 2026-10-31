@@ -1,4 +1,4 @@
-# AIRUN Đà Nẵng · V9.0 Google Maps + AI ở mọi tab
+# AIRUN Đà Nẵng · V9.1 Giao diện điện thoại mới + AI ở mọi tab
 
 Trang web hỗ trợ người chạy bộ ở Đà Nẵng: kiểm tra thời tiết, AQI, UV theo giờ → chấm điểm thuận lợi bằng công thức minh bạch → **AI Coach giải thích bằng lời, trả lời câu hỏi và làm giúp (tạo cung, đổi kế hoạch, mở tab)** → **mô tả cung chạy bằng lời, AI tìm địa điểm và vẽ đường trên Google Maps** → chạy với GPS → **đánh giá khuyến nghị sau buổi chạy** → dữ liệu lưu vào **tài khoản người chạy (Google Sheet)** để AI gợi ý cá nhân hoá và lập kế hoạch tuần.
 
@@ -7,7 +7,13 @@ Hướng dẫn cài đặt Google Maps, Google Sheet và biến môi trường: 
 ## Cấu trúc
 | File | Vai trò |
 |---|---|
-| `index.html` | Toàn bộ giao diện + logic phía trình duyệt |
+| `index.html` | Khung trang (HTML) + bộ biểu tượng Lucide |
+| `css/vendor/open-props.subset.css` | Biến thiết kế Open Props (MIT): chuyển động, bo góc, bóng, cỡ chữ |
+| `css/app.css` | Giao diện gốc V4–V9 |
+| `css/mobile.css` | Lớp thiết kế V9.1 ưu tiên điện thoại: chữ, nút + hiệu ứng nhấn, thanh tab, lộ trình 5 bước |
+| `js/app.js` | Logic phía trình duyệt (chấm điểm, bản đồ, GPS, AI Coach, tài khoản) |
+| `js/ui.js` | Tương tác giao diện: gợn sóng/rung khi chạm, thanh lộ trình tự sáng, tiểu mục Nhật ký |
+| `js/boot.js` | Báo lỗi nếu script chính không khởi động (sửa cache) |
 | `server.js` | Máy chủ Node (không cần thư viện ngoài): phục vụ trang, proxy Open-Meteo, AI Coach (OpenAI), Google Places/Routes, GraphHopper, tài khoản, phản hồi |
 | `api/index.js`, `vercel.json` | Chạy cùng code trên Vercel (serverless) |
 | `apps-script/Code.gs` | Apps Script dán vào Google Sheet để lưu người chạy, buổi chạy, kế hoạch, đánh giá, góp ý |
@@ -30,6 +36,7 @@ OPENAI_API_KEY=sk-... GOOGLE_MAPS_BROWSER_KEY=AIza... node server.js
 | `SHEETS_SECRET` | Cùng với trên | Chuỗi bí mật, phải giống `AIRUN_SECRET` trong Apps Script |
 | `SESSION_SECRET` | Không | Khóa ký phiên đăng nhập (nếu thiếu sẽ tự suy ra từ `SHEETS_SECRET`) |
 | `GRAPHHOPPER_API_KEY` | Không | Tạo cung vòng bằng GraphHopper. Thiếu thì dùng Google Routes, rồi Valhalla (OpenStreetMap) |
+| `GOOGLE_MAPS_BASEMAP` | Không | Đặt `1` để dùng bản đồ nền Google. **Mặc định tắt**: Google không tính phí Maps cho tài khoản thanh toán ở Việt Nam nên bản đồ nền bị từ chối; AIRUN dùng OpenFreeMap. Tìm địa điểm/vẽ cung bằng Google (khóa máy chủ) vẫn chạy |
 | `MAPBOX_PUBLIC_TOKEN` | Không | Token `pk.` (chỉ dùng khi không có Google Maps) |
 | `FEEDBACK_WEBHOOK_URL`, `ADMIN_TOKEN` | Không | Cách lưu phản hồi cũ (V8), vẫn hoạt động |
 

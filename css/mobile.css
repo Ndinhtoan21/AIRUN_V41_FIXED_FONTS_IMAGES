@@ -1,0 +1,323 @@
+/* ==========================================================================
+   AIRUN V9.1 — Lớp thiết kế mới, ưu tiên điện thoại
+   - Biến thiết kế lấy từ Open Props (css/vendor/open-props.subset.css, MIT)
+   - Biểu tượng Lucide (sprite trong index.html, ISC)
+   - Nạp SAU css/app.css nên chỉ ghi đè những gì cần đổi; logic JS giữ nguyên.
+   ========================================================================== */
+
+/* ---------- 1. Token: màu, chữ, bo góc, bóng, chuyển động ---------- */
+:root{
+  /* màu thương hiệu (giữ tông xanh AIRUN, làm dịu và đồng nhất) */
+  --brand-950:#041f1a; --brand-900:#052f27; --brand-800:#064538; --brand-700:#08664f; --brand-600:#0a7c60;
+  --brand-100:#dff1e8; --brand-50:#eef7f2; --accent:#c8f16b; --accent-ink:#183329;
+  --green:var(--brand-700); --green-dark:var(--brand-900); --lime:var(--accent);
+  --ink:#0f2a22; --ink-2:#2c4a40; --muted:#5b6f67; --line:#e0eae5; --line-strong:#cddcd5;
+  --paper:#f3f7f5; --card:#fff;
+  --good:#12925f; --warn:#c77712; --bad:#c8463e;
+
+  /* chữ: Be Vietnam Pro (đủ dấu tiếng Việt), cỡ chữ theo thang 1.2 */
+  --ui-font:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --fs-cap:13px; --fs-xs:13px; --fs-sm:14px; --fs-md:16px; --fs-lg:18px; --fs-xl:21px;
+  --fs-h3:clamp(18px,1.1vw + 14px,20px);
+  --fs-h2:clamp(24px,2.2vw + 16px,38px);
+  --fs-h1:clamp(30px,4.2vw + 14px,58px);
+  --lh-tight:var(--font-lineheight-0,1.1); --lh-head:1.2; --lh-body:1.55;
+
+  /* hình khối */
+  --r-sm:10px; --r-md:14px; --r-lg:20px; --r-xl:26px; --r-pill:999px;
+  --tap:48px;
+  --shadow-color:160 60% 10%;
+  --elev-1:0 1px 2px hsl(var(--shadow-color)/.06),0 6px 18px -10px hsl(var(--shadow-color)/.22);
+  --elev-2:0 2px 4px hsl(var(--shadow-color)/.06),0 14px 34px -14px hsl(var(--shadow-color)/.30);
+  --elev-3:0 10px 40px -10px hsl(var(--shadow-color)/.40);
+  --soft-shadow:var(--elev-1); --shadow:var(--elev-2);
+
+  /* chuyển động (Open Props) */
+  --press-ease:var(--ease-out-3,cubic-bezier(0,0,.3,1));
+  --release-ease:var(--ease-spring-3,cubic-bezier(.5,1.25,.75,1.25));
+  --t-fast:var(--duration-quick-2,120ms); --t-med:var(--duration-moderate-2,260ms);
+
+  font-family:var(--ui-font);
+}
+
+/* ---------- 2. Nền tảng ---------- */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{font-family:var(--ui-font);font-size:var(--fs-md);line-height:var(--lh-body);color:var(--ink);background:var(--paper);
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;-webkit-tap-highlight-color:transparent;text-rendering:optimizeLegibility}
+h1,h2,h3{text-wrap:balance}
+p{text-wrap:pretty}
+b,strong{font-weight:800}
+/* số liệu thẳng cột, không nhảy khi cập nhật */
+.tracker-distance strong,.tracker-stats strong,.score-ring strong,.orbit-main strong,.orbit-metrics b,
+.pstat b,.route-map-summary b,.plan-estimate strong,.metric-grid strong,#homeBest{font-variant-numeric:tabular-nums}
+::selection{background:var(--accent);color:var(--accent-ink)}
+
+.ic{width:1.25em;height:1.25em;flex:none;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-.22em}
+
+/* ---------- 3. Nút bấm: một hệ thống chung + hiệu ứng khi nhấn ---------- */
+.primary,.light-btn,.ghost-btn,.soft-btn,.save-btn,.location-action,.mini-action,.chip-btn,
+.run-start,.run-secondary,.run-finish,.segment button,.decision-actions button,.coach-suggest button,
+.ai-route-examples button,.route-distance-chips button,.acc-tabs button,.next-step,.journey a,.subnav a{
+  position:relative;overflow:hidden;isolation:isolate;
+  -webkit-user-select:none;user-select:none;touch-action:manipulation;
+  transition:transform var(--t-med) var(--release-ease),background-color var(--t-fast) ease,box-shadow var(--t-fast) ease,color var(--t-fast) ease,border-color var(--t-fast) ease,filter var(--t-fast) ease;
+}
+.primary,.light-btn,.ghost-btn,.soft-btn,.save-btn,.location-action,.run-start,.run-secondary,.run-finish{
+  min-height:var(--tap);border-radius:var(--r-md);padding:12px 18px;gap:8px;font-size:var(--fs-md);font-weight:800;letter-spacing:-.005em;line-height:1.2
+}
+.primary{background:linear-gradient(180deg,var(--brand-600),var(--brand-700));color:#fff;box-shadow:0 1px 0 rgba(255,255,255,.18) inset,0 8px 18px -10px rgba(8,102,79,.75)}
+.primary:hover{filter:brightness(1.06)}
+.light-btn{background:var(--accent);color:var(--accent-ink);box-shadow:0 10px 24px -12px rgba(200,241,107,.9)}
+.soft-btn,.location-action,.run-secondary{background:var(--brand-50);color:var(--brand-700);border:1px solid #cfe4da}
+.save-btn{background:var(--brand-900);color:#fff}
+.run-start{background:linear-gradient(180deg,#0b8a69,var(--brand-700));color:#fff;box-shadow:0 12px 26px -14px rgba(8,102,79,.9)}
+.run-finish{background:#fdecea;color:#a3352f;border:1px solid #f6cfcb}
+.chip-btn{min-height:40px;border-radius:var(--r-pill)}
+
+/* trạng thái nhấn: thu nhỏ nhẹ + tối đi một chút (cảm giác "bấm thật") */
+:is(.primary,.light-btn,.ghost-btn,.soft-btn,.save-btn,.location-action,.mini-action,.chip-btn,.run-start,.run-secondary,.run-finish,
+  .segment button,.decision-actions button,.coach-suggest button,.ai-route-examples button,.route-distance-chips button,.acc-tabs button,.next-step,.journey a,.subnav a,
+  .home-card,.journey-list a,.tabbar a,.ai-fab,.account-btn,.compare-card,.hour-bar):active,
+.is-pressed{transform:scale(.965);transition:transform var(--t-fast) var(--press-ease),background-color var(--t-fast) ease;filter:brightness(.97)}
+:is(button,a,input,select,textarea,summary):focus-visible{outline:3px solid rgba(8,124,96,.55);outline-offset:2px;border-radius:var(--r-sm)}
+button:disabled,.primary:disabled{opacity:.55;transform:none!important;filter:grayscale(.2)}
+
+/* gợn sóng khi chạm (js/ui.js thêm span.ui-ripple) */
+.ui-ripple{position:absolute;border-radius:50%;pointer-events:none;background:currentColor;opacity:.18;transform:scale(0);z-index:-1;
+  animation:ui-ripple 520ms var(--ease-out-3,ease-out) forwards}
+.primary .ui-ripple,.run-start .ui-ripple,.save-btn .ui-ripple,.next-step .ui-ripple{background:#fff;opacity:.28}
+@keyframes ui-ripple{to{transform:scale(1);opacity:0}}
+
+/* ---------- 4. Ô nhập liệu ---------- */
+input:not([type=checkbox]):not([type=radio]):not([type=range]),select,textarea{
+  border:1.5px solid var(--line-strong);border-radius:12px;background:#fff;color:var(--ink);
+  transition:border-color var(--t-fast) ease,box-shadow var(--t-fast) ease}
+input:not([type=checkbox]):not([type=radio]):not([type=range]),select{min-height:var(--tap)}
+input:focus,select:focus,textarea:focus{border-color:var(--brand-600);box-shadow:0 0 0 4px rgba(10,124,96,.14);outline:none}
+input[type=range]{accent-color:var(--brand-700)}
+input[type=checkbox],input[type=radio]{accent-color:var(--brand-700);width:20px;height:20px}
+
+/* ---------- 5. Thẻ & tiêu đề ---------- */
+.card,.home-card{border-color:var(--line);border-radius:var(--r-lg);box-shadow:var(--elev-1)}
+.eyebrow{font-size:var(--fs-cap);font-weight:800;letter-spacing:.11em}
+.section-heading h2{font-size:var(--fs-h2);line-height:var(--lh-head);letter-spacing:-.03em}
+
+/* ---------- 6. Lộ trình 5 bước (thanh dính dưới tiêu đề) ---------- */
+.journey{display:none}
+body[data-view="plan"] .journey,body[data-view="coach"] .journey,body[data-view="run"] .journey{
+  display:flex;gap:6px;position:sticky;top:74px;z-index:60;max-width:var(--max);margin:12px auto 0;padding:6px;
+  background:rgba(255,255,255,.86);-webkit-backdrop-filter:blur(14px) saturate(1.3);backdrop-filter:blur(14px) saturate(1.3);
+  border:1px solid var(--line);border-radius:var(--r-pill);box-shadow:var(--elev-1);overflow-x:auto;scrollbar-width:none}
+.journey::-webkit-scrollbar{display:none}
+.journey a{flex:1 0 auto;display:flex;align-items:center;justify-content:center;gap:7px;min-height:40px;padding:6px 12px;border-radius:var(--r-pill);
+  text-decoration:none;color:var(--muted);font-size:var(--fs-sm);font-weight:700;white-space:nowrap}
+.journey a i{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;font-style:normal;font-size:12.5px;font-weight:800;background:#edf3f0;color:#5d7068;transition:background var(--t-fast),color var(--t-fast)}
+.journey a.done{color:var(--brand-700)}
+.journey a.done i{background:var(--brand-100);color:var(--brand-700);font-size:0}
+.journey a.done i:before{content:"";width:11px;height:6px;border-left:2.5px solid currentColor;border-bottom:2.5px solid currentColor;transform:translateY(-1px) rotate(-45deg)}
+.journey a.current{background:var(--brand-900);color:#fff;box-shadow:0 6px 16px -8px rgba(5,47,39,.8)}
+.journey a.current i{background:var(--accent);color:var(--accent-ink)}
+
+/* ---------- 7. Thẻ "Bước tiếp theo" ---------- */
+.next-step-wrap{padding-top:22px!important}
+.next-step{display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:var(--r-lg);text-decoration:none;color:#fff;
+  background:radial-gradient(120% 160% at 100% 0,#0d8a6a 0,var(--brand-800) 55%,var(--brand-900) 100%);box-shadow:var(--elev-2)}
+.next-step .ns-ic{display:grid;place-items:center;width:46px;height:46px;border-radius:14px;background:var(--accent);color:var(--accent-ink);flex:none}
+.next-step .ns-ic .ic{width:24px;height:24px}
+.next-step .ns-body{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+.next-step small{font-size:12px;font-weight:800;letter-spacing:.1em;color:#bfe7d6}
+.next-step b{font-size:var(--fs-lg);line-height:1.25}
+.next-step em{font-style:normal;font-size:var(--fs-sm);color:#d3ebe1;line-height:1.4}
+.next-step .ns-go{width:22px;height:22px;opacity:.9;transition:transform var(--t-med) var(--release-ease)}
+.next-step:hover .ns-go{transform:translateX(3px)}
+
+/* ---------- 8. Danh sách lộ trình ở trang chủ ---------- */
+.journey-list .journey-list-title{grid-column:1/-1;margin:0 0 4px;display:flex;flex-direction:column;gap:1px;padding:4px 6px}
+.journey-list .journey-list-title b{font-size:var(--fs-lg)}
+.journey-list .journey-list-title small{font-size:var(--fs-sm);color:var(--muted)}
+.quick-strip.journey-list{grid-template-columns:repeat(5,1fr)}
+.journey-list a{position:relative}
+.journey-list .jl-ic{display:none}
+.journey-list .jl-go{display:none}
+
+/* ---------- 9. Tiểu mục dính (Nhật ký) ---------- */
+.subnav{display:flex;gap:8px;position:sticky;top:74px;z-index:60;max-width:var(--max);margin:14px auto 0;padding:6px 20px;overflow-x:auto;scrollbar-width:none;
+  background:linear-gradient(var(--paper) 70%,rgba(243,247,245,0))}
+.subnav::-webkit-scrollbar{display:none}
+.subnav a{flex:none;display:inline-flex;align-items:center;min-height:40px;padding:8px 16px;border-radius:var(--r-pill);border:1px solid var(--line-strong);background:#fff;
+  color:var(--ink-2);font-size:var(--fs-sm);font-weight:700;text-decoration:none}
+.subnav a.active{background:var(--brand-900);border-color:var(--brand-900);color:#fff}
+
+/* ---------- 10. "Về AIRUN" thu gọn ---------- */
+.about-airun{max-width:var(--max);margin:28px auto 0;padding:0 20px}
+.about-airun>summary{list-style:none;cursor:pointer;display:flex;flex-direction:column;gap:2px;padding:16px 18px;border:1px solid var(--line);border-radius:var(--r-lg);background:#fff;box-shadow:var(--elev-1)}
+.about-airun>summary::-webkit-details-marker{display:none}
+.about-airun>summary span{display:flex;align-items:center;gap:8px;font-weight:800;font-size:var(--fs-lg);color:var(--brand-800)}
+.about-airun>summary small{color:var(--muted);font-size:var(--fs-sm)}
+.about-airun>summary{position:relative;padding-right:52px}
+.about-airun>summary:after{content:"";position:absolute;right:22px;top:50%;width:10px;height:10px;margin-top:-7px;border-right:2.5px solid var(--brand-700);border-bottom:2.5px solid var(--brand-700);transform:rotate(45deg);transition:transform var(--t-med) var(--release-ease)}
+.about-airun[open]>summary:after{transform:rotate(-135deg);margin-top:-2px}
+.about-airun[open]>summary{border-radius:var(--r-lg) var(--r-lg) 0 0}
+.about-airun .city-stories{padding-left:0;padding-right:0;padding-top:24px}
+.about-airun .method-section{margin-top:24px;border-radius:var(--r-lg)}
+
+/* ---------- 11. Nút "Hỏi AI" nổi ---------- */
+.ai-fab{transition:transform var(--t-med) var(--release-ease),padding var(--t-med) var(--ease-out-3,ease),box-shadow var(--t-fast) ease,opacity var(--t-fast) ease;
+  box-shadow:0 14px 30px -12px rgba(5,47,39,.7),0 0 0 1px rgba(255,255,255,.08) inset}
+.ai-fab span{background:var(--accent);color:var(--accent-ink)}
+.ai-fab span .ic{width:17px;height:17px}
+.ai-fab b{transition:max-width var(--t-med) var(--ease-out-3,ease),opacity var(--t-fast) ease;max-width:120px;overflow:hidden;white-space:nowrap}
+
+/* ---------- 12. Thanh tab dưới, toast, tài khoản ---------- */
+.account-btn .acc-avatar .ic{width:20px;height:20px}
+.toast{border-radius:var(--r-md);padding:12px 16px;font-size:var(--fs-sm);font-weight:600;box-shadow:var(--elev-3)}
+
+/* ==========================================================================
+   ĐIỆN THOẠI (≤ 780px)
+   ========================================================================== */
+@media (max-width:780px){
+  :root{--fs-h1:30px;--fs-h2:24px}
+  html{scroll-padding-top:120px}
+  body{font-size:var(--fs-md);padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+
+  /* thanh trạng thái trên cùng: ẩn để nhường chỗ (thông tin kết nối vẫn có trong thẻ dữ liệu) */
+  .status-bar{display:none}
+
+  /* tiêu đề ứng dụng */
+  .nav{height:58px;padding:0 14px;background:rgba(255,255,255,.88);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);border-bottom:1px solid rgba(224,234,229,.9)}
+  .brand-mark{width:34px;height:34px;border-radius:11px;font-size:19px}
+  .brand strong{font-size:20px}
+  .account-btn{width:40px;height:40px;padding:0;display:grid;place-items:center;border-radius:50%;background:var(--brand-50);border:1px solid #d4e7dd;color:var(--brand-700)}
+  .account-btn .acc-avatar{display:grid;place-items:center;width:100%;height:100%;font-weight:800;font-size:16px;background:transparent}
+
+  /* thanh lộ trình & tiểu mục: dính ngay dưới tiêu đề 58px */
+  body[data-view="plan"] .journey,body[data-view="coach"] .journey,body[data-view="run"] .journey{
+    top:58px;margin:0;border-radius:0;border-width:0 0 1px;padding:8px 12px;gap:6px;background:rgba(243,247,245,.92);box-shadow:none}
+  .journey a{flex:none;padding:6px 12px 6px 8px;font-size:13.5px;min-height:44px;min-width:44px;justify-content:center}
+  .journey a:not(.current) span{max-width:0;overflow:hidden;opacity:0;margin-left:-7px;transition:max-width var(--t-med) var(--ease-out-3,ease),opacity var(--t-fast) ease}
+  .journey a.current span{max-width:120px;opacity:1}
+  .journey a:not(.current){padding:6px 10px}
+  .subnav{top:58px;margin:0;padding:10px 14px 12px}
+
+  /* khung chung */
+  .section-wrap{padding:22px 14px 0}
+  .section-heading{gap:10px;margin-bottom:16px}
+  .section-heading h2{font-size:var(--fs-h2);line-height:1.22;letter-spacing:-.025em}
+  .section-heading p:not(.eyebrow),.step-lead{font-size:15.5px;line-height:1.55;color:var(--muted)}
+  .eyebrow{font-size:12.5px;margin-bottom:6px}
+  .card{border-radius:var(--r-lg)}
+  .form-card,.result-card,.coach-card,.feedback-card,.appfb-card,.weekly-card{padding:16px}
+  .card-title h3{font-size:var(--fs-lg)}
+  label{font-size:15px}
+
+  /* ---- Trang chủ: dữ liệu trước, ảnh làm nền ---- */
+  .hero{padding:22px 16px 26px;gap:14px;min-height:0;isolation:isolate;
+    background:radial-gradient(130% 90% at 85% 0,#127a60 0,#075b49 38%,#052f27 78%)}
+  .hero:after{opacity:.7}
+  .hero-content{display:contents}
+  .hero-visual{display:contents}
+  .hero-photo-card{position:absolute;inset:0;z-index:0;margin:0;border:0;border-radius:0;box-shadow:none;transform:none;opacity:.26;pointer-events:none}
+  .hero-photo-card img{width:100%;height:100%!important;object-fit:cover;filter:saturate(.8)}
+  .hero-photo-card:after{background:linear-gradient(180deg,rgba(5,47,39,.2),rgba(5,47,39,.85))}
+  .hero-photo-card figcaption{display:none}
+  .hero .eyebrow,.hero h1,.hero-lead,.hero-actions,.hero .live-orbit{position:relative;z-index:1}
+  .hero .eyebrow{order:1;font-size:12px;margin:0;color:#bfe7d6}
+  .hero h1{order:2;font-size:var(--fs-h1);line-height:1.1;letter-spacing:-.035em}
+  .hero-lead{display:none}
+  /* thẻ dữ liệu: câu kết luận "có nên chạy" lên ngay dưới nhiệt độ */
+  .live-orbit{display:flex;flex-direction:column;gap:12px;padding:16px!important}
+  .live-orbit .orbit-top{order:0}.live-orbit .orbit-main{order:1}.live-orbit .hero-verdict{order:2;margin:0!important}
+  .live-orbit .orbit-metrics{order:3;margin:0!important}.live-orbit .orbit-note{order:4;margin:0!important;font-size:13.5px}.live-orbit .tech-status{order:5;margin:0!important}
+  .hero-visual .live-orbit,.live-orbit{order:4;margin:4px 0 0!important;border-radius:var(--r-xl);box-shadow:0 20px 50px -18px rgba(0,0,0,.55)}
+  .hero-actions{order:5;display:grid;grid-template-columns:1fr;gap:10px;margin:2px 0 0}
+  .hero-actions>*{width:100%}
+  .hero-actions .light-btn{min-height:54px;font-size:17px}
+  .hero-actions .ghost-btn{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.22)}
+
+  /* lộ trình 5 bước ở trang chủ */
+  .view[data-view="home"] .quick-strip.journey-list{display:grid!important;grid-template-columns:1fr;gap:0;margin:16px 14px 0;padding:10px;border-radius:var(--r-xl);box-shadow:var(--elev-1);border:1px solid var(--line)}
+  .journey-list a{display:grid;grid-template-columns:auto auto 1fr auto;grid-template-rows:auto auto;column-gap:12px;align-items:center;padding:11px 8px;border-radius:14px}
+  .journey-list a+a{border-top:1px solid #edf2ef}
+  .journey-list a .jl-num{grid-row:1/3;grid-column:1;display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--brand-900);color:var(--accent);font-size:13px;font-weight:800}
+  .journey-list .jl-ic{display:block;grid-row:1/3;grid-column:2;width:22px;height:22px;color:var(--brand-700)}
+  .journey-list a b{grid-column:3;font-size:16px;line-height:1.25}
+  .journey-list a small{grid-column:3;font-size:14px;color:var(--muted)}
+  .journey-list .jl-go{display:block;grid-row:1/3;grid-column:4;width:20px;height:20px;color:#9bb0a7}
+
+  .home-cards{padding-top:16px!important}
+  .home-grid{grid-template-columns:1fr!important;gap:12px}
+  .home-card{padding:16px 18px;border-radius:var(--r-xl)}
+  .home-card small{font-size:12.5px;letter-spacing:.09em}
+  .home-card strong{font-size:19px}
+  .hc-link{display:inline-flex;align-items:center;min-height:44px;margin-top:4px;padding:0}
+
+  /* ---- Kế hoạch ---- */
+  .result-title{flex-wrap:wrap;row-gap:8px}
+  .result-title>div{flex:1 1 0;min-width:0}
+  .result-title .result-pill{order:3;margin-left:38px}
+  .check-row small{font-weight:500;color:var(--muted)}
+  .planner-grid{gap:12px}
+  .segment{border-radius:12px;padding:4px}
+  .segment button{min-height:44px;border-radius:9px;font-size:15px}
+  .decision-panel{border-radius:var(--r-lg)}
+  .score-ring{flex:none}
+  .hour-box{border-radius:var(--r-lg)}
+
+  /* ---- AI Coach ---- */
+  .coach-suggest{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;flex-wrap:nowrap}
+  .coach-suggest::-webkit-scrollbar{display:none}
+  .coach-suggest button{flex:none;min-height:40px;border-radius:var(--r-pill)}
+  .coach-form input{min-height:50px}
+  .coach-form .primary{min-width:84px}
+  .coach-link{min-height:40px;padding:0 6px}
+
+  /* ---- Chạy ---- */
+  .ai-route-examples button{min-height:40px}
+  .map-link{display:inline-flex;align-items:center;min-height:44px}
+  .route-distance-chips button{min-height:44px;border-radius:12px;font-size:15px}
+  .tracker-controls{gap:10px}
+  .run-start,.run-secondary,.run-finish{min-height:56px;border-radius:16px;font-size:17px}
+  .tracker-distance strong{letter-spacing:-.04em}
+
+  /* ---- Nhật ký ---- */
+  .about-airun{padding:0 14px;margin-top:22px}
+
+  /* ---- Thanh tab dưới: biểu tượng trong "viên thuốc" sáng lên khi chọn ---- */
+  .tabbar{padding:6px 6px calc(8px + env(safe-area-inset-bottom));background:rgba(255,255,255,.9);-webkit-backdrop-filter:blur(20px) saturate(1.5);backdrop-filter:blur(20px) saturate(1.5);
+    border-top:1px solid rgba(224,234,229,.95);box-shadow:0 -8px 24px -18px rgba(5,47,39,.35)}
+  .tabbar a{gap:3px;padding:2px 0 0;background:none!important;color:#61746c;min-height:52px;justify-content:center}
+  .tabbar a span{display:grid;place-items:center;width:58px;height:32px;border-radius:var(--r-pill);font-size:0;transition:background var(--t-med) var(--ease-out-3,ease),transform var(--t-med) var(--release-ease)}
+  .tabbar a span .ic{width:22px;height:22px}
+  .tabbar a b{font-size:12.5px;font-weight:700;letter-spacing:-.01em}
+  .tabbar a.active{color:var(--brand-800)}
+  .tabbar a.active span{background:var(--brand-100);transform:translateY(-1px)}
+  .tabbar a.active span .ic{stroke-width:2.4}
+  .tabbar a.active b{font-weight:800}
+  .tabbar .run-dot{top:2px;right:calc(50% - 26px)}
+
+  /* nút Hỏi AI: nằm trên thanh tab, thu nhỏ khi cuộn xuống */
+  .ai-fab{right:14px;bottom:calc(78px + env(safe-area-inset-bottom));height:52px;padding:0 18px 0 10px;gap:8px}
+  .ai-fab span{width:32px;height:32px}
+  /* chỉ trang chủ hiện chữ "Hỏi AI"; các tab khác là nút tròn gọn; tab AI Coach đã có ô chat nên ẩn */
+  body.fab-mini .ai-fab,body:not([data-view="home"]) .ai-fab{padding:0 10px}
+  body.fab-mini .ai-fab b,body:not([data-view="home"]) .ai-fab b{max-width:0;opacity:0}
+  body[data-view="coach"] .ai-fab{opacity:0;pointer-events:none;transform:scale(.6)}
+  .toast{bottom:calc(142px + env(safe-area-inset-bottom))!important;max-width:calc(100% - 28px)}
+
+  /* ngăn kéo AI dạng tấm trượt từ dưới lên */
+  .ai-drawer{border-radius:24px 24px 0 0;box-shadow:0 -20px 60px rgba(5,47,39,.35)}
+  .ai-drawer:before{content:"";position:absolute;left:50%;top:7px;width:40px;height:4px;margin-left:-20px;border-radius:4px;background:#cfdcd6;z-index:2}
+}
+
+/* điện thoại rất nhỏ */
+@media (max-width:360px){
+  :root{--fs-h1:27px;--fs-h2:22px}
+  .tabbar a b{font-size:11.5px}
+  .tabbar a span{width:50px}
+}
+
+/* tôn trọng cài đặt "giảm chuyển động" của hệ điều hành */
+@media (prefers-reduced-motion:reduce){
+  .ui-ripple{display:none}
+  :is(.primary,.light-btn,.ghost-btn,.soft-btn,.save-btn,.location-action,.chip-btn,.run-start,.run-secondary,.run-finish,.next-step,.journey a,.tabbar a,.ai-fab,.home-card):active,.is-pressed{transform:none}
+}

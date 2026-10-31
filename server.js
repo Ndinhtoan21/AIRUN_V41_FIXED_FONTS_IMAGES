@@ -13,7 +13,7 @@ const path = require('path');
 
 const PORT = Number(process.env.PORT) || 10000;
 const ROOT = __dirname;
-const VERSION = '9.0.0';
+const VERSION = '9.1.0';
 const OPENAI_API_KEY = (process.env.OPENAI_API_KEY || '').trim();
 const OPENAI_MODEL = (process.env.OPENAI_MODEL || 'gpt-4.1-mini').trim();
 const OPENAI_FALLBACK_MODEL = (process.env.OPENAI_FALLBACK_MODEL || 'gpt-4o-mini').trim();
@@ -374,6 +374,9 @@ function handleFeedbackExport(res, url) {
 const crypto = require('crypto');
 const GOOGLE_MAPS_BROWSER_KEY = (process.env.GOOGLE_MAPS_BROWSER_KEY || process.env.GOOGLE_MAPS_API_KEY || '').trim();
 const GOOGLE_MAPS_SERVER_KEY = (process.env.GOOGLE_MAPS_SERVER_KEY || '').trim() || GOOGLE_MAPS_BROWSER_KEY;
+// Bản đồ nền Google: Google không tính phí Maps cho tài khoản thanh toán ở Việt Nam (vùng bị cấm), nên mặc định tắt
+// và dùng OpenFreeMap. Bật lại bằng GOOGLE_MAPS_BASEMAP=1 nếu tài khoản thanh toán được phép.
+const GOOGLE_MAPS_BASEMAP = process.env.GOOGLE_MAPS_BASEMAP === '1';
 const PUBLIC_SITE_URL = (process.env.PUBLIC_SITE_URL || 'https://airun-da-nang.vercel.app').replace(/\/+$/, '');
 const GOOGLE_PLACES_BASE = (process.env.GOOGLE_PLACES_BASE || 'https://places.googleapis.com/v1').replace(/\/+$/, '');
 const GOOGLE_ROUTES_BASE = (process.env.GOOGLE_ROUTES_BASE || 'https://routes.googleapis.com').replace(/\/+$/, '');
@@ -712,8 +715,10 @@ function buildProfile(h) {
 function serveStatic(req, res, pathname) {
   let file = pathname === '/' ? '/index.html' : pathname;
   try { file = decodeURIComponent(file); } catch { return send(res, 400, 'Bad request'); }
-  const allowed = PUBLIC_FILES.has(file) || file.startsWith('/assets/');
   const full = path.normalize(path.join(ROOT, file));
+  // Chỉ phục vụ file công khai; kiểm tra trên đường dẫn ĐÃ chuẩn hoá để chặn kiểu /css/../server.js.
+  const rel = '/' + path.relative(ROOT, full).split(path.sep).join('/');
+  const allowed = PUBLIC_FILES.has(rel) || /^\/(assets|css|js)\/[^/]/.test(rel);
   if (!allowed || !full.startsWith(ROOT + path.sep)) {
     // Đường dẫn lạ → trả trang chính (giống SPA), không lộ file mã nguồn.
     return serveFile(res, path.join(ROOT, 'index.html'), req.method === 'HEAD');
@@ -749,7 +754,7 @@ async function handler(req, res) {
   try {
     if (p === '/healthz') return json(res, 200, { ok: true, version: VERSION });
     if (p === '/api/config' && req.method === 'GET') {
-      return json(res, 200, { version: VERSION, server: true, ai: Boolean(OPENAI_API_KEY), aiModel: OPENAI_API_KEY ? OPENAI_MODEL : null, routing: Boolean(GRAPHHOPPER_API_KEY), mapboxToken: MAPBOX_PUBLIC_TOKEN || '', googleMapsKey: GOOGLE_MAPS_BROWSER_KEY || '', googlePlaces: Boolean(GOOGLE_MAPS_SERVER_KEY), routePlan: true, accounts: accountsEnabled(), feedback: true, feedbackPersistent: Boolean(FEEDBACK_WEBHOOK_URL) || accountsEnabled() });
+      return json(res, 200, { version: VERSION, server: true, ai: Boolean(OPENAI_API_KEY), aiModel: OPENAI_API_KEY ? OPENAI_MODEL : null, routing: Boolean(GRAPHHOPPER_API_KEY), mapboxToken: MAPBOX_PUBLIC_TOKEN || '', googleMapsKey: GOOGLE_MAPS_BASEMAP ? (GOOGLE_MAPS_BROWSER_KEY || '') : '', googlePlaces: Boolean(GOOGLE_MAPS_SERVER_KEY), routePlan: true, accounts: accountsEnabled(), feedback: true, feedbackPersistent: Boolean(FEEDBACK_WEBHOOK_URL) || accountsEnabled() });
     }
     let m = p.match(/^\/api\/(weather|air)\/(-?[\d.]+)\/(-?[\d.]+)\/?$/);
     if (m && req.method === 'GET') return handleEnv(res, m[1], m[2], m[3]);
