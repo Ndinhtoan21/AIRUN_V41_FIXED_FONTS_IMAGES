@@ -1706,14 +1706,22 @@ async function finishRun(){
   trackerAlert(tracker.lastEnvResult?.tone||'good','Đã kết thúc.',`Quãng đường ${tracker.distanceKm.toFixed(2)} km · ${formatDuration(seconds)}. Bản đồ hành trình chỉ lưu trên máy này, không gửi lên máy chủ.`,'✓');
 }
 
-function journalRows(){
+// V9.4: mỗi dòng nhật ký có chủ (uid). Khách = không có uid. Nhiều người dùng chung máy không thấy nhật ký của nhau.
+function journalOwner(){try{return session?.user?.id||'';}catch{return '';}}
+function allJournalRows(){
   let rows=localGet(STORAGE.journal,null);
   if(rows===null){rows=localGet('airun-v40-journal',[]);localSet(STORAGE.journal,rows);}
   return Array.isArray(rows)?rows:[];
 }
+function journalRows(){const owner=journalOwner();return allJournalRows().filter(row=>(row.uid||'')===owner);}
+function writeJournal(rows){
+  const owner=journalOwner(),others=allJournalRows().filter(row=>(row.uid||'')!==owner);
+  const mine=rows.map(row=>owner?{...row,uid:owner}:(({uid,...rest})=>rest)(row));
+  return localSet(STORAGE.journal,[...mine.slice(0,150),...others].slice(0,450));
+}
 
 function saveRunToJournal({seconds,pace,area}){
-  const rows=journalRows();rows.unshift({id:Date.now(),type:'run',at:new Date().toISOString(),area,distance:round(tracker.distanceKm,2),durationSec:round(seconds),pace:pace?formatPace(pace):'',aqi:tracker.lastEnvResult?$('trackerAqi').textContent:'',score:tracker.lastEnvResult?.score??'',source:'gps',feels:tracker.lastEnv?.feels??''});localSet(STORAGE.journal,rows.slice(0,150));renderJournal();cloudLog('run',rows[0]);return rows[0].id;
+  const rows=journalRows();rows.unshift({id:Date.now(),type:'run',at:new Date().toISOString(),area,distance:round(tracker.distanceKm,2),durationSec:round(seconds),pace:pace?formatPace(pace):'',aqi:tracker.lastEnvResult?$('trackerAqi').textContent:'',score:tracker.lastEnvResult?.score??'',source:'gps',feels:tracker.lastEnv?.feels??''});writeJournal(rows.slice(0,150));renderJournal();cloudLog('run',rows[0]);return rows[0].id;
 }
 
 function saveJournal(){
@@ -1722,7 +1730,7 @@ function saveJournal(){
   const rows=journalRows(),plan=currentPlan(),label=activeData?.location?.label||ward().name;
   const estimate=planEstimate(plan);
   rows.unshift({id:Date.now(),type:'plan',at:new Date().toISOString(),area:label,time:plan.time,duration:plan.duration,pace:formatPace(estimate.pace),distance:round(estimate.distance,2),intensity:plan.intensity,sensitive:plan.sensitive,decision:selectedDecision,score:activeResult.score,aqi:fmt(activeSnapshot.aqi,0,''),temp:fmt(activeSnapshot.temp,0,''),feels:fmt(activeSnapshot.feels,0,''),note:$('note').value.trim(),source:activeData.source});
-  localSet(STORAGE.journal,rows.slice(0,150));$('note').value='';renderJournal();cloudLog('plan',rows[0]);showToast(session?'Đã lưu kế hoạch vào nhật ký và tài khoản của bạn.':'Đã lưu kế hoạch vào nhật ký trên thiết bị.');
+  writeJournal(rows.slice(0,150));$('note').value='';renderJournal();cloudLog('plan',rows[0]);showToast(session?'Đã lưu kế hoạch vào nhật ký và tài khoản của bạn.':'Đã lưu kế hoạch vào nhật ký trên thiết bị.');
 }
 
 const FB_LABEL={dung:'✓ Khuyến nghị đúng',qua_khat_khe:'▲ Quá khắt khe',qua_de_dai:'▼ Quá dễ dãi'};
@@ -1741,7 +1749,7 @@ function renderJournal(){
   }).join(''):'<div class="empty-state">Chưa có dữ liệu được lưu.</div>';
   if(typeof renderHomeRun==='function')renderHomeRun();
   if(typeof renderProfile==='function'&&!cloudProfile)renderProfile();
-  $('journalList').querySelectorAll('[data-delete]').forEach(button=>button.addEventListener('click',()=>{localSet(STORAGE.journal,rows.filter(row=>row.id!==Number(button.dataset.delete)));renderJournal();if(typeof updateFeedbackStats==='function')updateFeedbackStats();}));
+  $('journalList').querySelectorAll('[data-delete]').forEach(button=>button.addEventListener('click',()=>{writeJournal(rows.filter(row=>row.id!==Number(button.dataset.delete)));renderJournal();if(typeof updateFeedbackStats==='function')updateFeedbackStats();}));
 }
 
 function csvCell(value){let text=String(value??'');if(/^[=+\-@]/.test(text))text=`'${text}`;return `"${text.replace(/"/g,'""')}"`;}
@@ -1778,7 +1786,7 @@ function initPWA(){const button=$('installBtn');if(button)button.hidden=true;}
 
 async function runDiagnostics(){
   const button=$('diagnosticBtn');setBusy(button,true,'Đang kiểm tra…');
-  setSystemStatus('js','ok','V9.3 · bản đồ sáng/tối, độ cao');updateConnection();
+  setSystemStatus('js','ok','V9.4 · tài khoản & cộng đồng');updateConnection();
   try{
     const permission=await geolocationPermissionState();
     setSystemStatus('gps',permission==='denied'?'error':permission==='granted'?'ok':'warn',permission==='denied'?'Bị chặn':permission==='granted'?'Đã cấp quyền':'Chưa cấp quyền');
@@ -1806,7 +1814,7 @@ function bindEvents(){
   on('generateRouteBtn','click',()=>runAsyncTask('Tạo cung chạy',()=>generateSuggestedRoute()));on('regenerateRouteBtn','click',()=>runAsyncTask('Tạo cung khác',()=>generateSuggestedRoute({regenerate:true})));
   syncRouteProviderStatus();on('useSuggestedRouteBtn','click',useSuggestedRoute);
   on('routeFromPlanBtn','click',()=>{routePlanner.usePlan=true;routePlanner.targetKm=planEstimate().distance;syncRoutePlanCard();$('mapSection').scrollIntoView({behavior:'smooth'});setTimeout(()=>runAsyncTask('Tạo cung chạy',()=>generateSuggestedRoute()),450);});
-  on('clearJournalBtn','click',()=>{if(journalRows().length&&confirm('Xóa toàn bộ nhật ký trên thiết bị này?')){localSet(STORAGE.journal,[]);renderJournal();showToast('Đã xóa nhật ký.');}});
+  on('clearJournalBtn','click',()=>{if(journalRows().length&&confirm(session?'Xóa nhật ký của bạn trên thiết bị này? (Dữ liệu trong tài khoản vẫn còn)':'Xóa nhật ký trên thiết bị này?')){writeJournal([]);renderJournal();showToast('Đã xóa nhật ký.');}});
   on('startRunBtn','click',startRun);on('pauseRunBtn','click',pauseOrResumeRun);on('finishRunBtn','click',finishRun);
   on('menuBtn','click',()=>{const nav=$('mainNav');if(!nav)return;const open=nav.classList.toggle('open');$('menuBtn')?.setAttribute('aria-expanded',String(open));});
   $('mainNav')?.querySelectorAll('a').forEach(link=>link.addEventListener('click',()=>{$('mainNav')?.classList.remove('open');$('menuBtn')?.setAttribute('aria-expanded','false');}));
@@ -2021,7 +2029,7 @@ async function submitFeedback(event){
   const fb={verdict,route:payload.route,heat:payload.heat,breath:payload.breath,effort:payload.effort,note:payload.note,tester:payload.tester,feels:conditions.feels,aqi:conditions.aqi,uv:conditions.uv,score:payload.score};
   const rows=journalRows();const target=recentRun?rows.find(r=>r.id===recentRun.id):null;
   if(target)target.feedback=fb;else rows.unshift({id:Date.now(),type:'feedback',at:new Date().toISOString(),area:payload.area,score:payload.score??'',aqi:conditions.aqi??'',temp:conditions.temp??'',feels:conditions.feels??'',time:plan.time,duration:plan.duration,intensity:plan.intensity,feedback:fb,source:activeData?.source||''});
-  localSet(STORAGE.journal,rows.slice(0,150));renderJournal();
+  writeJournal(rows.slice(0,150));renderJournal();
   btn.disabled=true;status.textContent='Đang gửi…';status.className='fb-status';
   // 2) Gửi về máy chủ để nhóm tổng hợp
   let server=null;
@@ -2063,7 +2071,7 @@ function bindCoachEvents(){
 }
 
 /* ===================== V8.3 · ĐIỀU HƯỚNG THEO TAB ===================== */
-const VIEWS=['home','weather','plan','coach','run','journal'];
+const VIEWS=['home','weather','plan','coach','run','community','journal'];
 let currentView='home';
 function viewOfElement(el){return el?.closest?.('.view')?.dataset.view||null;}
 function resizeVisibleMaps(name){
@@ -2099,7 +2107,7 @@ function handleRoute(){
   const h=decodeURIComponent(location.hash||'');
   if(h==='#/run-feedback'){activateView('run');setTimeout(()=>$('feedbackForm')?.scrollIntoView({behavior:'smooth',block:'start'}),80);return;}
   if(h==='#/run-gps'){activateView('run');setTimeout(()=>$('tracker')?.scrollIntoView({behavior:'smooth',block:'start'}),80);return;}
-  if(h.startsWith('#/')){activateView(h.slice(2));return;}
+  if(h.startsWith('#/')){activateView(h.slice(2).split('?')[0]);return;}
   const target=h.length>1?document.getElementById(h.slice(1)):null;
   const v=viewOfElement(target);
   if(v){activateView(v,{scroll:false});setTimeout(()=>target.scrollIntoView({block:'start'}),40);return;}
@@ -2389,35 +2397,45 @@ function syncAccountUi(){
 }
 function setAccMode(m){
   accMode=m;document.querySelectorAll('[data-acc-tab]').forEach(b=>b.classList.toggle('active',b.dataset.accTab===m));
-  $('accPin2Wrap').hidden=m!=='register';$('accSubmit').textContent=m==='register'?'Tạo tài khoản':'Đăng nhập';$('accountTitle').textContent=m==='register'?'Tạo tài khoản người chạy':'Đăng nhập AIRUN';
+  document.querySelectorAll('[data-acc-register]').forEach(n=>{n.hidden=m!=='register';});$('accPass')?.setAttribute('autocomplete',m==='register'?'new-password':'current-password');$('accSubmit').textContent=m==='register'?'Tạo tài khoản':'Đăng nhập';$('accountTitle').textContent=m==='register'?'Tạo tài khoản người chạy':'Đăng nhập AIRUN';
   $('accStatus').textContent='';
 }
 function openAccount(m='login'){
   const d=$('accountDialog');if(!d)return;
-  if(session){activateView('journal');$('profileSection')?.scrollIntoView({behavior:'smooth'});return;}
+  if(session){if(typeof openAccountPanel==='function')openAccountPanel();else activateView('journal');return;}
   setAccMode(m);
-  if(!SERVER_CFG.accounts){$('accStatus').textContent='Máy chủ chưa kết nối Google Sheet nên chưa tạo/đăng nhập tài khoản được.';$('accStatus').className='fb-status err';}
+  if(!SERVER_CFG.accounts){$('accStatus').textContent='Máy chủ chưa bật cơ sở dữ liệu tài khoản nên chưa tạo/đăng nhập được.';$('accStatus').className='fb-status err';}
   if(typeof d.showModal==='function')d.showModal();else d.setAttribute('open','');
-  setTimeout(()=>$('accName')?.focus(),60);
+  setTimeout(()=>$('accUser')?.focus(),60);
 }
 function closeAccount(){const d=$('accountDialog');if(!d)return;if(typeof d.close==='function')d.close();else d.removeAttribute('open');}
 async function submitAccount(event){
   event.preventDefault();
-  const name=$('accName').value.trim(),pin=$('accPin').value.trim(),pin2=$('accPin2').value.trim(),st=$('accStatus');
-  if(name.length<2){st.textContent='Tên người chạy cần ít nhất 2 ký tự.';st.className='fb-status err';return;}
-  if(!/^\d{4,6}$/.test(pin)){st.textContent='Mã PIN gồm 4–6 chữ số.';st.className='fb-status err';return;}
-  if(accMode==='register'&&pin!==pin2){st.textContent='Hai lần nhập mã PIN chưa khớp.';st.className='fb-status err';return;}
+  const username=$('accUser').value.trim().toLowerCase(),pass=$('accPass').value,st=$('accStatus');
+  const err=text=>{st.textContent=text;st.className='fb-status err';};
+  if(!/^[a-z][a-z0-9_.]{2,19}$/.test(username))return err('Tên đăng nhập 3–20 ký tự: chữ thường không dấu, số, dấu chấm hoặc gạch dưới, bắt đầu bằng chữ.');
+  if(pass.length<8)return err('Mật khẩu cần ít nhất 8 ký tự.');
+  const body={username,password:pass};
+  if(accMode==='register'){
+    const name=$('accName').value.trim();
+    if(name.length<2)return err('Tên hiển thị cần ít nhất 2 ký tự.');
+    if(pass!==$('accPass2').value)return err('Hai lần nhập mật khẩu chưa khớp.');
+    body.name=name;body.public=$('accPublic')?.checked!==false;
+  }
   const btn=$('accSubmit');setBusy(btn,true,accMode==='register'?'Đang tạo…':'Đang đăng nhập…');st.textContent='';
   try{
-    const res=await fetch(`/api/account/${accMode==='register'?'register':'login'}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,pin})});
+    const res=await fetch(`/api/account/${accMode==='register'?'register':'login'}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
     const data=await res.json();
-    if(!res.ok||!data.ok){st.textContent=data.reason||'Chưa đăng nhập được.';st.className='fb-status err';return;}
+    if(!res.ok||!data.ok)return err(data.reason||'Chưa đăng nhập được.');
+    const guestRuns=journalRows().filter(r=>r.type==='run'||r.type==='plan').length;
     session={token:data.token,user:data.user};localSet(SESSION_KEY,session);cloudProfile=data.profile||null;
     if(data.history)mergeCloudHistory(data.history);
-    if(accMode==='register')pushLocalHistoryToCloud();
-    $('accPin').value='';$('accPin2').value='';closeAccount();syncAccountUi();renderProfile();
-    showToast(accMode==='register'?`Đã tạo tài khoản ${data.user.ten}. AI Coach sẽ nhớ thói quen của bạn.`:`Chào ${data.user.ten}! Đã tải lịch sử chạy của bạn.`);
-  }catch(error){st.textContent=`Chưa kết nối được: ${error.message}`;st.className='fb-status err';}
+    // Tài khoản mới nhận luôn nhật ký đang có trên máy; đăng nhập trên máy dùng chung thì để người dùng tự chọn.
+    if(accMode==='register'&&guestRuns)adoptGuestJournal();
+    ['accPass','accPass2'].forEach(id=>{const n=$(id);if(n)n.value='';});closeAccount();syncAccountUi();renderJournal();renderProfile();
+    accountChanged(data);
+    showToast(accMode==='register'?`Đã tạo tài khoản ${data.user.ten}. Nhật ký và bảng xếp hạng đã sẵn sàng.`:`Chào ${data.user.ten}! Đã tải nhật ký của bạn.`);
+  }catch(error){err(`Chưa kết nối được: ${error.message}`);}
   finally{setBusy(btn,false);}
 }
 async function refreshAccount(){
@@ -2425,22 +2443,44 @@ async function refreshAccount(){
   try{
     const res=await fetch('/api/account/me',{cache:'no-store',headers:authHeaders()});
     if(res.status===401){logout(true);return;}
-    const data=await res.json();if(data.ok){cloudProfile=data.profile||null;mergeCloudHistory(data.history||{});renderProfile();}
+    const data=await res.json();if(data.ok){cloudProfile=data.profile||null;if(data.user){session={...session,user:{...session.user,...data.user}};localSet(SESSION_KEY,session);syncAccountUi();}mergeCloudHistory(data.history||{});renderProfile();accountChanged(data);}
   }catch{}
 }
-function logout(silent=false){session=null;try{localStorage.removeItem(SESSION_KEY);}catch{}cloudProfile=null;syncAccountUi();renderProfile();if(!silent)showToast('Đã đăng xuất. Nhật ký trên máy này vẫn được giữ.');}
+function logout(silent=false){session=null;try{localStorage.removeItem(SESSION_KEY);}catch{}cloudProfile=null;syncAccountUi();renderJournal();renderProfile();accountChanged(null);if(!silent)showToast('Đã đăng xuất. Nhật ký của bạn vẫn nằm trong tài khoản.');}
+// Báo cho trang Cộng đồng / trang chủ khi trạng thái tài khoản thay đổi.
+function accountChanged(data){try{document.dispatchEvent(new CustomEvent('airun:account',{detail:data||null}));}catch{}}
+// Nhật ký khách trên máy → chuyển vào tài khoản đang đăng nhập (và gửi lên máy chủ, có chống trùng).
+function guestJournalRows(){return allJournalRows().filter(r=>!r.uid&&(r.type==='run'||r.type==='plan'));}
+function adoptGuestJournal(){
+  if(!session?.user?.id)return 0;
+  const guest=guestJournalRows();if(!guest.length)return 0;
+  const ids=new Set(guest.map(r=>r.id)),rest=allJournalRows().filter(r=>!(ids.has(r.id)&&!r.uid));
+  localSet(STORAGE.journal,[...guest.map(r=>({...r,uid:session.user.id})),...rest].slice(0,450));
+  guest.slice(0,40).reverse().forEach(r=>cloudLog(r.type,r));
+  renderJournal();return guest.length;
+}
 function mergeCloudHistory(h){
   const rows=journalRows(),ids=new Set(rows.map(r=>String(r.id)));let added=0;
   (h.buoi_chay||[]).forEach(r=>{const id=String(r.ma_buoi||'');if(!id||ids.has(id))return;ids.add(id);added++;rows.push({id:Number(id)||Date.parse(r.thoi_diem)||Date.now(),type:'run',at:r.thoi_diem,area:r.khu_vuc||'',distance:Number(r.km)||0,durationSec:Number(r.thoi_gian_giay)||0,pace:r.pace||'',score:r.diem_airun??'',aqi:r.aqi??'',feels:r.cam_giac_c??'',source:'cloud'});});
   (h.ke_hoach||[]).forEach(r=>{const id=String(r.ma||'');if(!id||ids.has(id))return;ids.add(id);added++;rows.push({id:Number(id)||Date.parse(r.thoi_diem)||Date.now(),type:'plan',at:r.thoi_diem,area:r.khu_vuc||'',time:r.gio_chay||'',duration:Number(r.thoi_luong_phut)||0,distance:Number(r.km_du_kien)||'',pace:r.pace||'',intensity:r.cuong_do||'',decision:r.quyet_dinh||'',score:r.diem_airun??'',aqi:r.aqi??'',temp:r.nhiet_do??'',note:r.ghi_chu||'',source:'cloud'});});
-  if(added){rows.sort((a,b)=>String(b.at).localeCompare(String(a.at)));localSet(STORAGE.journal,rows.slice(0,150));renderJournal();}
+  if(added){rows.sort((a,b)=>String(b.at).localeCompare(String(a.at)));writeJournal(rows.slice(0,150));renderJournal();}
 }
 function cloudLog(kind,data){
   if(!session?.token||!SERVER_CFG.accounts)return;
   fetch('/api/account/log',{method:'POST',headers:{'Content-Type':'application/json',...authHeaders()},body:JSON.stringify({kind,data})})
-    .then(r=>{if(r.ok){clearTimeout(cloudLog.timer);cloudLog.timer=setTimeout(()=>void refreshAccount(),1500);}}).catch(()=>{});
+    .then(async r=>{
+      const j=await r.json().catch(()=>({}));
+      if(r.status===401){logout(true);showToast('Phiên đăng nhập đã hết, hãy đăng nhập lại.');return;}
+      if(!r.ok)return;
+      if(kind==='run'&&!j.duplicate){
+        if(j.newBadges?.length)showToast(`🏅 Huy hiệu mới: ${j.newBadges.map(b=>b.name).join(', ')}`);
+        else if(j.counted===false&&j.reason)showToast(`Đã lưu buổi chạy nhưng chưa tính vào bảng xếp hạng: ${j.reason}.`);
+        try{document.dispatchEvent(new CustomEvent('airun:run-logged',{detail:j}));}catch{}
+      }
+      clearTimeout(cloudLog.timer);cloudLog.timer=setTimeout(()=>void refreshAccount(),1500);
+    }).catch(()=>{});
 }
-function pushLocalHistoryToCloud(){journalRows().filter(r=>r.source!=='cloud').slice(0,20).reverse().forEach(r=>{if(r.type==='run')cloudLog('run',r);else if(r.type==='plan')cloudLog('plan',r);});}
+function pushLocalHistoryToCloud(){return adoptGuestJournal();}
 
 /* Hồ sơ thói quen (máy chủ tính khi đăng nhập; nếu chưa đăng nhập thì tính từ nhật ký trên máy). */
 function localProfile(){
@@ -2590,8 +2630,8 @@ let airunInitialized=false;
 async function init(){
   if(airunInitialized)return;airunInitialized=true;
   if(await clearLegacyServiceWorkerControl()) return;
-  if(typeof window!=='undefined')window.__AIRUN_APP_READY='v93';
-  setSystemStatus('js','ok','V9.3 · bản đồ sáng/tối, độ cao');
+  if(typeof window!=='undefined')window.__AIRUN_APP_READY='v94';
+  setSystemStatus('js','ok','V9.4 · tài khoản & cộng đồng');
   safeCall('khu vực',()=>{$('area').innerHTML=WARDS.map(item=>`<option value="${item.key}">${escapeHTML(item.name)}</option>`).join('');});
   safeCall('khôi phục cài đặt',restorePlanSettings);
   safeCall('chọn khu vực',()=>{$('area').value=selectedKey;});

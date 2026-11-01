@@ -13,7 +13,7 @@ const path = require('path');
 
 const PORT = Number(process.env.PORT) || 10000;
 const ROOT = __dirname;
-const VERSION = '9.3.0';
+const VERSION = '9.4.0';
 const OPENAI_API_KEY = (process.env.OPENAI_API_KEY || '').trim();
 const OPENAI_MODEL = (process.env.OPENAI_MODEL || 'gpt-4.1-mini').trim();
 const OPENAI_FALLBACK_MODEL = (process.env.OPENAI_FALLBACK_MODEL || 'gpt-4o-mini').trim();
@@ -353,8 +353,15 @@ async function handleFeedback(req, res) {
       forwarded = r.ok;
     } catch (error) { console.warn('AIRUN feedback webhook:', error.message); }
   }
-  if (accountsEnabled()) {
-    const user = verifyToken(req), c = row.conditions || {}, r = row.run || {};
+  const fbUser = verifyToken(req);
+  if (fbUser && accountsEnabled()) {
+    // Đánh giá sau buổi chạy cũng vào nhật ký riêng của người đó.
+    const c = row.conditions || {}, r = row.run || {};
+    const entry = { thoi_diem: row.at, ma: row.id, khu_vuc: row.area, danh_gia: row.verdict, cung_duong: row.route, nong_1_5: row.heat, kho_tho_1_5: row.breath, met_1_5: row.effort, diem_airun: row.score, cam_giac_c: c.feels, aqi: c.aqi, km: r.distanceKm, pace: r.pace, ghi_chu: row.note };
+    try { await redisPipe([['LPUSH', K.journal(fbUser.id, 'fb'), JSON.stringify(entry)], ['LTRIM', K.journal(fbUser.id, 'fb'), '0', '199']]); forwarded = true; } catch (error) { console.warn('AIRUN feedback → account:', error.message); }
+  }
+  if (sheetsEnabled()) {
+    const user = fbUser, c = row.conditions || {}, r = row.run || {};
     forwarded = (await sheetsAppendQuiet('danh_gia', { thoi_diem: row.at, nguoi_chay_id: user?.id || '', ten: user?.ten || '', ma: row.id, khu_vuc: row.area, danh_gia: row.verdict, cung_duong: row.route, nong_1_5: row.heat, kho_tho_1_5: row.breath, met_1_5: row.effort, diem_airun: row.score, cam_giac_c: c.feels, aqi: c.aqi, uv: c.uv, mua: c.rain, gio: c.wind, km: r.distanceKm, thoi_gian_giay: r.durationSec, pace: r.pace, ghi_chu: row.note, nguoi_thu: row.tester, co_gps: row.hasGps ? 'có' : 'không' }, 5000)) || forwarded;
   }
   return json(res, 200, { ok: true, forwarded, summary: feedbackSummary() });
@@ -630,24 +637,98 @@ async function handleRoutePlan(req, res) {
   }
 }
 
-/* ---------- V9: Tài khoản người chạy + Google Sheet ---------- */
+/* ---------- V9.4: Tài khoản thật + cộng đồng chạy bộ (Upstash Redis qua REST, không cần thư viện) ---------- */
+// Vercel → Storage → Upstash for Redis tự thêm KV_REST_API_URL + KV_REST_API_TOKEN vào dự án.
+const REDIS_URL = (process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL || '').trim().replace(/\/+$/, '');
+const REDIS_TOKEN = (process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN || '').trim();
+const RP = (process.env.REDIS_PREFIX || 'airun:').trim();
+const redisOn = () => Boolean(REDIS_URL && REDIS_TOKEN);
+// Đăng nhập Google: mã khách OAuth (Web) là công khai, chỉ dùng để kiểm tra token đúng là cấp cho AIRUN.
+const GOOGLE_CLIENT_ID = (process.env.GOOGLE_CLIENT_ID || '').trim();
+const GOOGLE_CERTS_URL = (process.env.GOOGLE_CERTS_URL || 'https://www.googleapis.com/oauth2/v3/certs').trim();
+const accountsEnabled = () => redisOn() && Boolean(GOOGLE_CLIENT_ID);
+
+// Google Sheet (tuỳ chọn): chỉ còn dùng để chép thêm một bản dữ liệu cho nhóm xem.
 const SHEETS_WEBAPP_URL = (process.env.SHEETS_WEBAPP_URL || '').trim();
 const SHEETS_SECRET = (process.env.SHEETS_SECRET || '').trim();
-const SESSION_SECRET = (process.env.SESSION_SECRET || '').trim() || crypto.createHash('sha256').update(`airun:${SHEETS_SECRET}:${OPENAI_API_KEY}:${ADMIN_TOKEN}`).digest('hex');
-const accountsEnabled = () => Boolean(SHEETS_WEBAPP_URL && SHEETS_SECRET);
+const sheetsEnabled = () => Boolean(SHEETS_WEBAPP_URL && SHEETS_SECRET);
+const SESSION_SECRET = (process.env.SESSION_SECRET || '').trim() || crypto.createHash('sha256').update(`airun-session:${REDIS_TOKEN}:${SHEETS_SECRET}:${OPENAI_API_KEY}:${ADMIN_TOKEN}`).digest('hex');
 
 async function sheetsCall(payload, timeout = 12000) {
-  if (!accountsEnabled()) throw Object.assign(new Error('Chưa kết nối Google Sheet'), { status: 503 });
+  if (!sheetsEnabled()) throw Object.assign(new Error('Chưa kết nối Google Sheet'), { status: 503 });
   const r = await fetchWithTimeout(SHEETS_WEBAPP_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ secret: SHEETS_SECRET, ...payload }), redirect: 'follow' }, timeout);
   const text = await r.text();
   let j; try { j = JSON.parse(text); } catch { throw Object.assign(new Error('Google Sheet trả về sai định dạng (kiểm tra lại Deploy Apps Script)'), { status: 502 }); }
   if (j.error === 'unauthorized') throw Object.assign(new Error('Sai SHEETS_SECRET (khác với AIRUN_SECRET trong Apps Script)'), { status: 502 });
   return j;
 }
+
+/* Redis REST: mỗi lệnh là một mảng, gửi theo lô (pipeline) để tiết kiệm thời gian. */
+async function redisPipe(cmds) {
+  if (!redisOn()) throw Object.assign(new Error('Máy chủ chưa bật cơ sở dữ liệu tài khoản'), { status: 503 });
+  const r = await fetchWithTimeout(`${REDIS_URL}/pipeline`, { method: 'POST', headers: { Authorization: `Bearer ${REDIS_TOKEN}`, 'Content-Type': 'application/json' }, body: JSON.stringify(cmds) }, 8000);
+  const j = await r.json().catch(() => null);
+  if (!r.ok || !Array.isArray(j)) throw Object.assign(new Error(`Cơ sở dữ liệu lỗi (HTTP ${r.status})`), { status: 502 });
+  return j.map(x => { if (x && x.error) throw Object.assign(new Error(`Cơ sở dữ liệu: ${x.error}`), { status: 502 }); return x ? x.result : null; });
+}
+const redis = async (...cmd) => (await redisPipe([cmd]))[0];
+const hobj = v => { if (v && !Array.isArray(v) && typeof v === 'object') return v; const o = {}; if (Array.isArray(v)) for (let i = 0; i + 1 < v.length; i += 2) o[v[i]] = v[i + 1]; return o; };
+const K = {
+  user: id => `${RP}u:${id}`, email: e => `${RP}email:${e}`, names: `${RP}names`, journal: (id, k) => `${RP}j:${id}:${k}`, stats: id => `${RP}st:${id}`,
+  week: w => `${RP}lb:w:${w}`, weekRuns: w => `${RP}lb:rw:${w}`, streak: `${RP}lb:streak`, rids: id => `${RP}rids:${id}`
+};
+
+/* Thời gian theo giờ Việt Nam: ngày, tuần ISO, tháng. */
+function vnDate(ms = Date.now()) { return new Date(ms + 7 * 3600e3).toISOString().slice(0, 10); }
+function vnMonth(ms = Date.now()) { return vnDate(ms).slice(0, 7); }
+function vnWeek(ms = Date.now()) {
+  const d = new Date(`${vnDate(ms)}T00:00:00Z`), day = (d.getUTCDay() + 6) % 7;
+  d.setUTCDate(d.getUTCDate() - day + 3);
+  const firstThu = new Date(Date.UTC(d.getUTCFullYear(), 0, 4));
+  const week = 1 + Math.round(((d - firstThu) / 864e5 - 3 + ((firstThu.getUTCDay() + 6) % 7)) / 7);
+  return `${d.getUTCFullYear()}-W${String(week).padStart(2, '0')}`;
+}
+function weekRange(ms = Date.now()) {
+  const d = new Date(`${vnDate(ms)}T00:00:00Z`), day = (d.getUTCDay() + 6) % 7;
+  const mon = new Date(d.getTime() - day * 864e5), sun = new Date(mon.getTime() + 6 * 864e5);
+  const f = x => `${x.getUTCDate()}/${x.getUTCMonth() + 1}`;
+  return `${f(mon)}–${f(sun)}`;
+}
+
+/* Đăng nhập Google: kiểm tra chữ ký ID token bằng khoá công khai của Google (có cache), đúng aud/iss/hạn. */
+let googleKeys = { at: 0, ttl: 0, keys: [] };
+async function googleJwks(force = false) {
+  if (!force && googleKeys.keys.length && Date.now() - googleKeys.at < googleKeys.ttl) return googleKeys.keys;
+  const r = await fetchWithTimeout(GOOGLE_CERTS_URL, { headers: { Accept: 'application/json' } }, 8000);
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok || !Array.isArray(j.keys)) throw Object.assign(new Error('Chưa lấy được khoá xác minh của Google'), { status: 502 });
+  const maxAge = Number((String(r.headers.get('cache-control') || '').match(/max-age=(\d+)/) || [])[1]) || 3600;
+  googleKeys = { at: Date.now(), ttl: Math.min(maxAge, 6 * 3600) * 1000, keys: j.keys };
+  return j.keys;
+}
+async function verifyGoogleCredential(credential) {
+  const parts = String(credential || '').split('.');
+  if (parts.length !== 3) throw Object.assign(new Error('Thông tin đăng nhập Google không hợp lệ'), { status: 400 });
+  let header, claims;
+  try { header = JSON.parse(fromB64u(parts[0]).toString('utf8')); claims = JSON.parse(fromB64u(parts[1]).toString('utf8')); }
+  catch { throw Object.assign(new Error('Thông tin đăng nhập Google không hợp lệ'), { status: 400 }); }
+  if (header.alg !== 'RS256' || !header.kid) throw Object.assign(new Error('Thông tin đăng nhập Google không hợp lệ'), { status: 400 });
+  let jwk = (await googleJwks()).find(k => k.kid === header.kid);
+  if (!jwk) jwk = (await googleJwks(true)).find(k => k.kid === header.kid);
+  if (!jwk) throw Object.assign(new Error('Không xác minh được đăng nhập Google'), { status: 401 });
+  const ok = crypto.verify('RSA-SHA256', Buffer.from(`${parts[0]}.${parts[1]}`), crypto.createPublicKey({ key: jwk, format: 'jwk' }), fromB64u(parts[2]));
+  const now = Math.floor(Date.now() / 1000);
+  if (!ok) throw Object.assign(new Error('Không xác minh được đăng nhập Google'), { status: 401 });
+  if (!['accounts.google.com', 'https://accounts.google.com'].includes(claims.iss)) throw Object.assign(new Error('Đăng nhập không đến từ Google'), { status: 401 });
+  if (claims.aud !== GOOGLE_CLIENT_ID) throw Object.assign(new Error('Đăng nhập Google không dành cho AIRUN'), { status: 401 });
+  if (!(Number(claims.exp) > now - 60)) throw Object.assign(new Error('Phiên Google đã hết hạn, hãy đăng nhập lại'), { status: 401 });
+  if (!claims.sub) throw Object.assign(new Error('Thiếu mã tài khoản Google'), { status: 401 });
+  return { sub: String(claims.sub), email: String(claims.email || '').toLowerCase(), emailVerified: claims.email_verified === true || claims.email_verified === 'true', name: String(claims.name || claims.given_name || 'Người chạy'), given: String(claims.given_name || '') };
+}
 const b64u = buf => Buffer.from(buf).toString('base64').replace(/=+$/, '').replace(/\+/g, '-').replace(/\//g, '_');
 const fromB64u = s => Buffer.from(String(s).replace(/-/g, '+').replace(/_/g, '/'), 'base64');
 function signToken(user) {
-  const payload = b64u(JSON.stringify({ id: user.id, ten: user.ten, exp: Date.now() + 60 * 24 * 3600 * 1000 }));
+  const payload = b64u(JSON.stringify({ id: user.id, ten: user.ten, v: Number(user.ver || 1), exp: Date.now() + 60 * 24 * 3600 * 1000 }));
   const sig = b64u(crypto.createHmac('sha256', SESSION_SECRET).update(payload).digest());
   return `${payload}.${sig}`;
 }
@@ -657,72 +738,282 @@ function verifyToken(req) {
   if (!token || !token.includes('.')) return null;
   const [payload, sig] = token.split('.');
   const expect = b64u(crypto.createHmac('sha256', SESSION_SECRET).update(payload).digest());
-  if (sig.length !== expect.length || !crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expect))) return null;
-  try { const d = JSON.parse(fromB64u(payload).toString('utf8')); return d.exp > Date.now() ? { id: d.id, ten: d.ten } : null; } catch { return null; }
-}
-function nameKey(name) {
-  return String(name || '').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'd').toLowerCase().replace(/\s+/g, ' ').trim();
+  if (!sig || sig.length !== expect.length || !crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expect))) return null;
+  try { const d = JSON.parse(fromB64u(payload).toString('utf8')); return d.exp > Date.now() ? { id: d.id, ten: d.ten, ver: d.v || 1 } : null; } catch { return null; }
 }
 function cleanName(name) { return String(name || '').replace(/\s+/g, ' ').trim().slice(0, 30); }
-function hashPin(pin, salt) { return crypto.scryptSync(String(pin), salt, 32).toString('hex'); }
-
-async function handleRegister(req, res) {
-  if (!accountsEnabled()) return json(res, 503, { error: true, reason: 'Máy chủ chưa kết nối Google Sheet' });
-  if (rateLimited(req, 'register', 10, 60 * 60 * 1000)) return json(res, 429, { error: true, reason: 'Tạo tài khoản quá nhiều lần, thử lại sau.' });
-  let body; try { body = await readBody(req, 4096); } catch (e) { return json(res, 400, { error: true, reason: e.message }); }
-  const ten = cleanName(body.name), pin = String(body.pin || '');
-  if (ten.length < 2 || !/^[\p{L}\p{N} ._-]+$/u.test(ten)) return json(res, 400, { error: true, reason: 'Tên người chạy cần 2–30 ký tự (chữ, số, dấu cách)' });
-  if (!/^\d{4,6}$/.test(pin)) return json(res, 400, { error: true, reason: 'Mã PIN gồm 4–6 chữ số' });
-  const salt = crypto.randomBytes(16).toString('hex');
-  const user = { id: `u_${crypto.randomBytes(6).toString('hex')}`, ten, ten_khoa: nameKey(ten), pin_hash: hashPin(pin, salt), salt };
-  try {
-    const r = await sheetsCall({ action: 'register', user });
-    if (!r.ok) return json(res, r.error === 'name_taken' ? 409 : 502, { error: true, reason: r.error === 'name_taken' ? 'Tên này đã có người dùng, hãy chọn tên khác' : `Không tạo được tài khoản (${r.error})` });
-    return json(res, 200, { ok: true, token: signToken(user), user: { id: user.id, ten }, profile: buildProfile({}) });
-  } catch (e) { return json(res, e.status || 502, { error: true, reason: e.message }); }
+const NAME_RE = /^[\p{L}\p{N} ._-]{2,30}$/u;
+// Biệt danh trên bảng xếp hạng: 2–20 ký tự, không phải email hay số điện thoại.
+function nickProblem(nick) {
+  const n = cleanName(nick);
+  if (n.length < 2 || n.length > 20 || !NAME_RE.test(n)) return 'Biệt danh cần 2–20 ký tự (chữ, số, dấu cách, . _ -)';
+  if (/@/.test(n) || /\d{8,}/.test(n.replace(/\s/g, ''))) return 'Biệt danh không nên là email hay số điện thoại';
+  return null;
 }
-async function handleLogin(req, res) {
-  if (!accountsEnabled()) return json(res, 503, { error: true, reason: 'Máy chủ chưa kết nối Google Sheet' });
-  let body; try { body = await readBody(req, 4096); } catch (e) { return json(res, 400, { error: true, reason: e.message }); }
-  const key = nameKey(body.name), pin = String(body.pin || '');
-  if (rateLimited(req, `login:${key}`, 8, 10 * 60 * 1000)) return json(res, 429, { error: true, reason: 'Nhập sai quá nhiều lần, đợi 10 phút nhé.' });
+// Lấy người dùng từ phiên + kiểm tra tài khoản còn tồn tại và phiên chưa bị thu hồi.
+async function sessionUser(req) {
+  const t = verifyToken(req);
+  if (!t || !redisOn()) return null;
+  const u = hobj(await redis('HGETALL', K.user(t.id)));
+  if (!u.id || Number(u.ver || 1) !== Number(t.ver || 1)) return null;
+  return { id: u.id, ten: u.name, name: u.name, email: u.email || '', nick: u.nick || '', public: u.public === '1', ver: Number(u.ver || 1), created: u.created };
+}
+
+/* ---------- Thống kê, chuỗi ngày, huy hiệu ---------- */
+const BADGES = [
+  { id: 'first', icon: '🏁', name: 'Buổi chạy đầu tiên', desc: 'Hoàn thành buổi chạy GPS đầu tiên', test: s => s.runs >= 1 },
+  { id: 'runs10', icon: '🔟', name: '10 buổi chạy', desc: 'Chạy GPS đủ 10 buổi', test: s => s.runs >= 10 },
+  { id: 'runs50', icon: '🏅', name: '50 buổi chạy', desc: 'Chạy GPS đủ 50 buổi', test: s => s.runs >= 50 },
+  { id: 'k5', icon: '5️⃣', name: 'Chinh phục 5K', desc: 'Một buổi chạy từ 5 km', test: s => s.longest >= 5 },
+  { id: 'k10', icon: '🔥', name: 'Chinh phục 10K', desc: 'Một buổi chạy từ 10 km', test: s => s.longest >= 10 },
+  { id: 'half', icon: '🥈', name: 'Bán marathon', desc: 'Một buổi chạy từ 21,1 km', test: s => s.longest >= 21.1 },
+  { id: 'km50', icon: '🛣️', name: '50 km tích luỹ', desc: 'Tổng quãng đường đạt 50 km', test: s => s.km >= 50 },
+  { id: 'km100', icon: '💯', name: '100 km tích luỹ', desc: 'Tổng quãng đường đạt 100 km', test: s => s.km >= 100 },
+  { id: 'km500', icon: '🏆', name: '500 km tích luỹ', desc: 'Tổng quãng đường đạt 500 km', test: s => s.km >= 500 },
+  { id: 'streak3', icon: '📅', name: 'Chuỗi 3 ngày', desc: 'Chạy 3 ngày liên tiếp', test: s => s.best >= 3 },
+  { id: 'streak7', icon: '⚡', name: 'Chuỗi 7 ngày', desc: 'Chạy 7 ngày liên tiếp', test: s => s.best >= 7 },
+  { id: 'streak30', icon: '👑', name: 'Chuỗi 30 ngày', desc: 'Chạy 30 ngày liên tiếp', test: s => s.best >= 30 },
+  { id: 'clean5', icon: '🌿', name: 'Hít thở trong lành', desc: '5 buổi chạy khi AQI ≤ 50', test: s => s.clean >= 5 },
+  { id: 'early5', icon: '🌅', name: 'Dậy sớm', desc: '5 buổi chạy bắt đầu trước 6 giờ sáng', test: s => s.early >= 5 },
+  { id: 'smart5', icon: '🧠', name: 'Chọn giờ thông minh', desc: '5 buổi chạy khi điểm AIRUN từ 8', test: s => s.smart >= 5 }
+];
+function parseStats(raw) {
+  const s = hobj(raw), n = k => Number(s[k]) || 0;
+  return { km: Math.round(n('km') * 100) / 100, runs: n('runs'), longest: n('longest'), lastDay: s.lastDay || '', streak: n('streak'), best: n('best'), clean: n('clean'), early: n('early'), smart: n('smart'), badges: String(s.badges || '').split(',').filter(Boolean) };
+}
+function publicStats(s) {
+  const today = vnDate(), yesterday = vnDate(Date.now() - 864e5);
+  const streakNow = s.lastDay === today || s.lastDay === yesterday ? s.streak : 0;
+  return { km: s.km, runs: s.runs, longest: s.longest, streak: streakNow, best: s.best, ranToday: s.lastDay === today,
+    badges: BADGES.map(b => ({ id: b.id, icon: b.icon, name: b.name, desc: b.desc, earned: s.badges.includes(b.id) })) };
+}
+function paceMinPerKm(sec, km) { return km > 0 ? sec / 60 / km : null; }
+// Một buổi chạy chỉ được tính vào bảng xếp hạng khi số liệu hợp lý.
+function runEligibility(d, atMs) {
+  const km = num(d.distance, 0), sec = num(d.durationSec, 0), pace = paceMinPerKm(sec, km);
+  if (String(d.source || 'gps') !== 'gps') return 'Chỉ buổi chạy ghi bằng GPS trong AIRUN mới được tính';
+  if (km < 0.2) return 'Buổi chạy ngắn hơn 0,2 km';
+  if (km > 60) return 'Quãng đường lớn bất thường';
+  if (sec < 120) return 'Buổi chạy ngắn hơn 2 phút';
+  if (!pace || pace < 2.5) return 'Tốc độ nhanh bất thường (nhanh hơn 2:30/km)';
+  if (pace > 20) return 'Tốc độ quá chậm để tính là chạy (chậm hơn 20:00/km)';
+  if (atMs > Date.now() + 5 * 60e3 || atMs < Date.now() - 35 * 864e5) return 'Buổi chạy quá cũ (hơn 35 ngày) hoặc sai thời gian';
+  return null;
+}
+function nextStats(s, d, atMs) {
+  const km = num(d.distance, 0), sec = num(d.durationSec, 0), day = vnDate(atMs);
+  const out = { ...s, badges: [...s.badges] };
+  out.km = Math.round((s.km + km) * 100) / 100; out.runs = s.runs + 1; out.longest = Math.max(s.longest, km);
+  if (day !== s.lastDay) {
+    const prev = vnDate(new Date(`${day}T12:00:00Z`).getTime() - 864e5);
+    out.streak = s.lastDay === prev ? s.streak + 1 : (s.lastDay > day ? s.streak : 1);
+    if (s.lastDay <= day) out.lastDay = day;
+  }
+  out.best = Math.max(s.best, out.streak);
+  if (hasNumber(d.aqi) && Number(d.aqi) <= 50) out.clean = s.clean + 1;
+  if (hasNumber(d.score) && Number(d.score) >= 8) out.smart = s.smart + 1;
+  const startHour = Number(new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Ho_Chi_Minh', hour: '2-digit', hourCycle: 'h23' }).format(new Date(atMs - sec * 1000)));
+  if (startHour >= 3 && startHour < 6) out.early = s.early + 1;
+  const newly = BADGES.filter(b => !out.badges.includes(b.id) && b.test(out)).map(b => b.id);
+  out.badges.push(...newly);
+  return { stats: out, newly };
+}
+const hasNumber = v => v !== null && v !== undefined && v !== '' && Number.isFinite(Number(v));
+function statsFields(s) { return ['km', String(s.km), 'runs', String(s.runs), 'longest', String(s.longest), 'lastDay', s.lastDay, 'streak', String(s.streak), 'best', String(s.best), 'clean', String(s.clean), 'early', String(s.early), 'smart', String(s.smart), 'badges', s.badges.join(',')]; }
+
+/* ---------- Đăng nhập Google / hồ sơ ---------- */
+async function loadAccount(uid) {
+  const [run, plan, fb, st] = await redisPipe([
+    ['LRANGE', K.journal(uid, 'run'), '0', '99'], ['LRANGE', K.journal(uid, 'plan'), '0', '59'], ['LRANGE', K.journal(uid, 'fb'), '0', '59'],
+    ['HGETALL', K.stats(uid)]
+  ]);
+  const parse = list => (Array.isArray(list) ? list : []).map(x => { try { return JSON.parse(x); } catch { return null; } }).filter(Boolean);
+  const history = { buoi_chay: parse(run), ke_hoach: parse(plan), danh_gia: parse(fb) };
+  return { history, profile: buildProfile(history), stats: publicStats(parseStats(st)) };
+}
+function userOut(u) { return { id: u.id, ten: u.name || u.ten, email: u.email || '', nick: u.nick || '', public: u.public === '1' || u.public === true }; }
+async function handleGoogleAuth(req, res) {
+  if (!accountsEnabled()) return json(res, 503, { error: true, reason: 'Máy chủ chưa bật đăng nhập (thiếu cơ sở dữ liệu hoặc GOOGLE_CLIENT_ID)' });
+  // Cả lớp có thể dùng chung một mạng Wi-Fi nên giới hạn theo IP để rộng.
+  if (rateLimited(req, 'gauth', 60, 10 * 60 * 1000)) return json(res, 429, { error: true, reason: 'Đăng nhập quá nhiều lần từ mạng này, thử lại sau.' });
+  let body; try { body = await readBody(req, 8 * 1024); } catch (e) { return json(res, 400, { error: true, reason: e.message }); }
   try {
-    const r = await sheetsCall({ action: 'getUser', ten_khoa: key });
-    if (!r.ok || !r.user) return json(res, 401, { error: true, reason: 'Sai tên hoặc mã PIN' });
-    const expect = Buffer.from(String(r.user.pin_hash)), got = Buffer.from(hashPin(pin, String(r.user.salt)));
-    if (expect.length !== got.length || !crypto.timingSafeEqual(expect, got)) return json(res, 401, { error: true, reason: 'Sai tên hoặc mã PIN' });
-    const user = { id: String(r.user.id), ten: String(r.user.ten) };
-    const [, hist] = await Promise.all([sheetsCall({ action: 'touch', id: user.id }).catch(() => null), sheetsCall({ action: 'history', id: user.id, limit: 60 }).catch(() => null)]);
-    return json(res, 200, { ok: true, token: signToken(user), user, history: hist?.history || {}, profile: buildProfile(hist?.history || {}) });
+    const g = await verifyGoogleCredential(body.credential);
+    const id = `g_${g.sub}`;
+    const existing = hobj(await redis('HGETALL', K.user(id)));
+    let u = existing;
+    if (!existing.id) {
+      u = { id, provider: 'google', name: cleanName(g.name) || 'Người chạy', email: g.emailVerified ? g.email : '', nick: '', public: '0', created: new Date().toISOString(), ver: '1' };
+      await redisPipe([
+        ['HSET', K.user(id), ...Object.entries(u).flat()],
+        ['HSET', K.names, id, JSON.stringify({ n: '', p: 0 })],
+        ...(u.email ? [['SET', K.email(u.email), id]] : [])
+      ]);
+    } else if (cleanName(g.name) && cleanName(g.name) !== existing.name) {
+      await redis('HSET', K.user(id), 'name', cleanName(g.name)); u = { ...existing, name: cleanName(g.name) };
+    }
+    const acc = await loadAccount(id);
+    return json(res, 200, { ok: true, isNew: !existing.id, token: signToken({ id, ten: u.name, ver: u.ver }), user: userOut(u), ...acc });
   } catch (e) { return json(res, e.status || 502, { error: true, reason: e.message }); }
 }
 async function handleMe(req, res) {
-  const user = verifyToken(req);
-  if (!user) return json(res, 401, { error: true, reason: 'Phiên đăng nhập hết hạn' });
   try {
-    const hist = await sheetsCall({ action: 'history', id: user.id, limit: 60 });
-    return json(res, 200, { ok: true, user, history: hist.history || {}, profile: buildProfile(hist.history || {}) });
-  } catch (e) { return json(res, e.status || 502, { error: true, reason: e.message, user }); }
+    const user = await sessionUser(req);
+    if (!user) return json(res, 401, { error: true, reason: 'Phiên đăng nhập hết hạn' });
+    return json(res, 200, { ok: true, user: userOut({ ...user, public: user.public ? '1' : '0' }), ...(await loadAccount(user.id)) });
+  } catch (e) { return json(res, e.status || 502, { error: true, reason: e.message }); }
+}
+// Biệt danh + bật/tắt tham gia bảng xếp hạng (mặc định TẮT).
+async function handleSettings(req, res) {
+  let body; try { body = await readBody(req, 4096); } catch (e) { return json(res, 400, { error: true, reason: e.message }); }
+  try {
+    const user = await sessionUser(req);
+    if (!user) return json(res, 401, { error: true, reason: 'Cần đăng nhập' });
+    const nick = body.nick !== undefined ? cleanName(body.nick) : user.nick;
+    if (body.nick !== undefined && nick) { const bad = nickProblem(nick); if (bad) return json(res, 400, { error: true, reason: bad }); }
+    const pub = body.public === undefined ? user.public : Boolean(body.public);
+    if (pub && !nick) return json(res, 400, { error: true, reason: 'Hãy đặt biệt danh trước khi tham gia bảng xếp hạng' });
+    await redisPipe([['HSET', K.user(user.id), 'nick', nick, 'public', pub ? '1' : '0'], ['HSET', K.names, user.id, JSON.stringify({ n: nick, p: pub ? 1 : 0 })]]);
+    boardCache.clear();
+    return json(res, 200, { ok: true, user: userOut({ ...user, nick, public: pub ? '1' : '0' }) });
+  } catch (e) { return json(res, e.status || 502, { error: true, reason: e.message }); }
+}
+async function deleteAccountData(id, email) {
+  const now = Date.now(), weeks = new Set();
+  for (let i = 0; i < 20; i++) weeks.add(vnWeek(now - i * 7 * 864e5));
+  await redisPipe([
+    ['DEL', K.user(id), K.journal(id, 'run'), K.journal(id, 'plan'), K.journal(id, 'fb'), K.stats(id), K.rids(id),
+      ...[0, 1, 2].map(i => `${RP}day:${id}:${vnDate(now - i * 864e5)}`)],
+    ['HDEL', K.names, id], ['ZREM', K.streak, id],
+    ...[...weeks].flatMap(w => [['ZREM', K.week(w), id], ['ZREM', K.weekRuns(w), id]]),
+    ...(email ? [['DEL', K.email(email)]] : [])
+  ]);
+  boardCache.clear();
+}
+async function handleDeleteAccount(req, res) {
+  let body; try { body = await readBody(req, 4096); } catch (e) { return json(res, 400, { error: true, reason: e.message }); }
+  try {
+    const user = await sessionUser(req);
+    if (!user) return json(res, 401, { error: true, reason: 'Cần đăng nhập' });
+    if (String(body.confirm || '').trim().toUpperCase() !== 'XOA') return json(res, 400, { error: true, reason: 'Gõ XOA để xác nhận xoá tài khoản' });
+    await deleteAccountData(user.id, user.email);
+    return json(res, 200, { ok: true });
+  } catch (e) { return json(res, e.status || 502, { error: true, reason: e.message }); }
+}
+// Quản trị (giáo viên/BTC): ẩn biệt danh khỏi bảng xếp hạng hoặc xoá tài khoản vi phạm, tìm theo email.
+async function handleAdminUser(req, res) {
+  if (!ADMIN_TOKEN || String(req.headers['x-admin-token'] || '') !== ADMIN_TOKEN) return json(res, 403, { error: true, reason: 'Cần ADMIN_TOKEN' });
+  let body; try { body = await readBody(req, 4096); } catch (e) { return json(res, 400, { error: true, reason: e.message }); }
+  try {
+    const email = String(body.email || '').trim().toLowerCase(), id = email ? await redis('GET', K.email(email)) : null;
+    const u = id ? hobj(await redis('HGETALL', K.user(id))) : {};
+    if (!u.id) return json(res, 404, { error: true, reason: 'Không có tài khoản này' });
+    if (body.action === 'hide') { await redisPipe([['HSET', K.user(u.id), 'public', '0'], ['HSET', K.names, u.id, JSON.stringify({ n: u.nick || '', p: 0 })]]); boardCache.clear(); return json(res, 200, { ok: true }); }
+    if (body.action === 'delete') { await deleteAccountData(u.id, u.email); return json(res, 200, { ok: true }); }
+    return json(res, 400, { error: true, reason: 'action: hide | delete' });
+  } catch (e) { return json(res, e.status || 502, { error: true, reason: e.message }); }
 }
 
+/* ---------- Nhật ký riêng của từng người ---------- */
 const num = (v, d = null) => { const n = Number(v); return Number.isFinite(n) ? n : d; };
 const str = (v, n = 200) => String(v ?? '').slice(0, n);
 function rowFor(kind, d, user) {
-  const base = { thoi_diem: new Date().toISOString(), nguoi_chay_id: user?.id || '', ten: user?.ten || '' };
+  const base = { thoi_diem: str(d.at, 30) && Number.isFinite(Date.parse(d.at)) ? new Date(Date.parse(d.at)).toISOString() : new Date().toISOString(), nguoi_chay_id: user?.id || '', ten: user?.ten || '' };
   if (kind === 'run') return ['buoi_chay', { ...base, ma_buoi: str(d.id, 40), khu_vuc: str(d.area, 60), km: num(d.distance), thoi_gian_giay: num(d.durationSec), pace: str(d.pace, 10), diem_airun: num(d.score), aqi: num(d.aqi), cam_giac_c: num(d.feels), danh_gia: str(d.verdict, 20), ghi_chu: str(d.note, 300), nguon: str(d.source || 'gps', 20) }];
   if (kind === 'plan') return ['ke_hoach', { ...base, ma: str(d.id, 40), khu_vuc: str(d.area, 60), gio_chay: str(d.time, 8), thoi_luong_phut: num(d.duration), km_du_kien: num(d.distance), pace: str(d.pace, 10), cuong_do: str(d.intensity, 10), nhom_nhay_cam: d.sensitive ? 'có' : 'không', quyet_dinh: str(d.decision, 30), diem_airun: num(d.score), aqi: num(d.aqi), nhiet_do: num(d.temp), ghi_chu: str(d.note, 300) }];
   return null;
 }
 async function handleLog(req, res) {
-  const user = verifyToken(req);
-  if (!user) return json(res, 401, { error: true, reason: 'Cần đăng nhập' });
-  if (rateLimited(req, `log:${user.id}`, 60, 10 * 60 * 1000)) return json(res, 429, { error: true, reason: 'Quá nhiều yêu cầu' });
   let body; try { body = await readBody(req, 16 * 1024); } catch (e) { return json(res, 400, { error: true, reason: e.message }); }
-  const mapped = rowFor(body.kind, body.data || {}, user);
-  if (!mapped) return json(res, 400, { error: true, reason: 'Loại dữ liệu không hợp lệ' });
-  try { const r = await sheetsCall({ action: 'append', tab: mapped[0], row: mapped[1] }); return json(res, r.ok ? 200 : 502, r.ok ? { ok: true } : { error: true, reason: r.error }); }
-  catch (e) { return json(res, e.status || 502, { error: true, reason: e.message }); }
+  try {
+    const user = await sessionUser(req);
+    if (!user) return json(res, 401, { error: true, reason: 'Cần đăng nhập' });
+    if (rateLimited(req, `log:${user.id}`, 60, 10 * 60 * 1000)) return json(res, 429, { error: true, reason: 'Quá nhiều yêu cầu' });
+    const d = body.data || {}, mapped = rowFor(body.kind, d, user);
+    if (!mapped) return json(res, 400, { error: true, reason: 'Loại dữ liệu không hợp lệ' });
+    const [tab, row] = mapped, rid = str(d.id, 40) || String(Date.now());
+    // Chống ghi trùng (đồng bộ lại từ nhiều thiết bị) và chống cộng km hai lần.
+    const fresh = await redis('HSETNX', K.rids(user.id), `${body.kind}:${rid}`, '1');
+    if (Number(fresh) !== 1) return json(res, 200, { ok: true, duplicate: true });
+    if (body.kind === 'plan') {
+      await redisPipe([['LPUSH', K.journal(user.id, 'plan'), JSON.stringify(row)], ['LTRIM', K.journal(user.id, 'plan'), '0', '199']]);
+      void sheetsAppendQuiet(tab, row);
+      return json(res, 200, { ok: true });
+    }
+    const atMs = Date.parse(row.thoi_diem), km = Math.round(num(d.distance, 0) * 100) / 100, dayKey = `${RP}day:${user.id}:${vnDate(atMs)}`;
+    let why = runEligibility(d, atMs);
+    // Tối đa 100 km mỗi ngày được tính vào bảng xếp hạng.
+    if (!why && (Number(await redis('GET', dayKey)) || 0) + km > 100) why = 'Đã quá 100 km trong một ngày';
+    row.tinh_bxh = why ? 'không' : 'có'; if (why) row.ly_do = why;
+    const cmds = [['LPUSH', K.journal(user.id, 'run'), JSON.stringify(row)], ['LTRIM', K.journal(user.id, 'run'), '0', '299']];
+    let stats = parseStats(await redis('HGETALL', K.stats(user.id))), newly = [];
+    if (!why) {
+      const w = vnWeek(atMs);
+      ({ stats, newly } = nextStats(stats, d, atMs));
+      cmds.push(['ZINCRBY', K.week(w), String(km), user.id], ['EXPIRE', K.week(w), String(130 * 86400)],
+        ['ZINCRBY', K.weekRuns(w), '1', user.id], ['EXPIRE', K.weekRuns(w), String(130 * 86400)],
+        ['ZADD', K.streak, String(stats.streak), user.id], ['HSET', K.stats(user.id), ...statsFields(stats)],
+        ['INCRBYFLOAT', dayKey, String(km)], ['EXPIRE', dayKey, String(3 * 86400)]);
+    }
+    await redisPipe(cmds);
+    boardCache.clear();
+    void sheetsAppendQuiet(tab, row);
+    return json(res, 200, { ok: true, counted: !why, reason: why || null, stats: publicStats(stats), newBadges: BADGES.filter(b => newly.includes(b.id)).map(b => ({ id: b.id, icon: b.icon, name: b.name })) });
+  } catch (e) { return json(res, e.status || 502, { error: true, reason: e.message }); }
 }
+
+/* ---------- Bảng xếp hạng: km tuần · số buổi tuần · chuỗi ngày ---------- */
+const boardCache = new Map();
+const METRICS = {
+  km: { key: () => K.week(vnWeek()), label: () => `Km tuần này · ${weekRange()}`, unit: 'km' },
+  runs: { key: () => K.weekRuns(vnWeek()), label: () => `Số buổi chạy tuần này · ${weekRange()}`, unit: 'buổi' },
+  streak: { key: () => K.streak, label: () => 'Chuỗi ngày chạy liên tiếp (đang giữ)', unit: 'ngày' }
+};
+async function namesFor(ids) {
+  if (!ids.length) return {};
+  const vals = await redis('HMGET', K.names, ...ids);
+  const out = {}; ids.forEach((id, i) => { try { out[id] = JSON.parse(vals?.[i] || 'null'); } catch { out[id] = null; } });
+  return out;
+}
+// Chuỗi ngày chỉ còn hiệu lực nếu lần chạy gần nhất là hôm nay hoặc hôm qua.
+async function liveStreaks(ids) {
+  if (!ids.length) return {};
+  const days = await redisPipe(ids.map(id => ['HGET', K.stats(id), 'lastDay']));
+  const ok = new Set([vnDate(), vnDate(Date.now() - 864e5)]), out = {};
+  ids.forEach((id, i) => { out[id] = ok.has(days[i]); });
+  return out;
+}
+async function handleBoard(req, res, url) {
+  if (!accountsEnabled()) return json(res, 503, { error: true, reason: 'Máy chủ chưa bật tài khoản' });
+  if (rateLimited(req, 'board', 120, 10 * 60 * 1000)) return json(res, 429, { error: true, reason: 'Đợi một chút rồi tải lại.' });
+  const metric = METRICS[url.searchParams.get('metric')] ? url.searchParams.get('metric') : 'km', m = METRICS[metric], key = m.key();
+  try {
+    let board = boardCache.get(key);
+    if (!board || Date.now() - board.at > 30000) {
+      const flat = await redis('ZREVRANGE', key, '0', '149', 'WITHSCORES');
+      const pairs = []; for (let i = 0; i + 1 < (flat || []).length; i += 2) if (Number(flat[i + 1]) > 0) pairs.push([flat[i], Number(flat[i + 1])]);
+      const ids = pairs.map(p => p[0]);
+      const [names, alive] = await Promise.all([namesFor(ids), metric === 'streak' ? liveStreaks(ids) : Promise.resolve(null)]);
+      const shown = pairs.filter(([id]) => names[id] && names[id].p === 1 && names[id].n && (!alive || alive[id]));
+      let rank = 0, last = null;
+      const entries = shown.slice(0, 50).map(([id, v], i) => { if (v !== last) { rank = i + 1; last = v; } return { rank, id, name: names[id].n, value: metric === 'km' ? Math.round(v * 100) / 100 : Math.round(v) }; });
+      board = { at: Date.now(), entries, runners: shown.length };
+      boardCache.set(key, board); if (boardCache.size > 30) boardCache.delete(boardCache.keys().next().value);
+    }
+    const t = verifyToken(req);
+    let me = null;
+    if (t) {
+      const [score, nm, lastDay] = await redisPipe([['ZSCORE', key, t.id], ['HGET', K.names, t.id], ['HGET', K.stats(t.id), 'lastDay']]);
+      let info = { n: '', p: 0 }; try { info = JSON.parse(nm || '{}'); } catch {}
+      let v = Number(score) || 0;
+      if (metric === 'streak' && ![vnDate(), vnDate(Date.now() - 864e5)].includes(lastDay)) v = 0;
+      const mine = board.entries.find(e => e.id === t.id);
+      me = { value: metric === 'km' ? Math.round(v * 100) / 100 : Math.round(v), rank: mine ? mine.rank : null, joined: info.p === 1, nick: info.n || '' };
+    }
+    return json(res, 200, { ok: true, metric, label: m.label(), unit: m.unit, runners: board.runners, entries: board.entries.map(e => ({ rank: e.rank, name: e.name, value: e.value, me: Boolean(t && e.id === t.id) })), me });
+  } catch (e) { return json(res, e.status || 502, { error: true, reason: e.message }); }
+}
+
 async function handleAppFeedback(req, res) {
   if (rateLimited(req, 'appfb', 10, 10 * 60 * 1000)) return json(res, 429, { error: true, reason: 'Gửi quá nhiều góp ý, thử lại sau.' });
   let body; try { body = await readBody(req, 8192); } catch (e) { return json(res, 400, { error: true, reason: e.message }); }
@@ -730,12 +1021,12 @@ async function handleAppFeedback(req, res) {
   const stars = Math.min(5, Math.max(1, Math.round(num(body.stars, 0) || 0)));
   if (!num(body.stars)) return json(res, 400, { error: true, reason: 'Hãy chọn số sao' });
   const row = { thoi_diem: new Date().toISOString(), nguoi_chay_id: user?.id || '', ten: user?.ten || str(body.name, 30), so_sao: stars, de_dung_1_5: num(body.easy), huu_ich_1_5: num(body.useful), tinh_nang_thich: str(body.liked, 120), gop_y: str(body.text, 800), tab: str(body.tab, 20), thiet_bi: /Mobi|Android|iPhone/i.test(String(req.headers['user-agent'] || '')) ? 'điện thoại' : 'máy tính' };
-  if (!accountsEnabled()) return json(res, 200, { ok: true, stored: false });
+  if (!sheetsEnabled()) return json(res, 200, { ok: true, stored: false });
   try { const r = await sheetsCall({ action: 'append', tab: 'gop_y', row }); return json(res, 200, { ok: true, stored: Boolean(r.ok) }); }
   catch (e) { return json(res, 200, { ok: true, stored: false, reason: e.message }); }
 }
 async function sheetsAppendQuiet(tab, row, timeout = 3500) {
-  if (!accountsEnabled()) return false;
+  if (!sheetsEnabled()) return false;
   try { const r = await Promise.race([sheetsCall({ action: 'append', tab, row }, timeout), new Promise(r => setTimeout(() => r({ ok: false }), timeout))]); return Boolean(r?.ok); } catch { return false; }
 }
 
@@ -815,7 +1106,7 @@ async function handler(req, res) {
   try {
     if (p === '/healthz') return json(res, 200, { ok: true, version: VERSION });
     if (p === '/api/config' && req.method === 'GET') {
-      return json(res, 200, { version: VERSION, server: true, ai: Boolean(OPENAI_API_KEY), aiModel: OPENAI_API_KEY ? OPENAI_MODEL : null, routing: Boolean(GRAPHHOPPER_API_KEY), mapboxToken: MAPBOX_PUBLIC_TOKEN || '', googleMapsKey: GOOGLE_MAPS_BASEMAP ? (GOOGLE_MAPS_BROWSER_KEY || '') : '', googlePlaces: Boolean(GOOGLE_MAPS_SERVER_KEY), routePlan: true, elevation: true, accounts: accountsEnabled(), feedback: true, feedbackPersistent: Boolean(FEEDBACK_WEBHOOK_URL) || accountsEnabled() });
+      return json(res, 200, { version: VERSION, server: true, ai: Boolean(OPENAI_API_KEY), aiModel: OPENAI_API_KEY ? OPENAI_MODEL : null, routing: Boolean(GRAPHHOPPER_API_KEY), mapboxToken: MAPBOX_PUBLIC_TOKEN || '', googleMapsKey: GOOGLE_MAPS_BASEMAP ? (GOOGLE_MAPS_BROWSER_KEY || '') : '', googlePlaces: Boolean(GOOGLE_MAPS_SERVER_KEY), routePlan: true, elevation: true, accounts: accountsEnabled(), community: accountsEnabled(), googleClientId: accountsEnabled() ? GOOGLE_CLIENT_ID : '', feedback: true, feedbackPersistent: Boolean(FEEDBACK_WEBHOOK_URL) || accountsEnabled() });
     }
     let m = p.match(/^\/api\/(weather|air)\/(-?[\d.]+)\/(-?[\d.]+)\/?$/);
     if (m && req.method === 'GET') return handleEnv(res, m[1], m[2], m[3]);
@@ -823,10 +1114,14 @@ async function handler(req, res) {
     if (p === '/api/elevation' && req.method === 'POST') return handleElevation(req, res);
     if (p === '/api/route/plan' && req.method === 'POST') return handleRoutePlan(req, res);
     if (p === '/api/places' && req.method === 'GET') return handlePlaces(res, url);
-    if (p === '/api/account/register' && req.method === 'POST') return handleRegister(req, res);
-    if (p === '/api/account/login' && req.method === 'POST') return handleLogin(req, res);
+    if (p === '/api/auth/google' && req.method === 'POST') return handleGoogleAuth(req, res);
+    if (['/api/account/register', '/api/account/login', '/api/account/password'].includes(p)) return json(res, 410, { error: true, reason: 'AIRUN đã chuyển sang đăng nhập bằng tài khoản Google' });
     if (p === '/api/account/me' && req.method === 'GET') return handleMe(req, res);
     if (p === '/api/account/log' && req.method === 'POST') return handleLog(req, res);
+    if (p === '/api/account/settings' && req.method === 'POST') return handleSettings(req, res);
+    if (p === '/api/account/delete' && req.method === 'POST') return handleDeleteAccount(req, res);
+    if (p === '/api/community/board' && req.method === 'GET') return handleBoard(req, res, url);
+    if (p === '/api/admin/user' && req.method === 'POST') return handleAdminUser(req, res);
     if (p === '/api/app-feedback' && req.method === 'POST') return handleAppFeedback(req, res);
     if (p === '/api/coach' && req.method === 'POST') return handleCoach(req, res);
     if (p === '/api/feedback' && req.method === 'POST') return handleFeedback(req, res);
