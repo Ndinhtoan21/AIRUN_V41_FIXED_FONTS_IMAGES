@@ -13,7 +13,7 @@ const path = require('path');
 
 const PORT = Number(process.env.PORT) || 10000;
 const ROOT = __dirname;
-const VERSION = '9.3.0';
+const VERSION = '9.5.0';
 const OPENAI_API_KEY = (process.env.OPENAI_API_KEY || '').trim();
 const OPENAI_MODEL = (process.env.OPENAI_MODEL || 'gpt-4.1-mini').trim();
 const OPENAI_FALLBACK_MODEL = (process.env.OPENAI_FALLBACK_MODEL || 'gpt-4o-mini').trim();
@@ -152,7 +152,7 @@ async function handleRoute(res, url) {
   if (!GRAPHHOPPER_API_KEY && !GOOGLE_MAPS_SERVER_KEY) return json(res, 503, { error: true, reason: 'Máy chủ chưa cấu hình GraphHopper/Google Routes' });
   try {
     const r = await roundTripBest({ lat: coord[0], lon: coord[1] }, km, seed);
-    return json(res, 200, { points: r.points, distanceKm: r.distanceKm, durationMs: null, source: r.source, seed, attempts: r.attempts, roads: r.roads || null });
+    return json(res, 200, { points: r.points, distanceKm: r.distanceKm, durationMs: null, source: r.source, seed, attempts: r.attempts, roads: r.roads || null, steps: r.steps || null });
   } catch (error) {
     return json(res, 502, { error: true, reason: `Không tạo được vòng chạy: ${error.message}` });
   }
@@ -409,6 +409,13 @@ function summarizeDetails(points, details) {
   const surface = share(details.surface, v => !v || v === 'missing' || v === 'other' ? 'unknown' : UNPAVED.has(v) ? 'unpaved' : 'paved');
   return roads || surface ? { roads, surface } : null;
 }
+// V9.5 · Các điểm rẽ (chỉ đường bằng giọng nói): sign của GraphHopper, tên đường, vị trí trong mảng điểm.
+function summarizeSteps(instructions) {
+  if (!Array.isArray(instructions)) return null;
+  const steps = instructions.map(i => ({ sign: Number(i.sign), street: String(i.street_name || '').slice(0, 80), at: Array.isArray(i.interval) ? Number(i.interval[0]) : 0 }))
+    .filter(x => Number.isFinite(x.sign) && Number.isFinite(x.at) && ![0, 4, 5].includes(x.sign));
+  return steps.slice(0, 200);
+}
 // Gọi GraphHopper kèm path details; nếu dịch vụ từ chối tham số details thì gọi lại như cũ.
 async function ghFetch(qs) {
   const withDetails = new URLSearchParams(qs); withDetails.append('details', 'road_class'); withDetails.append('details', 'surface');
@@ -503,12 +510,12 @@ async function routeGraphHopper(points) {
   if (!GRAPHHOPPER_API_KEY) throw new Error('no_graphhopper');
   const qs = new URLSearchParams();
   points.forEach(p => qs.append('point', `${p.lat},${p.lon}`));
-  qs.set('profile', 'foot'); qs.set('locale', 'vi'); qs.set('points_encoded', 'false'); qs.set('instructions', 'false'); qs.set('calc_points', 'true'); qs.set('key', GRAPHHOPPER_API_KEY);
+  qs.set('profile', 'foot'); qs.set('locale', 'vi'); qs.set('points_encoded', 'false'); qs.set('instructions', 'true'); qs.set('calc_points', 'true'); qs.set('key', GRAPHHOPPER_API_KEY);
   const { r, j } = await ghFetch(qs);
   const p = j.paths?.[0];
   if (!r.ok || !p?.points?.coordinates?.length) throw new Error(j?.message || `GraphHopper HTTP ${r.status}`);
   const pts = p.points.coordinates.map(c => ({ lon: Number(c[0]), lat: Number(c[1]) }));
-  return { points: pts, distanceKm: Number(p.distance) / 1000, source: 'graphhopper', roads: summarizeDetails(pts, p.details) };
+  return { points: pts, distanceKm: Number(p.distance) / 1000, source: 'graphhopper', roads: summarizeDetails(pts, p.details), steps: summarizeSteps(p.instructions) };
 }
 async function routeValhalla(points) {
   const body = { locations: points.map(p => ({ lat: p.lat, lon: p.lon })), costing: 'pedestrian', units: 'kilometers' };
@@ -531,12 +538,12 @@ async function ghRoundTrip(start, km, seed) {
   qs.append('point', `${start.lat},${start.lon}`);
   qs.set('profile', 'foot'); qs.set('locale', 'vi'); qs.set('algorithm', 'round_trip');
   qs.set('round_trip.distance', String(Math.round(km * 1000))); qs.set('round_trip.seed', String(seed));
-  qs.set('points_encoded', 'false'); qs.set('instructions', 'false'); qs.set('calc_points', 'true'); qs.set('key', GRAPHHOPPER_API_KEY);
+  qs.set('points_encoded', 'false'); qs.set('instructions', 'true'); qs.set('calc_points', 'true'); qs.set('key', GRAPHHOPPER_API_KEY);
   const { r, j } = await ghFetch(qs);
   const p = j.paths?.[0];
   if (!r.ok || !p?.points?.coordinates?.length) throw new Error(j?.message || `GraphHopper HTTP ${r.status}`);
   const pts = p.points.coordinates.map(c => ({ lon: Number(c[0]), lat: Number(c[1]), ele: Number.isFinite(Number(c[2])) ? Number(c[2]) : null }));
-  return { points: pts, distanceKm: Number(p.distance) / 1000, source: 'graphhopper', seed, roads: summarizeDetails(pts, p.details) };
+  return { points: pts, distanceKm: Number(p.distance) / 1000, source: 'graphhopper', seed, roads: summarizeDetails(pts, p.details), steps: summarizeSteps(p.instructions) };
 }
 /* Vòng chạy theo số km: thử lại (tối đa 3 lần) với mục tiêu hiệu chỉnh để quãng đường gần mục tiêu nhất. */
 async function roundTripBest(start, km, seed = 0) {

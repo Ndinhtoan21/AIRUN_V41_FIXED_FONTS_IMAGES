@@ -1007,8 +1007,8 @@ function syncMapThemeButtons(){
     const label=btn.querySelector('span');if(label)label.textContent=dark?'Sáng':'Tối';
   });
 }
-async function setMapTheme(theme){
-  mapTheme=theme==='dark'?'dark':'light';localSet(MAP_THEME_KEY,mapTheme);syncMapThemeButtons();
+async function setMapTheme(theme,{silent=false,remember=true}={}){
+  mapTheme=theme==='dark'?'dark':'light';if(remember)localSet(MAP_THEME_KEY,mapTheme);syncMapThemeButtons();
   const url=await mapStyleUrl();
   for(const [map,kind] of [[routeFallbackMap.map,'route'],[runFallbackMap.map,'run']]){
     if(!map)continue;
@@ -1023,9 +1023,9 @@ async function setMapTheme(theme){
     // diff:false để MapLibre dựng lại toàn bộ style và bắn 'style.load' (chế độ diff sẽ âm thầm xoá lớp đường chạy).
     try{map.setStyle(url,{diff:false});}catch(error){console.warn('AIRUN setStyle:',error);map.__airunStyleReady=true;}
   }
-  showToast(mapTheme==='dark'?'Đã chuyển sang bản đồ tối.':'Đã chuyển sang bản đồ sáng.');
+  if(!silent)showToast(mapTheme==='dark'?'Đã chuyển sang bản đồ tối.':'Đã chuyển sang bản đồ sáng.');
 }
-if(hasDom())document.addEventListener('click',event=>{const btn=event.target.closest?.('[data-map-theme]');if(btn){event.preventDefault();void setMapTheme(mapTheme==='dark'?'light':'dark');}});
+if(hasDom())document.addEventListener('click',event=>{const btn=event.target.closest?.('[data-map-theme]');if(btn){event.preventDefault();const next=mapTheme==='dark'?'light':'dark';if(document.body.classList.contains('run-mode')){localSet('airun-v95-run-theme',next);void setMapTheme(next,{remember:false});}else void setMapTheme(next);}});
 
 function ensureMapLibreAssets(){
   if(window.maplibregl)return Promise.resolve(true);
@@ -1146,7 +1146,7 @@ async function fetchGraphHopperRoundTrip(origin,targetKm,seed=0){
   try{
     const res=await fetch(`/api/route?${qs}`,{cache:'no-store',signal:controller.signal});const data=await res.json();
     if(!res.ok||data.error||!Array.isArray(data.points))throw new Error(data?.reason||`Route HTTP ${res.status}`);
-    return {points:data.points,distanceKm:Number(data.distanceKm),durationMs:data.durationMs||null,source:data.source||'graphhopper',seed,roads:data.roads||null};
+    return {points:data.points,distanceKm:Number(data.distanceKm),durationMs:data.durationMs||null,source:data.source||'graphhopper',seed,roads:data.roads||null,steps:data.steps||null};
   }finally{clearTimeout(timer);}
 }
 function decodePolyline5(str){
@@ -1412,7 +1412,7 @@ async function ensureRunMapLibre(){
 // V8.1: bản đồ GPS không bị "đơ" — không chặn cập nhật khi nền đang tải, không resize liên tục, tôn trọng thao tác kéo/zoom.
 const RUN_MAP_USER_PAUSE_MS=20000;
 function runMapUserBusy(state){return Date.now()-Number(state.userAt||0)<RUN_MAP_USER_PAUSE_MS;}
-function runMapShouldFollow(state){return typeof tracker!=='undefined'&&tracker.status==='running';}
+function runMapShouldFollow(state){return (typeof tracker!=='undefined'&&tracker.status==='running')||Boolean(typeof window!=='undefined'&&window.__airunFollow);}
 function bindRunMapGestures(map,state,container){
   const mark=e=>{if(e&&e.originalEvent)state.userAt=Date.now();};
   ['dragstart','zoomstart','rotatestart','pitchstart','touchstart','wheel'].forEach(type=>map.on(type,mark));
@@ -1422,8 +1422,9 @@ function followRunPoint(map,state,raw){
   if(!raw||!runMapShouldFollow(state)||runMapUserBusy(state)||map.isMoving?.())return;
   const lat=Number(raw.lat),lon=Number(raw.lon);if(!Number.isFinite(lat)||!Number.isFinite(lon))return;
   const b=map.getBounds(),n=b.getNorth(),s=b.getSouth(),e=b.getEast(),w=b.getWest(),mh=(n-s)*.25,mw=(e-w)*.25;
-  if(lat<n-mh&&lat>s+mh&&lon<e-mw&&lon>w+mw)return;
-  map.easeTo({center:[lon,lat],duration:700});
+  const pro=hasDom()&&document.body.classList.contains('run-mode');
+  if(!pro&&lat<n-mh&&lat>s+mh&&lon<e-mw&&lon>w+mw)return;
+  map.easeTo(pro?{center:[lon,lat],zoom:Math.max(map.getZoom?.()||16,16.3),duration:600}:{center:[lon,lat],duration:700});
 }
 function fitRunMapLibre(map,points,force=false){
   const pts=(points||[]).filter(p=>Number.isFinite(+p.lat)&&Number.isFinite(+p.lon));if(!pts.length)return;
@@ -1778,7 +1779,7 @@ function initPWA(){const button=$('installBtn');if(button)button.hidden=true;}
 
 async function runDiagnostics(){
   const button=$('diagnosticBtn');setBusy(button,true,'Đang kiểm tra…');
-  setSystemStatus('js','ok','V9.3 · bản đồ sáng/tối, độ cao');updateConnection();
+  setSystemStatus('js','ok','V9.5 · chế độ chạy, chỉ đường');updateConnection();
   try{
     const permission=await geolocationPermissionState();
     setSystemStatus('gps',permission==='denied'?'error':permission==='granted'?'ok':'warn',permission==='denied'?'Bị chặn':permission==='granted'?'Đã cấp quyền':'Chưa cấp quyền');
@@ -2344,7 +2345,7 @@ async function planRouteFromIntent(intent,{reply=''}={}){
     const data=await res.json();
     if(!res.ok||data.error||!Array.isArray(data.points)){setRouteStatus(`Chưa tạo được cung: ${data.reason||res.status}`,'error');showToast(data.reason||'Chưa tạo được cung chạy');return null;}
     if(!useCurrent&&data.start)setCustomStart({...data.start,mode:'place'},{silent:true});
-    const route={points:data.points,distanceKm:Number(data.distanceKm),source:data.source,roads:data.roads||null,waypoints:data.waypoints||[],start:data.start,ai:true,targetKm:data.targetKm||null,origin:data.start,generatedAt:Date.now()};
+    const route={points:data.points,distanceKm:Number(data.distanceKm),source:data.source,roads:data.roads||null,steps:data.steps||null,waypoints:data.waypoints||[],start:data.start,ai:true,targetKm:data.targetKm||null,origin:data.start,generatedAt:Date.now()};
     routePlanner.current=route;renderSuggestedRoute(route);
     const via=(route.waypoints||[]).map(w=>w.label).filter(Boolean);
     const missing=(data.notFound||[]).filter(Boolean);
@@ -2590,8 +2591,8 @@ let airunInitialized=false;
 async function init(){
   if(airunInitialized)return;airunInitialized=true;
   if(await clearLegacyServiceWorkerControl()) return;
-  if(typeof window!=='undefined')window.__AIRUN_APP_READY='v93';
-  setSystemStatus('js','ok','V9.3 · bản đồ sáng/tối, độ cao');
+  if(typeof window!=='undefined')window.__AIRUN_APP_READY='v95';
+  setSystemStatus('js','ok','V9.5 · chế độ chạy, chỉ đường');
   safeCall('khu vực',()=>{$('area').innerHTML=WARDS.map(item=>`<option value="${item.key}">${escapeHTML(item.name)}</option>`).join('');});
   safeCall('khôi phục cài đặt',restorePlanSettings);
   safeCall('chọn khu vực',()=>{$('area').value=selectedKey;});

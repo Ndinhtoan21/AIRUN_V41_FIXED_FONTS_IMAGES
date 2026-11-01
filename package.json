@@ -1,6 +1,6 @@
 {
   "name": "airun-da-nang",
-  "version": "9.3.0",
+  "version": "9.5.0",
   "private": true,
   "description": "AIRUN Đà Nẵng – hỗ trợ chạy bộ: thời tiết, AQI, cung chạy, GPS và AI Coach",
   "main": "server.js",
