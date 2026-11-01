@@ -271,3 +271,84 @@ label{font-weight:var(--w-med)}
   .now-facts{grid-template-columns:repeat(2,minmax(0,1fr))}
   .cat-txt b{font-size:13.5px}
 }
+
+/* ==========================================================================
+   AIRUN V9.3 — bản đồ Sáng/Tối, chất lượng cung đường, bản đồ hành trình
+   ========================================================================== */
+/* Nút đổi bản đồ sáng/tối (dưới nút phóng to/thu nhỏ) */
+.map-theme-btn{position:absolute;right:10px;top:84px;z-index:12;display:inline-flex;align-items:center;gap:5px;min-height:36px;padding:0 11px 0 9px;border-radius:999px;
+  border:1px solid rgba(5,47,39,.12);background:rgba(255,255,255,.95);color:var(--brand-800);font-size:13px;font-weight:var(--w-semi);cursor:pointer;
+  box-shadow:0 4px 14px rgba(5,47,39,.14);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.map-theme-btn .ic{width:16px;height:16px}
+.map-theme-btn[aria-pressed="true"]{background:rgba(8,19,15,.88);color:#e8f6ef;border-color:rgba(255,255,255,.14)}
+#trackerMapWrap .map-theme-btn{top:auto;bottom:62px}
+body.map-dark .route-map-badge,body.map-dark .run-map-provider{background:rgba(8,19,15,.86)!important;color:#d9f3e6!important;border-color:rgba(255,255,255,.1)!important}
+body.map-dark .route-map-wrap,body.map-dark .tracker-map-wrap{background:#11181a}
+
+/* Thẻ chất lượng cung đường */
+.route-quality{margin-top:12px;padding:12px 12px 10px;border-radius:16px;border:1px solid var(--hairline);background:var(--surface-2)}
+.rq-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}
+.rq-head b{font-size:15px}
+.rq-list{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.rq-list li{display:grid;grid-template-columns:1fr auto;column-gap:10px;padding:8px 0;border-bottom:1px solid var(--hairline)}
+.rq-list li:last-child{border-bottom:0}
+.rq-list span{font-size:13.5px;color:var(--ink-2)}
+.rq-list b{font-size:13.5px;color:var(--tc,var(--ink));text-align:right}
+.rq-list small{grid-column:1/-1;font-size:12px;color:var(--muted)}
+.rq-elev{margin-top:8px}
+.elev-svg{display:block;width:100%;height:70px}
+.elev-area{fill:rgba(8,116,90,.14)}
+.elev-line{fill:none;stroke:var(--brand-700);stroke-width:2;vector-effect:non-scaling-stroke}
+.rq-elev-axis{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted)}
+.rq-note{margin:8px 0 0;font-size:12px;color:var(--muted)}
+
+/* Hình đường chạy trong nhật ký & thẻ tổng kết */
+.journal-item.has-track{grid-template-columns:auto 96px minmax(0,1fr) auto auto}
+.journal-track{display:block;width:96px;height:64px;padding:0;border:1px solid var(--hairline);border-radius:12px;background:#f2f6f4;cursor:pointer;overflow:hidden}
+.journal-track.big{width:160px;height:110px}
+.track-svg{display:block;width:100%;height:100%}
+.trk-case{fill:none;stroke:#fff;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+.trk-line{fill:none;stroke:#e0475b;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.trk-start{fill:#12865a;stroke:#fff;stroke-width:1.5}.trk-end{fill:#e0475b;stroke:#fff;stroke-width:1.5}
+.trk-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.trk-actions .chip-btn{min-height:34px;padding:4px 10px;font-size:12.5px}
+.trk-actions .ic{width:14px;height:14px}
+.summary-track{grid-column:1/-1;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-top:12px;border-top:1px solid var(--hairline)}
+
+/* Hộp thoại xem lại buổi chạy */
+.run-dialog{width:min(560px,calc(100% - 24px));max-height:min(90vh,820px);padding:0 0 14px;border:0;border-radius:24px;overflow:auto;display:none;flex-direction:column;box-shadow:0 30px 80px rgba(2,31,24,.35)}
+.run-dialog[open]{display:flex}
+.run-dialog::backdrop{background:rgba(2,31,24,.5);backdrop-filter:blur(3px)}
+.run-dialog .sheet-head small{display:block;font-size:12.5px;color:var(--muted)}
+.rd-map{position:relative;height:240px;margin:6px 16px 0;border-radius:18px;overflow:hidden;background:#f2f6f4;border:1px solid var(--hairline)}
+.rd-map .track-svg{position:absolute;inset:0}
+.rd-map-gl{position:absolute;inset:0;opacity:0;transition:opacity .3s}
+.rd-map-gl.ready{opacity:1}
+.rd-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 16px 0}
+.rd-stats div{padding:10px 12px;border-radius:14px;background:var(--surface-2);border:1px solid var(--hairline)}
+.rd-stats small{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.rd-stats b{font-size:20px;font-weight:var(--w-semi);font-variant-numeric:tabular-nums}
+.rd-stats b span{font-size:12px;color:var(--muted);margin-left:2px;font-weight:var(--w-reg)}
+.rd-splits{margin:12px 16px 0}
+.rd-splits h3{margin:0 0 8px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:var(--w-semi)}
+.rd-splits ol{list-style:none;margin:0;padding:0;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+.rd-splits li{flex:0 0 52px;display:flex;flex-direction:column;align-items:center;gap:3px}
+.rd-splits li i{display:block;width:26px;height:56px;border-radius:8px;background:linear-gradient(to top,var(--brand-700) var(--h),#e7efeb var(--h))}
+.rd-splits li.best i{background:linear-gradient(to top,#a8d93f var(--h),#e7efeb var(--h))}
+.rd-splits li b{font-size:12.5px;font-variant-numeric:tabular-nums}
+.rd-splits li small{font-size:11px;color:var(--muted)}
+.rd-actions{margin:14px 16px 0}
+.rd-actions .primary{width:100%;gap:8px}
+.rd-actions .ic{width:18px;height:18px}
+.rd-note{margin:10px 16px 0;font-size:12px;color:var(--muted)}
+
+@media (max-width:780px){
+  .journal-item.has-track{grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"date main score" "track track track"}
+  .journal-item.has-track .journal-track{grid-area:track;width:100%;height:120px;margin-top:6px}
+  .journal-item.has-track .journal-date{grid-area:date}.journal-item.has-track .journal-main{grid-area:main}.journal-item.has-track .journal-score{grid-area:score}
+  .journal-item.has-track .journal-delete{position:absolute;right:8px;top:8px}
+  .journal-item.has-track{position:relative}
+  .run-dialog{width:100%;max-width:none;max-height:92vh;margin:auto 0 0;border-radius:24px 24px 0 0;padding-bottom:calc(14px + env(safe-area-inset-bottom))}
+  .rd-map{height:220px}
+  .map-theme-btn{top:82px}
+}

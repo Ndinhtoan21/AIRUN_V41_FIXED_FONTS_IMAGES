@@ -13,7 +13,7 @@ const path = require('path');
 
 const PORT = Number(process.env.PORT) || 10000;
 const ROOT = __dirname;
-const VERSION = '9.2.0';
+const VERSION = '9.3.0';
 const OPENAI_API_KEY = (process.env.OPENAI_API_KEY || '').trim();
 const OPENAI_MODEL = (process.env.OPENAI_MODEL || 'gpt-4.1-mini').trim();
 const OPENAI_FALLBACK_MODEL = (process.env.OPENAI_FALLBACK_MODEL || 'gpt-4o-mini').trim();
@@ -152,7 +152,7 @@ async function handleRoute(res, url) {
   if (!GRAPHHOPPER_API_KEY && !GOOGLE_MAPS_SERVER_KEY) return json(res, 503, { error: true, reason: 'Máy chủ chưa cấu hình GraphHopper/Google Routes' });
   try {
     const r = await roundTripBest({ lat: coord[0], lon: coord[1] }, km, seed);
-    return json(res, 200, { points: r.points, distanceKm: r.distanceKm, durationMs: null, source: r.source, seed, attempts: r.attempts });
+    return json(res, 200, { points: r.points, distanceKm: r.distanceKm, durationMs: null, source: r.source, seed, attempts: r.attempts, roads: r.roads || null });
   } catch (error) {
     return json(res, 502, { error: true, reason: `Không tạo được vòng chạy: ${error.message}` });
   }
@@ -383,6 +383,43 @@ const GOOGLE_ROUTES_BASE = (process.env.GOOGLE_ROUTES_BASE || 'https://routes.go
 const NOMINATIM_BASE = (process.env.NOMINATIM_BASE || 'https://nominatim.openstreetmap.org').replace(/\/+$/, '');
 const VALHALLA_BASE = (process.env.VALHALLA_BASE || 'https://valhalla1.openstreetmap.de').replace(/\/+$/, '');
 const GRAPHHOPPER_BASE = (process.env.GRAPHHOPPER_BASE || 'https://graphhopper.com/api/1').replace(/\/+$/, '');
+// Độ cao: Open-Meteo Elevation API (miễn phí, không cần khoá; DEM Copernicus 90 m).
+const ELEVATION_BASE = (process.env.ELEVATION_BASE || 'https://api.open-meteo.com/v1/elevation');
+
+/* V9.3 · Loại đường & mặt đường của cung chạy (GraphHopper path details) → tỉ lệ theo quãng đường. */
+const ROAD_GROUP = { motorway: 'big', trunk: 'big', primary: 'big', secondary: 'big', tertiary: 'medium', unclassified: 'medium', road: 'medium',
+  residential: 'small', living_street: 'small', service: 'small', track: 'small', footway: 'foot', pedestrian: 'foot', path: 'foot', steps: 'foot', cycleway: 'foot', bridleway: 'foot' };
+const UNPAVED = new Set(['unpaved', 'gravel', 'fine_gravel', 'dirt', 'ground', 'grass', 'sand', 'compacted', 'wood', 'mud']);
+function summarizeDetails(points, details) {
+  if (!details || !Array.isArray(points) || points.length < 2) return null;
+  const segKm = []; let total = 0;
+  for (let i = 1; i < points.length; i++) { const d = haversineKm(points[i - 1], points[i]); segKm.push(d); total += d; }
+  if (!total) return null;
+  const share = (list, groupOf) => {
+    if (!Array.isArray(list) || !list.length) return null;
+    const out = {};
+    for (const [from, to, value] of list) {
+      let km = 0; for (let i = Math.max(0, from); i < Math.min(to, segKm.length); i++) km += segKm[i];
+      const g = groupOf(String(value || '').toLowerCase()); out[g] = (out[g] || 0) + km;
+    }
+    for (const k of Object.keys(out)) out[k] = Math.round(out[k] / total * 100) / 100;
+    return out;
+  };
+  const roads = share(details.road_class, v => ROAD_GROUP[v] || 'other');
+  const surface = share(details.surface, v => !v || v === 'missing' || v === 'other' ? 'unknown' : UNPAVED.has(v) ? 'unpaved' : 'paved');
+  return roads || surface ? { roads, surface } : null;
+}
+// Gọi GraphHopper kèm path details; nếu dịch vụ từ chối tham số details thì gọi lại như cũ.
+async function ghFetch(qs) {
+  const withDetails = new URLSearchParams(qs); withDetails.append('details', 'road_class'); withDetails.append('details', 'surface');
+  let r = await fetchWithTimeout(`${GRAPHHOPPER_BASE}/route?${withDetails}`, {}, 10000);
+  let j = await r.json().catch(() => ({}));
+  if (r.status === 400) {
+    r = await fetchWithTimeout(`${GRAPHHOPPER_BASE}/route?${qs}`, {}, 10000);
+    j = await r.json().catch(() => ({}));
+  }
+  return { r, j };
+}
 const DN_CENTER = { lat: 16.0544, lon: 108.2022 };
 
 function googleHeaders(fieldMask) {
@@ -467,11 +504,11 @@ async function routeGraphHopper(points) {
   const qs = new URLSearchParams();
   points.forEach(p => qs.append('point', `${p.lat},${p.lon}`));
   qs.set('profile', 'foot'); qs.set('locale', 'vi'); qs.set('points_encoded', 'false'); qs.set('instructions', 'false'); qs.set('calc_points', 'true'); qs.set('key', GRAPHHOPPER_API_KEY);
-  const r = await fetchWithTimeout(`${GRAPHHOPPER_BASE}/route?${qs}`, {}, 10000);
-  const j = await r.json().catch(() => ({}));
+  const { r, j } = await ghFetch(qs);
   const p = j.paths?.[0];
   if (!r.ok || !p?.points?.coordinates?.length) throw new Error(j?.message || `GraphHopper HTTP ${r.status}`);
-  return { points: p.points.coordinates.map(c => ({ lon: Number(c[0]), lat: Number(c[1]) })), distanceKm: Number(p.distance) / 1000, source: 'graphhopper' };
+  const pts = p.points.coordinates.map(c => ({ lon: Number(c[0]), lat: Number(c[1]) }));
+  return { points: pts, distanceKm: Number(p.distance) / 1000, source: 'graphhopper', roads: summarizeDetails(pts, p.details) };
 }
 async function routeValhalla(points) {
   const body = { locations: points.map(p => ({ lat: p.lat, lon: p.lon })), costing: 'pedestrian', units: 'kilometers' };
@@ -495,11 +532,11 @@ async function ghRoundTrip(start, km, seed) {
   qs.set('profile', 'foot'); qs.set('locale', 'vi'); qs.set('algorithm', 'round_trip');
   qs.set('round_trip.distance', String(Math.round(km * 1000))); qs.set('round_trip.seed', String(seed));
   qs.set('points_encoded', 'false'); qs.set('instructions', 'false'); qs.set('calc_points', 'true'); qs.set('key', GRAPHHOPPER_API_KEY);
-  const r = await fetchWithTimeout(`${GRAPHHOPPER_BASE}/route?${qs}`, {}, 10000);
-  const j = await r.json().catch(() => ({}));
+  const { r, j } = await ghFetch(qs);
   const p = j.paths?.[0];
   if (!r.ok || !p?.points?.coordinates?.length) throw new Error(j?.message || `GraphHopper HTTP ${r.status}`);
-  return { points: p.points.coordinates.map(c => ({ lon: Number(c[0]), lat: Number(c[1]), ele: Number.isFinite(Number(c[2])) ? Number(c[2]) : null })), distanceKm: Number(p.distance) / 1000, source: 'graphhopper', seed };
+  const pts = p.points.coordinates.map(c => ({ lon: Number(c[0]), lat: Number(c[1]), ele: Number.isFinite(Number(c[2])) ? Number(c[2]) : null }));
+  return { points: pts, distanceKm: Number(p.distance) / 1000, source: 'graphhopper', seed, roads: summarizeDetails(pts, p.details) };
 }
 /* Vòng chạy theo số km: thử lại (tối đa 3 lần) với mục tiêu hiệu chỉnh để quãng đường gần mục tiêu nhất. */
 async function roundTripBest(start, km, seed = 0) {
@@ -523,6 +560,30 @@ async function roundTripBest(start, km, seed = 0) {
   if (!tries.length) throw new Error('Không tạo được vòng chạy');
   tries.sort((a, b) => Math.abs(a.distanceKm - km) - Math.abs(b.distanceKm - km));
   return { ...tries[0], attempts: tries.length };
+}
+
+/* V9.3 · Độ cao theo các điểm trên cung chạy (tối đa 100 điểm/lần), có cache. */
+const elevationCache = new Map();
+async function handleElevation(req, res) {
+  if (rateLimited(req, 'elev', 60, 10 * 60 * 1000)) return json(res, 429, { error: true, reason: 'Đợi một chút rồi thử lại.' });
+  let body;
+  try { body = await readBody(req, 16 * 1024); } catch (error) { return json(res, error.status || 400, { error: true, reason: error.message }); }
+  const pts = (Array.isArray(body?.points) ? body.points : []).slice(0, 100).map(p => validCoord(p?.lat, p?.lon)).filter(Boolean);
+  if (pts.length < 2) return json(res, 400, { error: true, reason: 'Cần ít nhất 2 điểm' });
+  const lat = pts.map(p => p[0].toFixed(5)).join(','), lon = pts.map(p => p[1].toFixed(5)).join(',');
+  const key = `${lat}|${lon}`;
+  const hit = elevationCache.get(key);
+  if (hit) return json(res, 200, { ok: true, elevation: hit, source: 'open-meteo', cached: true });
+  try {
+    const r = await fetchWithTimeout(`${ELEVATION_BASE}?latitude=${lat}&longitude=${lon}`, { headers: { Accept: 'application/json' } }, 9000);
+    const j = await r.json().catch(() => ({}));
+    const list = Array.isArray(j?.elevation) ? j.elevation.map(v => (Number.isFinite(Number(v)) ? Math.round(Number(v) * 10) / 10 : null)) : null;
+    if (!r.ok || !list || list.length !== pts.length) return json(res, 502, { error: true, reason: j?.reason || `Elevation HTTP ${r.status}` });
+    elevationCache.set(key, list); if (elevationCache.size > 300) elevationCache.delete(elevationCache.keys().next().value);
+    return json(res, 200, { ok: true, elevation: list, source: 'open-meteo' });
+  } catch (error) {
+    return json(res, 502, { error: true, reason: `Chưa lấy được độ cao: ${error.message}` });
+  }
 }
 
 async function handlePlaces(res, url) {
@@ -754,11 +815,12 @@ async function handler(req, res) {
   try {
     if (p === '/healthz') return json(res, 200, { ok: true, version: VERSION });
     if (p === '/api/config' && req.method === 'GET') {
-      return json(res, 200, { version: VERSION, server: true, ai: Boolean(OPENAI_API_KEY), aiModel: OPENAI_API_KEY ? OPENAI_MODEL : null, routing: Boolean(GRAPHHOPPER_API_KEY), mapboxToken: MAPBOX_PUBLIC_TOKEN || '', googleMapsKey: GOOGLE_MAPS_BASEMAP ? (GOOGLE_MAPS_BROWSER_KEY || '') : '', googlePlaces: Boolean(GOOGLE_MAPS_SERVER_KEY), routePlan: true, accounts: accountsEnabled(), feedback: true, feedbackPersistent: Boolean(FEEDBACK_WEBHOOK_URL) || accountsEnabled() });
+      return json(res, 200, { version: VERSION, server: true, ai: Boolean(OPENAI_API_KEY), aiModel: OPENAI_API_KEY ? OPENAI_MODEL : null, routing: Boolean(GRAPHHOPPER_API_KEY), mapboxToken: MAPBOX_PUBLIC_TOKEN || '', googleMapsKey: GOOGLE_MAPS_BASEMAP ? (GOOGLE_MAPS_BROWSER_KEY || '') : '', googlePlaces: Boolean(GOOGLE_MAPS_SERVER_KEY), routePlan: true, elevation: true, accounts: accountsEnabled(), feedback: true, feedbackPersistent: Boolean(FEEDBACK_WEBHOOK_URL) || accountsEnabled() });
     }
     let m = p.match(/^\/api\/(weather|air)\/(-?[\d.]+)\/(-?[\d.]+)\/?$/);
     if (m && req.method === 'GET') return handleEnv(res, m[1], m[2], m[3]);
     if (p === '/api/route' && req.method === 'GET') return handleRoute(res, url);
+    if (p === '/api/elevation' && req.method === 'POST') return handleElevation(req, res);
     if (p === '/api/route/plan' && req.method === 'POST') return handleRoutePlan(req, res);
     if (p === '/api/places' && req.method === 'GET') return handlePlaces(res, url);
     if (p === '/api/account/register' && req.method === 'POST') return handleRegister(req, res);

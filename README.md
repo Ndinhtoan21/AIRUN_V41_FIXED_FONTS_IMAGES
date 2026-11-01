@@ -1,4 +1,4 @@
-# AIRUN Đà Nẵng · V9.2 Gọn: mỗi màn một thông tin chính + Thời tiết theo khung giờ
+# AIRUN Đà Nẵng · V9.3 Bản đồ sáng/tối, độ cao, chất lượng cung đường, bản đồ hành trình
 
 Trang web hỗ trợ người chạy bộ ở Đà Nẵng: kiểm tra thời tiết, AQI, UV theo giờ → chấm điểm thuận lợi bằng công thức minh bạch → **AI Coach giải thích bằng lời, trả lời câu hỏi và làm giúp (tạo cung, đổi kế hoạch, mở tab)** → **mô tả cung chạy bằng lời, AI tìm địa điểm và vẽ đường trên Google Maps** → chạy với GPS → **đánh giá khuyến nghị sau buổi chạy** → dữ liệu lưu vào **tài khoản người chạy (Google Sheet)** để AI gợi ý cá nhân hoá và lập kế hoạch tuần.
 
@@ -14,6 +14,7 @@ Hướng dẫn cài đặt Google Maps, Google Sheet và biến môi trường: 
 | `css/mobile.css` | Lớp thiết kế V9.1 ưu tiên điện thoại: chữ, nút + hiệu ứng nhấn, thanh tab, lộ trình 5 bước |
 | `js/app.js` | Logic phía trình duyệt (chấm điểm, bản đồ, GPS, AI Coach, tài khoản) |
 | `js/hub.js` | Trang chủ (thẻ Bây giờ + danh mục), trang Thời tiết theo khung giờ cho từng khu vực, bảng chọn khu vực |
+| `js/runlab.js` | Độ cao & độ dốc cung chạy, thẻ chất lượng cung đường, bản đồ hành trình mỗi buổi chạy (chỉ lưu trên máy), chia km, tải GPX |
 | `js/ui.js` | Tương tác giao diện: gợn sóng/rung khi chạm, thanh lộ trình tự sáng, tiểu mục Nhật ký |
 | `js/boot.js` | Báo lỗi nếu script chính không khởi động (sửa cache) |
 | `server.js` | Máy chủ Node (không cần thư viện ngoài): phục vụ trang, proxy Open-Meteo, AI Coach (OpenAI), Google Places/Routes, GraphHopper, tài khoản, phản hồi |
@@ -39,6 +40,7 @@ OPENAI_API_KEY=sk-... GOOGLE_MAPS_BROWSER_KEY=AIza... node server.js
 | `SESSION_SECRET` | Không | Khóa ký phiên đăng nhập (nếu thiếu sẽ tự suy ra từ `SHEETS_SECRET`) |
 | `GRAPHHOPPER_API_KEY` | Không | Tạo cung vòng bằng GraphHopper. Thiếu thì dùng Google Routes, rồi Valhalla (OpenStreetMap) |
 | `GOOGLE_MAPS_BASEMAP` | Không | Đặt `1` để dùng bản đồ nền Google. **Mặc định tắt**: Google không tính phí Maps cho tài khoản thanh toán ở Việt Nam nên bản đồ nền bị từ chối; AIRUN dùng OpenFreeMap. Tìm địa điểm/vẽ cung bằng Google (khóa máy chủ) vẫn chạy |
+| `ELEVATION_BASE` | Không | Mặc định `https://api.open-meteo.com/v1/elevation` |
 | `MAPBOX_PUBLIC_TOKEN` | Không | Token `pk.` (chỉ dùng khi không có Google Maps) |
 | `FEEDBACK_WEBHOOK_URL`, `ADMIN_TOKEN` | Không | Cách lưu phản hồi cũ (V8), vẫn hoạt động |
 
@@ -48,6 +50,7 @@ OPENAI_API_KEY=sk-... GOOGLE_MAPS_BROWSER_KEY=AIza... node server.js
 - `POST /api/coach` – `mode: plan | chat | agent | route_intent | weekly | run | live`
 - `GET /api/places?q=&lat=&lon=` – tìm địa điểm (Google Places, dự phòng OpenStreetMap)
 - `GET /api/route?lat=&lon=&km=&seed=` – cung vòng theo số km
+- `POST /api/elevation` – `{points:[{lat,lon}]}` (≤100 điểm) → độ cao từ Open-Meteo Elevation (miễn phí)
 - `POST /api/route/plan` – `{start, waypoints[], km, loop}` → cung chạy qua các điểm
 - `POST /api/account/register | login`, `GET /api/account/me`, `POST /api/account/log` – tài khoản tên + mã PIN
 - `POST /api/feedback`, `POST /api/app-feedback`, `GET /api/feedback/summary`

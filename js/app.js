@@ -981,6 +981,52 @@ function loadExternalAsset(type,url,id){
   return promise;
 }
 let mapLibreAssetsPromise=null;
+/* ===== V9.3 · Bản đồ Sáng/Tối (OpenFreeMap, miễn phí, không cần khoá) ===== */
+const MAP_STYLES={light:'https://tiles.openfreemap.org/styles/positron',dark:'https://tiles.openfreemap.org/styles/dark',classic:'https://tiles.openfreemap.org/styles/liberty'};
+const MAP_THEME_KEY='airun-v93-map-theme';
+let mapTheme=(()=>{const saved=localGet(MAP_THEME_KEY,null);if(saved==='light'||saved==='dark')return saved;const h=Number(vnIso().slice(11,13));return h>=18||h<6?'dark':'light';})();
+const mapStyleCheck={};
+// Kiểm tra kiểu bản đồ tải được không; nếu không, quay về kiểu "liberty" quen thuộc.
+async function mapStyleUrl(theme=mapTheme){
+  const url=MAP_STYLES[theme]||MAP_STYLES.classic;
+  if(!(theme in mapStyleCheck))mapStyleCheck[theme]=(async()=>{try{const c=new AbortController(),t=setTimeout(()=>c.abort(),6000);const r=await fetch(url,{signal:c.signal});clearTimeout(t);return r.ok;}catch{return false;}})();
+  return (await mapStyleCheck[theme])?url:MAP_STYLES.classic;
+}
+function mapPalette(theme=mapTheme){
+  return theme==='dark'
+    ?{casing:'#08130f',main:'#c8f16b',core:'#f2ffd2',plan:'#8fbcff',raw:'#9fd3c4',actualCase:'#08130f',actual:'#c8f16b'}
+    :{casing:'#ffffff',main:'#08745a',core:'#c8f16b',plan:'#2d72d9',raw:'#5b9988',actualCase:'#ffffff',actual:'#08745a'};
+}
+function syncMapThemeButtons(){
+  if(!hasDom())return;
+  document.body.classList.toggle('map-dark',mapTheme==='dark');
+  document.querySelectorAll('[data-map-theme]').forEach(btn=>{
+    const dark=mapTheme==='dark';btn.setAttribute('aria-pressed',String(dark));
+    btn.title=dark?'Đang dùng bản đồ tối · chạm để chuyển sang sáng':'Đang dùng bản đồ sáng · chạm để chuyển sang tối';
+    const use=btn.querySelector('use');if(use)use.setAttribute('href',dark?'#i-sun':'#w-moon');
+    const label=btn.querySelector('span');if(label)label.textContent=dark?'Sáng':'Tối';
+  });
+}
+async function setMapTheme(theme){
+  mapTheme=theme==='dark'?'dark':'light';localSet(MAP_THEME_KEY,mapTheme);syncMapThemeButtons();
+  const url=await mapStyleUrl();
+  for(const [map,kind] of [[routeFallbackMap.map,'route'],[runFallbackMap.map,'run']]){
+    if(!map)continue;
+    map.__airunStyleReady=false;
+    map.once('style.load',()=>{
+      map.__airunStyleReady=true;
+      try{
+        if(kind==='route'){if(routePlanner.current)void renderMapLibreRoute(routePlanner.current);}
+        else{runSetSource(map,'airun-run-plan-src',[]);runSetSource(map,'airun-run-raw-src',[]);runSetSource(map,'airun-run-actual-src',[]);runAddLayers(map);void refreshRunMapLibre();}
+      }catch(error){console.warn('AIRUN map theme:',error);}
+    });
+    // diff:false để MapLibre dựng lại toàn bộ style và bắn 'style.load' (chế độ diff sẽ âm thầm xoá lớp đường chạy).
+    try{map.setStyle(url,{diff:false});}catch(error){console.warn('AIRUN setStyle:',error);map.__airunStyleReady=true;}
+  }
+  showToast(mapTheme==='dark'?'Đã chuyển sang bản đồ tối.':'Đã chuyển sang bản đồ sáng.');
+}
+if(hasDom())document.addEventListener('click',event=>{const btn=event.target.closest?.('[data-map-theme]');if(btn){event.preventDefault();void setMapTheme(mapTheme==='dark'?'light':'dark');}});
+
 function ensureMapLibreAssets(){
   if(window.maplibregl)return Promise.resolve(true);
   if(mapLibreAssetsPromise)return mapLibreAssetsPromise;
@@ -1069,9 +1115,9 @@ async function ensureRouteMapLibre(){
     container.hidden=false;if(mapbox)mapbox.hidden=true;if(iframe){iframe.style.visibility='hidden';iframe.removeAttribute('src');}
     wrap?.classList.add('openfree-active');
     const origin=routeOrigin();
-    const map=new maplibregl.Map({container:'routeMapLibreMap',style:'https://tiles.openfreemap.org/styles/liberty',center:[origin.lon,origin.lat],zoom:14.2,attributionControl:true});
+    const map=new maplibregl.Map({container:'routeMapLibreMap',style:await mapStyleUrl(),center:[origin.lon,origin.lat],zoom:14.2,attributionControl:true});
     map.addControl(new maplibregl.NavigationControl({showCompass:false}),'top-right');routeFallbackMap.map=map;attachMapLibrePick(map);
-    await waitMapLoad(map,'route');
+    await waitMapLoad(map,'route');map.__airunStyleReady=true;syncMapThemeButtons();
     requestAnimationFrame(()=>{map.resize();setTimeout(()=>map.resize(),180);});return map;
   })().catch(error=>{console.warn('AIRUN route OpenFreeMap:',error);routeFallbackMap.map=null;const c=$('routeMapLibreMap'),fallback=$('mapFallback');if(c)c.hidden=true;if(fallback){fallback.hidden=false;const p=fallback.querySelector('p');if(p)p.textContent='Không tải được OpenFreeMap. Nếu có Mapbox token, hãy kết nối lại bản đồ nâng cao.';}return null;}).finally(()=>{routeFallbackMap.loading=null;});
   return routeFallbackMap.loading;
@@ -1082,15 +1128,15 @@ async function renderMapLibreRoute(route){
   const update=()=>{
     if(map.getSource('airun-route-free'))map.getSource('airun-route-free').setData(geo);else{
       map.addSource('airun-route-free',{type:'geojson',data:geo});
-      map.addLayer({id:'airun-route-free-casing',type:'line',source:'airun-route-free',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':'#ffffff','line-width':['interpolate',['linear'],['zoom'],11,5.2,16,8.2],'line-opacity':.96}});
-      map.addLayer({id:'airun-route-free-main',type:'line',source:'airun-route-free',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':'#08745a','line-width':['interpolate',['linear'],['zoom'],11,3.0,16,5.6]}});
-      map.addLayer({id:'airun-route-free-core',type:'line',source:'airun-route-free',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':'#c8f16b','line-width':['interpolate',['linear'],['zoom'],11,.9,16,2.0],'line-opacity':.9}});
+      map.addLayer({id:'airun-route-free-casing',type:'line',source:'airun-route-free',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':mapPalette().casing,'line-width':['interpolate',['linear'],['zoom'],11,5.2,16,8.2],'line-opacity':.96}});
+      map.addLayer({id:'airun-route-free-main',type:'line',source:'airun-route-free',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':mapPalette().main,'line-width':['interpolate',['linear'],['zoom'],11,3.0,16,5.6]}});
+      map.addLayer({id:'airun-route-free-core',type:'line',source:'airun-route-free',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':mapPalette().core,'line-width':['interpolate',['linear'],['zoom'],11,.9,16,2.0],'line-opacity':.9}});
     }
     clearRouteMapLibreMarkers();const first=route.points[0],el=document.createElement('div');el.className='airun-start-marker';el.innerHTML='<i></i><span>Bắt đầu / Kết thúc</span>';routeFallbackMap.startMarker=new maplibregl.Marker({element:el,anchor:'left'}).setLngLat([first.lon,first.lat]).addTo(map);
     const kmMarks=routeDistanceMarkers(route.points,1).filter(m=>m.km<Math.max(1,Math.ceil(route.distanceKm)));for(const m of kmMarks){const k=document.createElement('div');k.className='airun-km-marker';k.textContent=String(m.km);routeFallbackMap.kmMarkers.push(new maplibregl.Marker({element:k}).setLngLat([m.lon,m.lat]).addTo(map));}
     const bounds=new maplibregl.LngLatBounds();coords.forEach(c=>bounds.extend(c));map.fitBounds(bounds,{padding:{top:70,bottom:80,left:70,right:70},duration:700,maxZoom:16});setTimeout(()=>map.resize(),100);
   };
-  if(map.loaded())update();else map.once('load',update);routeFallbackMap.routeReady=true;const badge=$('routeMapBadge');if(badge)badge.textContent='OpenFreeMap · cung chạy';return true;
+  if(map.__airunStyleReady!==false&&(map.__airunStyleReady||map.loaded()))update();else map.once('style.load',()=>{map.__airunStyleReady=true;update();});routeFallbackMap.routeReady=true;const badge=$('routeMapBadge');if(badge)badge.textContent='OpenFreeMap · cung chạy';return true;
 }
 
 async function fetchGraphHopperRoundTrip(origin,targetKm,seed=0){
@@ -1100,7 +1146,7 @@ async function fetchGraphHopperRoundTrip(origin,targetKm,seed=0){
   try{
     const res=await fetch(`/api/route?${qs}`,{cache:'no-store',signal:controller.signal});const data=await res.json();
     if(!res.ok||data.error||!Array.isArray(data.points))throw new Error(data?.reason||`Route HTTP ${res.status}`);
-    return {points:data.points,distanceKm:Number(data.distanceKm),durationMs:data.durationMs||null,source:data.source||'graphhopper',seed};
+    return {points:data.points,distanceKm:Number(data.distanceKm),durationMs:data.durationMs||null,source:data.source||'graphhopper',seed,roads:data.roads||null};
   }finally{clearTimeout(timer);}
 }
 function decodePolyline5(str){
@@ -1324,10 +1370,10 @@ function runMapboxConfigured(){return Boolean(routeConfig().mapbox);}
 function runGeoJSON(points){return {type:'Feature',properties:{},geometry:{type:'LineString',coordinates:(points||[]).map(p=>[Number(p.lon),Number(p.lat)])}};}
 function runSetSource(map,id,points){const data=runGeoJSON(points);const src=map.getSource(id);if(src)src.setData(data);else map.addSource(id,{type:'geojson',data});}
 function runAddLayers(map){
-  if(!map.getLayer('airun-run-plan'))map.addLayer({id:'airun-run-plan',type:'line',source:'airun-run-plan-src',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':'#2d72d9','line-width':['interpolate',['linear'],['zoom'],11,2.6,16,4.5],'line-opacity':.86,'line-dasharray':[2.2,1.7]}});
-  if(!map.getLayer('airun-run-raw'))map.addLayer({id:'airun-run-raw',type:'line',source:'airun-run-raw-src',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':'#5b9988','line-width':['interpolate',['linear'],['zoom'],11,1.4,16,2.3],'line-opacity':.36,'line-dasharray':[1.5,2.2]}});
-  if(!map.getLayer('airun-run-actual-case'))map.addLayer({id:'airun-run-actual-case',type:'line',source:'airun-run-actual-src',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':'#fff','line-width':['interpolate',['linear'],['zoom'],11,4.5,16,7.2],'line-opacity':.9}});
-  if(!map.getLayer('airun-run-actual'))map.addLayer({id:'airun-run-actual',type:'line',source:'airun-run-actual-src',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':'#08745a','line-width':['interpolate',['linear'],['zoom'],11,2.8,16,4.8]}});
+  if(!map.getLayer('airun-run-plan'))map.addLayer({id:'airun-run-plan',type:'line',source:'airun-run-plan-src',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':mapPalette().plan,'line-width':['interpolate',['linear'],['zoom'],11,2.6,16,4.5],'line-opacity':.86,'line-dasharray':[2.2,1.7]}});
+  if(!map.getLayer('airun-run-raw'))map.addLayer({id:'airun-run-raw',type:'line',source:'airun-run-raw-src',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':mapPalette().raw,'line-width':['interpolate',['linear'],['zoom'],11,1.4,16,2.3],'line-opacity':.36,'line-dasharray':[1.5,2.2]}});
+  if(!map.getLayer('airun-run-actual-case'))map.addLayer({id:'airun-run-actual-case',type:'line',source:'airun-run-actual-src',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':mapPalette().actualCase,'line-width':['interpolate',['linear'],['zoom'],11,4.5,16,7.2],'line-opacity':.9}});
+  if(!map.getLayer('airun-run-actual'))map.addLayer({id:'airun-run-actual',type:'line',source:'airun-run-actual-src',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':mapPalette().actual,'line-width':['interpolate',['linear'],['zoom'],11,2.8,16,4.8]}});
 }
 function makeRunMarker(cls){const el=document.createElement('div');el.className=cls;return el;}
 async function ensureRunMapbox(){
@@ -1349,9 +1395,9 @@ async function ensureRunMapLibre(){
     if(!container)throw new Error('Thiếu vùng bản đồ MapLibre');
     container.hidden=false;if(mapbox)mapbox.hidden=true;wrap?.classList.add('maplibre-active');wrap?.classList.remove('mapbox-active');if(iframe){iframe.style.visibility='hidden';iframe.removeAttribute('src');}
     const base=tracker.rawPoint||gpsLocation||ward();
-    const map=new maplibregl.Map({container:'runMapLibreMap',style:'https://tiles.openfreemap.org/styles/liberty',center:[base.lon,base.lat],zoom:14.8,attributionControl:true});
+    const map=new maplibregl.Map({container:'runMapLibreMap',style:await mapStyleUrl(),center:[base.lon,base.lat],zoom:14.8,attributionControl:true});
     map.addControl(new maplibregl.NavigationControl({showCompass:false}),'top-right');runFallbackMap.map=map;
-    await waitMapLoad(map,'run');
+    await waitMapLoad(map,'run');map.__airunStyleReady=true;syncMapThemeButtons();
     runSetSource(map,'airun-run-plan-src',[]);runSetSource(map,'airun-run-raw-src',[]);runSetSource(map,'airun-run-actual-src',[]);runAddLayers(map);runFallbackMap.ready=true;bindRunMapGestures(map,runFallbackMap,container);
     const provider=$('runMapProvider');if(provider)provider.textContent='OpenFreeMap · MapLibre';
     requestAnimationFrame(()=>{map.resize();setTimeout(()=>map.resize(),180);});return map;
@@ -1386,7 +1432,7 @@ function fitRunMapLibre(map,points,force=false){
   const b=new maplibregl.LngLatBounds();pts.forEach(p=>b.extend([p.lon,p.lat]));map.fitBounds(b,{padding:{top:52,bottom:68,left:52,right:52},duration:520,maxZoom:15.7});
 }
 async function refreshRunMapLibre({fit=false}={}){
-  const map=await ensureRunMapLibre();if(!map||!runFallbackMap.ready)return false;
+  const map=await ensureRunMapLibre();if(!map||!runFallbackMap.ready||map.__airunStyleReady===false)return false;
   const planned=tracker.plannedRoute?.points||[],rawPts=tracker.rawPoints||[],actual=tracker.points||[];
   runSetSource(map,'airun-run-plan-src',planned);runSetSource(map,'airun-run-raw-src',rawPts);runSetSource(map,'airun-run-actual-src',actual);
   const raw=tracker.rawPoint||gpsLocation;
@@ -1657,7 +1703,7 @@ async function finishRun(){
   lastRunInfo={id:runId,at:Date.now(),seconds,distanceKm:tracker.distanceKm,pace:pace?formatPace(pace):'',area:near.name,score:tracker.lastEnvResult?.score??activeResult?.score??null,env:tracker.lastEnv?{...tracker.lastEnv,time:vnIso()}:null};
   syncFeedbackContext();speak(`Đã kết thúc. ${tracker.distanceKm.toFixed(1)} ki lô mét. Hãy đánh giá khuyến nghị của AIRUN nhé.`);
   setTimeout(()=>$('feedbackForm')?.scrollIntoView({behavior:'smooth',block:'start'}),600);
-  trackerAlert(tracker.lastEnvResult?.tone||'good','Đã kết thúc.',`Quãng đường ${tracker.distanceKm.toFixed(2)} km · ${formatDuration(seconds)}. Toàn bộ chuỗi tọa độ không được lưu vào nhật ký.`,'✓');
+  trackerAlert(tracker.lastEnvResult?.tone||'good','Đã kết thúc.',`Quãng đường ${tracker.distanceKm.toFixed(2)} km · ${formatDuration(seconds)}. Bản đồ hành trình chỉ lưu trên máy này, không gửi lên máy chủ.`,'✓');
 }
 
 function journalRows(){
@@ -1732,7 +1778,7 @@ function initPWA(){const button=$('installBtn');if(button)button.hidden=true;}
 
 async function runDiagnostics(){
   const button=$('diagnosticBtn');setBusy(button,true,'Đang kiểm tra…');
-  setSystemStatus('js','ok','V9.2 · gọn, theo khung giờ');updateConnection();
+  setSystemStatus('js','ok','V9.3 · bản đồ sáng/tối, độ cao');updateConnection();
   try{
     const permission=await geolocationPermissionState();
     setSystemStatus('gps',permission==='denied'?'error':permission==='granted'?'ok':'warn',permission==='denied'?'Bị chặn':permission==='granted'?'Đã cấp quyền':'Chưa cấp quyền');
@@ -2298,7 +2344,7 @@ async function planRouteFromIntent(intent,{reply=''}={}){
     const data=await res.json();
     if(!res.ok||data.error||!Array.isArray(data.points)){setRouteStatus(`Chưa tạo được cung: ${data.reason||res.status}`,'error');showToast(data.reason||'Chưa tạo được cung chạy');return null;}
     if(!useCurrent&&data.start)setCustomStart({...data.start,mode:'place'},{silent:true});
-    const route={points:data.points,distanceKm:Number(data.distanceKm),source:data.source,waypoints:data.waypoints||[],start:data.start,ai:true,targetKm:data.targetKm||null,origin:data.start,generatedAt:Date.now()};
+    const route={points:data.points,distanceKm:Number(data.distanceKm),source:data.source,roads:data.roads||null,waypoints:data.waypoints||[],start:data.start,ai:true,targetKm:data.targetKm||null,origin:data.start,generatedAt:Date.now()};
     routePlanner.current=route;renderSuggestedRoute(route);
     const via=(route.waypoints||[]).map(w=>w.label).filter(Boolean);
     const missing=(data.notFound||[]).filter(Boolean);
@@ -2544,8 +2590,8 @@ let airunInitialized=false;
 async function init(){
   if(airunInitialized)return;airunInitialized=true;
   if(await clearLegacyServiceWorkerControl()) return;
-  if(typeof window!=='undefined')window.__AIRUN_APP_READY='v92';
-  setSystemStatus('js','ok','V9.2 · gọn, theo khung giờ');
+  if(typeof window!=='undefined')window.__AIRUN_APP_READY='v93';
+  setSystemStatus('js','ok','V9.3 · bản đồ sáng/tối, độ cao');
   safeCall('khu vực',()=>{$('area').innerHTML=WARDS.map(item=>`<option value="${item.key}">${escapeHTML(item.name)}</option>`).join('');});
   safeCall('khôi phục cài đặt',restorePlanSettings);
   safeCall('chọn khu vực',()=>{$('area').value=selectedKey;});
