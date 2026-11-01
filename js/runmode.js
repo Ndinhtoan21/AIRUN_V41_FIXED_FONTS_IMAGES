@@ -46,6 +46,7 @@
     let best = { d: Infinity, along: nav.progress, i: nav.idx };
     const from = Math.max(0, nav.idx - 6), to = Math.min(nav.pts.length - 1, nav.idx + 120);
     for (let i = from; i < to; i++) {
+      if (nav.cum[i] > nav.progress + 300) break; // chỉ xét đoạn phía trước ≤ 300 m: vòng chạy có điểm cuối trùng điểm đầu
       const a = nav.pts[i], b = nav.pts[i + 1], kx = Math.cos(a.lat * Math.PI / 180);
       const ax = 0, ay = 0, bx = (b.lon - a.lon) * kx, by = b.lat - a.lat, px = (p.lon - a.lon) * kx, py = p.lat - a.lat;
       const len2 = bx * bx + by * by, t = len2 ? Math.max(0, Math.min(1, (px * bx + py * by) / len2)) : 0;

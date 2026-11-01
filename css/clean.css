@@ -431,3 +431,19 @@ body.fs-open .toast{bottom:auto!important;top:calc(86px + env(safe-area-inset-to
 .rfs-actions{flex-wrap:wrap}
 .rfs-actions .light-btn{flex-basis:100%;order:-1;font-size:16px!important}
 .hud-stats div:nth-child(2) b{font-size:24px;padding-top:6px}
+
+/* V9.5.1 — chấm vị trí & ghim điểm xuất phát */
+.airun-me{position:relative;width:20px;height:20px;pointer-events:none}
+.airun-me i{position:absolute;inset:0;border-radius:50%;background:#2f7bf0;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35)}
+.airun-me i:after{content:"";position:absolute;inset:-12px;border-radius:50%;background:rgba(47,123,240,.22);animation:airun-me-pulse 2s ease-out infinite}
+.airun-me span{position:absolute;left:24px;top:50%;transform:translateY(-50%);white-space:nowrap;padding:3px 8px;border-radius:999px;background:#2f7bf0;color:#fff;font-size:12px;font-weight:600;box-shadow:0 3px 10px rgba(0,0,0,.2)}
+@keyframes airun-me-pulse{0%{transform:scale(.5);opacity:1}100%{transform:scale(1.6);opacity:0}}
+.airun-pin{display:flex;flex-direction:column;align-items:center;pointer-events:none}
+.airun-pin span{padding:4px 9px;border-radius:999px;background:#052f27;color:#fff;font-size:12.5px;font-weight:600;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,.25)}
+.airun-pin i{width:18px;height:18px;margin-top:3px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:#12865a;border:3px solid #fff;box-shadow:0 3px 8px rgba(0,0,0,.3)}
+.map-locate-btn{position:absolute;right:10px;top:168px;z-index:12;display:grid;place-items:center;width:40px;height:40px;border-radius:50%;border:1px solid rgba(5,47,39,.12);background:#fff;color:#2f7bf0;cursor:pointer;box-shadow:0 4px 14px rgba(5,47,39,.18)}
+.map-locate-btn .ic{width:20px;height:20px}
+#trackerMapWrap .map-locate-btn{top:auto;bottom:150px}
+.route-map-wrap.fs .map-locate-btn{top:calc(112px + env(safe-area-inset-top))}
+#trackerMapWrap.fs .map-locate-btn{bottom:auto;top:calc(50% + 84px);right:12px;width:46px;height:46px}
+@media (min-width:781px){#trackerMapWrap .map-locate-btn{bottom:66px}}
