@@ -1732,7 +1732,7 @@ function initPWA(){const button=$('installBtn');if(button)button.hidden=true;}
 
 async function runDiagnostics(){
   const button=$('diagnosticBtn');setBusy(button,true,'Đang kiểm tra…');
-  setSystemStatus('js','ok','V9.1 · giao diện mới + AI');updateConnection();
+  setSystemStatus('js','ok','V9.2 · gọn, theo khung giờ');updateConnection();
   try{
     const permission=await geolocationPermissionState();
     setSystemStatus('gps',permission==='denied'?'error':permission==='granted'?'ok':'warn',permission==='denied'?'Bị chặn':permission==='granted'?'Đã cấp quyền':'Chưa cấp quyền');
@@ -2017,7 +2017,7 @@ function bindCoachEvents(){
 }
 
 /* ===================== V8.3 · ĐIỀU HƯỚNG THEO TAB ===================== */
-const VIEWS=['home','plan','coach','run','journal'];
+const VIEWS=['home','weather','plan','coach','run','journal'];
 let currentView='home';
 function viewOfElement(el){return el?.closest?.('.view')?.dataset.view||null;}
 function resizeVisibleMaps(name){
@@ -2031,7 +2031,7 @@ function activateView(name,{scroll=true}={}){
   if(!VIEWS.includes(name))name='home';
   const changed=name!==currentView;currentView=name;
   document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.dataset.view===name));
-  document.querySelectorAll('[data-tab]').forEach(t=>{const on=t.dataset.tab===name;t.classList.toggle('active',on);if(on)t.setAttribute('aria-current','page');else t.removeAttribute('aria-current');});
+  document.querySelectorAll('[data-tab]').forEach(t=>{const on=t.dataset.tab===name||(t.dataset.tabAlso||'').split(' ').includes(name);t.classList.toggle('active',on);if(on)t.setAttribute('aria-current','page');else t.removeAttribute('aria-current');});
   document.body.dataset.view=name;
   if(scroll&&changed)window.scrollTo({top:0,behavior:'auto'});
   if(changed)resizeVisibleMaps(name);
@@ -2066,6 +2066,7 @@ function initTabs(){
 
 /* ---- Thẻ tóm tắt ở trang chủ ---- */
 function renderHomeSummary(data,snapshot,result){
+  setTimeout(()=>{if(typeof document!=='undefined')document.dispatchEvent(new CustomEvent('airun:update'));},0);
   const plan=currentPlan(),est=planEstimate(plan);
   if($('homePlanLine'))$('homePlanLine').textContent=`Kế hoạch: ${plan.time} · ${plan.duration} phút · ${est.distance.toFixed(1)} km · ${plan.intensity.toLowerCase()}.`;
   const best=$('homeBest'),hours=$('homeHours');
@@ -2080,12 +2081,14 @@ function renderHomeSummary(data,snapshot,result){
   if(line)line.textContent=`Đang xem: ${data.location?.label||ward().name} · ${plan.time} · ${plan.duration} phút · ${plan.intensity} — AIRUN chấm ${result.score}/10 (“${result.title}”).`;
 }
 function renderHomeAi(result,source){
+  setTimeout(()=>{if(typeof document!=='undefined')document.dispatchEvent(new CustomEvent('airun:update'));},0);
   const h=$('homeAiHead'),t=$('homeAiText');if(!h||!t||!result)return;
   h.textContent=result.headline||'AI Coach';
   const first=String(result.summary||'').split(/(?<=[.!?])\s+/)[0]||'';
   t.textContent=(first.length>170?first.slice(0,167)+'…':first)+(source==='ai'?'':' (giải thích tự động)');
 }
 function renderHomeRun(){
+  setTimeout(()=>{if(typeof document!=='undefined')document.dispatchEvent(new CustomEvent('airun:update'));},0);
   const head=$('homeRunHead'),text=$('homeRunText');if(!head||!text)return;
   if(tracker.status==='running'||tracker.status==='paused'){head.textContent=`Đang chạy · ${tracker.distanceKm.toFixed(2)} km`;text.textContent='Buổi chạy đang được ghi. Mở trang chạy để xem bản đồ.';return;}
   const last=journalRows().find(r=>r.type==='run');
@@ -2541,8 +2544,8 @@ let airunInitialized=false;
 async function init(){
   if(airunInitialized)return;airunInitialized=true;
   if(await clearLegacyServiceWorkerControl()) return;
-  if(typeof window!=='undefined')window.__AIRUN_APP_READY='v90';
-  setSystemStatus('js','ok','V9.1 · giao diện mới + AI');
+  if(typeof window!=='undefined')window.__AIRUN_APP_READY='v92';
+  setSystemStatus('js','ok','V9.2 · gọn, theo khung giờ');
   safeCall('khu vực',()=>{$('area').innerHTML=WARDS.map(item=>`<option value="${item.key}">${escapeHTML(item.name)}</option>`).join('');});
   safeCall('khôi phục cài đặt',restorePlanSettings);
   safeCall('chọn khu vực',()=>{$('area').value=selectedKey;});

@@ -1,4 +1,4 @@
-# AIRUN Đà Nẵng · V9.1 Giao diện điện thoại mới + AI ở mọi tab
+# AIRUN Đà Nẵng · V9.2 Gọn: mỗi màn một thông tin chính + Thời tiết theo khung giờ
 
 Trang web hỗ trợ người chạy bộ ở Đà Nẵng: kiểm tra thời tiết, AQI, UV theo giờ → chấm điểm thuận lợi bằng công thức minh bạch → **AI Coach giải thích bằng lời, trả lời câu hỏi và làm giúp (tạo cung, đổi kế hoạch, mở tab)** → **mô tả cung chạy bằng lời, AI tìm địa điểm và vẽ đường trên Google Maps** → chạy với GPS → **đánh giá khuyến nghị sau buổi chạy** → dữ liệu lưu vào **tài khoản người chạy (Google Sheet)** để AI gợi ý cá nhân hoá và lập kế hoạch tuần.
 
@@ -10,8 +10,10 @@ Hướng dẫn cài đặt Google Maps, Google Sheet và biến môi trường: 
 | `index.html` | Khung trang (HTML) + bộ biểu tượng Lucide |
 | `css/vendor/open-props.subset.css` | Biến thiết kế Open Props (MIT): chuyển động, bo góc, bóng, cỡ chữ |
 | `css/app.css` | Giao diện gốc V4–V9 |
+| `css/clean.css` | Lớp V9.2: chữ gọn, trang chủ "Bây giờ" + danh mục, trang Thời tiết, bảng chọn khu vực |
 | `css/mobile.css` | Lớp thiết kế V9.1 ưu tiên điện thoại: chữ, nút + hiệu ứng nhấn, thanh tab, lộ trình 5 bước |
 | `js/app.js` | Logic phía trình duyệt (chấm điểm, bản đồ, GPS, AI Coach, tài khoản) |
+| `js/hub.js` | Trang chủ (thẻ Bây giờ + danh mục), trang Thời tiết theo khung giờ cho từng khu vực, bảng chọn khu vực |
 | `js/ui.js` | Tương tác giao diện: gợn sóng/rung khi chạm, thanh lộ trình tự sáng, tiểu mục Nhật ký |
 | `js/boot.js` | Báo lỗi nếu script chính không khởi động (sửa cache) |
 | `server.js` | Máy chủ Node (không cần thư viện ngoài): phục vụ trang, proxy Open-Meteo, AI Coach (OpenAI), Google Places/Routes, GraphHopper, tài khoản, phản hồi |
