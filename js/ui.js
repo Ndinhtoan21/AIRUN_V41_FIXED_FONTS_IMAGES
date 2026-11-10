@@ -47,9 +47,9 @@
   const RUN_SECTIONS = [
     { step: 3, el: () => $('#mapSection') },
     { step: 4, el: () => $('#tracker') },
-    { step: 5, el: () => $('#feedbackForm') }
+    { step: 5, el: () => $('#feedbackFold') }
   ];
-  const stepTarget = { 3: '#mapSection', 4: '#tracker', 5: '#feedbackForm' };
+  const stepTarget = { 3: '#mapSection', 4: '#tracker', 5: '#feedbackFold' };
 
   function currentStep() {
     const v = view();
@@ -96,6 +96,7 @@
     // Đang ở tab Chạy thì chỉ cuộn tới đúng phần, không đổi trang.
     if (step >= 3 && view() === 'run') {
       event.preventDefault();
+      if (step === 5) { const f = $('#feedbackFold'); if (f) f.open = true; }
       smoothTo(stepTarget[step]);
       if (location.hash !== '#/run') history.replaceState(null, '', '#/run');
     } else if (location.hash === a.getAttribute('href')) {
@@ -105,8 +106,8 @@
   });
 
   /* ---------- 3. Tiểu mục dính trong Nhật ký ---------- */
-  const subnav = $('#journalNav');
-  subnav?.addEventListener('click', (event) => {
+  const SUBNAVS = [['journal', $('#journalNav')], ['coach', $('#coachNav')]].filter((x) => x[1]);
+  SUBNAVS.forEach(([, nav]) => nav.addEventListener('click', (event) => {
     const a = event.target.closest('a[href^="#"]');
     if (!a) return;
     event.preventDefault();
@@ -114,14 +115,16 @@
     const target = $(id);
     if (target?.tagName === 'DETAILS') target.open = true;
     smoothTo(id);
-  });
+  }));
   function paintSubnav() {
-    if (!subnav || view() !== 'journal') return;
+    const found = SUBNAVS.find(([v]) => v === view());
+    if (!found) return;
+    const subnav = found[1];
     const line = window.innerHeight * 0.35;
     let active = null;
     $$('a', subnav).forEach((a) => {
       const el = $(a.getAttribute('href'));
-      if (el && el.getBoundingClientRect().top < line) active = a;
+      if (el && el.offsetParent !== null && el.getBoundingClientRect().top < line) active = a;
     });
     active = active || $('a', subnav);
     $$('a', subnav).forEach((a) => a.classList.toggle('active', a === active));

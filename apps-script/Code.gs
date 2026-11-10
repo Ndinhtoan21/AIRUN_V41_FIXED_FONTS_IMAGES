@@ -34,6 +34,7 @@ function doPost(e) {
       case 'touch': return out(touch(req.id));
       case 'append': return out(append(req.tab, req.row));
       case 'history': return out(history(req.id, Number(req.limit) || 60));
+      case 'community': return out(community(Number(req.days) || 70));
       default: return out({ ok: false, error: 'unknown_action' });
     }
   } catch (err) {
@@ -130,4 +131,44 @@ function history(id, limit) {
     });
   });
   return { ok: true, history: result };
+}
+
+
+/**
+ * V9.6 – Cộng đồng: trả về các buổi chạy gần đây của mọi người (để máy chủ AIRUN xếp hạng tuần/tháng/khu vực)
+ * và các tin trong tab "tin_tuc". Không trả mã PIN hay dữ liệu nhạy cảm; chỉ tên người chạy, km, thời gian, khu vực.
+ * Tab "tin_tuc" được tạo tự động lần đầu. Bạn (quản trị) gõ tin vào đó: ngay | khu_vuc | tieu_de | noi_dung | lien_ket | hien
+ * (cột "hien" để trống hoặc gõ "x" = hiện; gõ "an" = ẩn tin).
+ */
+function isoOf(v) {
+  if (v instanceof Date) return v.toISOString();
+  const d = new Date(v);
+  return isNaN(d.getTime()) ? '' : d.toISOString();
+}
+
+function newsSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sh = ss.getSheetByName('tin_tuc');
+  if (!sh) {
+    sh = ss.insertSheet('tin_tuc');
+    sh.getRange(1, 1, 1, 6).setValues([['ngay', 'khu_vuc', 'tieu_de', 'noi_dung', 'lien_ket', 'hien']]).setFontWeight('bold');
+    sh.setFrozenRows(1);
+  }
+  return sh;
+}
+
+function community(days) {
+  const since = Date.now() - Math.min(120, Math.max(7, days)) * 864e5;
+  const runs = rowsAsObjects(sheet('buoi_chay')).map(r => ({
+    id: String(r.nguoi_chay_id || ''), ten: String(r.ten || ''), km: Number(r.km) || 0, giay: Number(r.thoi_gian_giay) || 0,
+    khu_vuc: String(r.khu_vuc || ''), thoi_diem: isoOf(r.thoi_diem), ma: String(r.ma_buoi || ''), nguon: String(r.nguon || 'gps')
+  })).filter(r => r.id && r.thoi_diem && new Date(r.thoi_diem).getTime() >= since);
+  let news = [];
+  try {
+    news = rowsAsObjects(newsSheet()).filter(n => String(n.tieu_de || '').trim() && String(n.hien || '').trim().toLowerCase() !== 'an').map(n => ({
+      ngay: n.ngay instanceof Date ? Utilities.formatDate(n.ngay, 'Asia/Ho_Chi_Minh', 'dd/MM/yyyy') : String(n.ngay || ''),
+      khu_vuc: String(n.khu_vuc || ''), tieu_de: String(n.tieu_de || ''), noi_dung: String(n.noi_dung || ''), lien_ket: String(n.lien_ket || '')
+    })).slice(-20).reverse();
+  } catch (err) { news = []; }
+  return { ok: true, runs: runs, news: news };
 }

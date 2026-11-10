@@ -1,0 +1,197 @@
+/* ==========================================================================
+   AIRUN V9.6 — HLV online (thể trạng, lộ trình, dinh dưỡng), Cộng đồng, Cẩm nang.
+   Nạp sau css/clean.css; dùng lại biến màu và cỡ chữ đã có.
+   ========================================================================== */
+
+/* ---------- Dùng chung ---------- */
+.help-btn{display:grid;place-items:center;width:40px;height:40px;flex:none;border-radius:50%;border:1px solid var(--hairline);background:var(--surface);color:var(--brand-700);text-decoration:none;margin-left:auto}
+.help-btn + .account-btn{margin-left:8px}
+.help-btn .ic{width:20px;height:20px}
+.help-btn:hover{background:var(--surface-2)}
+details.fold{border:1px solid var(--hairline);border-radius:18px;background:var(--surface);overflow:hidden}
+details.fold > summary{display:flex;align-items:center;gap:12px;min-height:60px;padding:12px 16px;cursor:pointer;list-style:none;-webkit-tap-highlight-color:transparent}
+details.fold > summary::-webkit-details-marker{display:none}
+details.fold > summary > span:not(.cat-ic){display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+details.fold > summary b{font-size:15.5px;font-weight:var(--w-semi);line-height:1.3}
+details.fold > summary small{font-size:12.5px;color:var(--muted)}
+details.fold > summary > .ic{width:18px;height:18px;flex:none;color:var(--muted);transition:transform .2s}
+details.fold[open] > summary > .ic{transform:rotate(180deg)}
+details.fold[open] > summary{border-bottom:1px solid var(--hairline)}
+details.fb-fold{margin-top:14px}
+details.fb-fold .feedback-card{border:0!important;border-radius:0!important;margin:0!important}
+.tools-section details.fold .tools-grid{padding:14px}
+.next-step.slim{margin-top:12px}
+.link-danger{border:0;background:none;color:#a23b33;font-size:13.5px;font-weight:var(--w-med);padding:8px 6px;cursor:pointer;min-height:40px}
+.cp-note{margin:10px 0 0;font-size:12.5px;line-height:1.5;color:var(--muted)}
+.cp-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:14px}
+.cp-actions .primary,.cp-actions .soft-btn{width:auto;min-height:44px;padding:0 16px;display:inline-flex;align-items:center;gap:7px;text-decoration:none}
+.cp-actions .ic{width:17px;height:17px}
+.cp-flag{margin:10px 0 0;padding:10px 12px;border-radius:12px;background:var(--t-ok-bg);color:#6b4a00;font-size:13.5px;line-height:1.5}
+#coachNav{position:static;margin-top:8px}
+body[data-view="coach"] .coachpro{scroll-margin-top:130px}
+.coachpro:empty{display:none}
+
+/* ---------- AI Coach: thể trạng & BMI ---------- */
+.cp-form{padding:16px}
+.cp-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.cp-grid label{display:flex;flex-direction:column;gap:6px;font-size:13.5px;color:#3c5249;min-width:0}
+.cp-grid input,.cp-grid select{min-height:46px;width:100%;padding:0 12px;border-radius:12px;border:1px solid #d5e2dc;background:#fff;font-size:16px;color:var(--ink)}
+.cp-grid label:last-child{grid-column:1/-1}
+.cp-bmi{padding:18px}
+.cp-bmi-top{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
+.cp-bmi-top > div small{display:block;font-size:var(--fs-cap);letter-spacing:.09em;color:var(--muted);font-weight:var(--w-semi)}
+.cp-bmi-top > div > b{display:block;font-size:46px;line-height:1.05;letter-spacing:-.03em;font-variant-numeric:tabular-nums;color:var(--ink)}
+.cp-tag{display:inline-block;margin-top:6px;padding:4px 10px;border-radius:999px;background:var(--tb);color:var(--tc);font-size:13px;font-weight:var(--w-semi)}
+.cp-bmi-top ul{list-style:none;margin:0;padding:0;display:grid;gap:6px;text-align:right}
+.cp-bmi-top li small{display:block;font-size:12px;color:var(--muted)}
+.cp-bmi-top li b{font-size:15px}
+.cp-scale{position:relative;display:grid;grid-template-columns:17.5% 22.5% 10% 50%;height:10px;margin-top:18px;border-radius:999px;overflow:visible}
+.cp-scale span{display:block;height:100%}
+.cp-scale .z1{background:#f0d27a;border-radius:999px 0 0 999px}.cp-scale .z2{background:#57b98c}.cp-scale .z3{background:#f0b45c}.cp-scale .z4{background:#e08a7c;border-radius:0 999px 999px 0}
+.cp-scale i{position:absolute;top:-5px;width:4px;height:20px;border-radius:2px;background:var(--ink);box-shadow:0 0 0 2px #fff;transform:translateX(-50%);z-index:1}
+.cp-scale-lbl{position:relative;height:18px;font-size:11.5px;color:var(--muted)}
+.cp-scale-lbl span{position:absolute;top:4px;transform:translateX(-50%)}
+.cp-scale-lbl span:nth-child(1){left:17.5%}.cp-scale-lbl span:nth-child(2){left:40%}.cp-scale-lbl span:nth-child(3){left:50%}
+.cp-range{margin:8px 0 0;font-size:14px}
+.cp-advice{margin:10px 0 0;font-size:15px;line-height:1.55}
+
+/* ---------- AI Coach: lộ trình ---------- */
+.cp-empty{padding:16px}.cp-empty p{margin:0;font-size:14.5px;line-height:1.55;color:#3c5249}
+.cp-program{padding:16px}
+.cp-weeks{display:flex;align-items:flex-end;gap:5px;height:92px;padding-bottom:20px;position:relative}
+.cp-weeks span{flex:1;height:100%;display:flex;align-items:flex-end;position:relative;min-width:0}
+.cp-weeks i{display:block;width:100%;border-radius:6px 6px 3px 3px;background:#d7e9e0}
+.cp-weeks .past i{background:#9fd0b8}.cp-weeks .now i{background:var(--brand-700)}.cp-weeks .deload i{opacity:.6}
+.cp-weeks em{position:absolute;bottom:-19px;left:0;right:0;text-align:center;font-style:normal;font-size:11px;color:var(--muted)}
+.cp-weeks .now em{color:var(--brand-800);font-weight:var(--w-bold)}
+.cp-week-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-end;margin:16px 0 10px}
+.cp-week-head small{display:block;font-size:var(--fs-cap);letter-spacing:.08em;color:var(--muted);font-weight:var(--w-semi)}
+.cp-week-head b{font-size:26px;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.cp-progress{flex:1;max-width:210px;text-align:right}
+.cp-progress span{display:block;height:8px;border-radius:999px;background:#e6efea;overflow:hidden}
+.cp-progress i{display:block;height:100%;border-radius:999px;background:var(--brand-600)}
+.cp-progress small{letter-spacing:0;font-weight:var(--w-reg);font-size:12.5px;margin-top:4px}
+.cp-program .weekly-list{display:grid;gap:8px}
+.cp-program .wk{grid-template-columns:84px minmax(0,1fr) auto}
+.cp-program .wk.today{border-color:#9fd0b8;background:#eaf6f0}
+.cp-program .wk-day small{color:var(--brand-700);font-weight:var(--w-semi)}
+.cp-all{margin-top:12px;border-radius:14px!important}
+.cp-all-list{margin:0;padding:8px 16px 12px 16px;list-style:none;display:grid;gap:0}
+.cp-all-list li{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--hairline);font-size:14px}
+.cp-all-list li:last-child{border-bottom:0}.cp-all-list li.now b{color:var(--brand-700)}
+.cp-all-list span{color:#3c5249;text-align:right}
+.cp-ai:empty{display:none}
+.cp-ai{margin-top:14px;padding:14px;border-radius:14px;background:#f3f8f5;border:1px solid #e1ece6}
+.cp-ai h3{margin:0 0 6px;font-size:16.5px;line-height:1.35}
+.cp-ai p{margin:0;font-size:14.5px;line-height:1.55}
+.cp-ai > small{display:block;margin:12px 0 4px;font-size:var(--fs-cap);letter-spacing:.08em;color:#3f7f69;font-weight:var(--w-semi)}
+.cp-ai ul{margin:0;padding-left:18px;font-size:14.5px;line-height:1.55}
+
+/* ---------- AI Coach: dinh dưỡng ---------- */
+.cp-nutri{padding:16px}
+.cp-nutri > ul{list-style:none;margin:0;padding:0;display:grid;gap:14px}
+.cp-nutri > ul > li{display:flex;gap:12px;align-items:flex-start}
+.cp-nutri li b{font-size:15px}.cp-nutri li p{margin:3px 0 0;font-size:14.5px;line-height:1.55;color:#3c5249}
+.cp-ask{margin-top:14px}
+
+/* ---------- Kết quả tìm địa điểm trong khung chat ---------- */
+.ai-places{align-self:stretch;display:grid;gap:6px}
+.ai-places a{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:12px;border:1px solid #d9e7e0;background:#fff;text-decoration:none;color:var(--ink)}
+.ai-places a b{font-size:14.5px;color:var(--brand-700)}.ai-places a small{font-size:12.5px;color:var(--muted);line-height:1.4}
+
+/* ---------- Cộng đồng ---------- */
+.cm-page,.gd-page{max-width:760px!important}
+.cm-tabs{display:grid;grid-auto-columns:1fr;width:100%;margin-top:12px}
+.cm-tabs button{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:42px}
+.cm-tabs .ic{width:17px;height:17px}
+.cm-period{margin-top:10px;display:grid;grid-auto-columns:1fr;width:100%}
+.cm-body{margin-top:14px;display:grid;gap:12px;transition:opacity .2s}
+.cm-body.is-loading{opacity:.55}
+.cm-skel{height:64px;border-radius:16px;background:linear-gradient(90deg,#eef4f1,#f7faf8,#eef4f1);background-size:200% 100%;animation:cmSkel 1.2s linear infinite}
+@keyframes cmSkel{to{background-position:-200% 0}}
+.cm-totals{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.cm-totals span{display:flex;flex-direction:column;align-items:center;padding:12px 6px;border-radius:14px;background:var(--surface-2);font-size:12.5px;color:var(--muted)}
+.cm-totals b{font-size:22px;color:var(--ink);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.cm-areas{margin:0}
+.cm-areas button small{margin-left:6px;font-size:11.5px;opacity:.75}
+.cm-me{display:flex;align-items:center;gap:12px;justify-content:space-between;padding:14px;border-radius:16px;border:1px dashed #c6dbd1;background:#fbfdfc}
+.cm-me.on{border-style:solid;border-color:#9fd0b8;background:#eaf6f0;justify-content:flex-start}
+.cm-me b{display:block;font-size:15px;line-height:1.35}.cm-me small{font-size:13px;color:var(--muted)}
+.cm-me .primary{width:auto;min-height:42px;padding:0 16px;flex:none;display:inline-flex;align-items:center;text-decoration:none}
+.cm-me .cm-rank{font-size:22px;font-weight:var(--w-bold);color:var(--brand-700);min-width:44px;text-align:center}
+.cm-board{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.cm-board li{display:grid;grid-template-columns:30px 38px minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 12px;border-radius:14px;background:var(--surface);border:1px solid var(--hairline)}
+.cm-board li.me{border-color:#9fd0b8;background:#f1f9f5}
+.cm-board .cm-rank{font-weight:var(--w-bold);font-size:15px;color:var(--muted);text-align:center;font-variant-numeric:tabular-nums}
+.cm-board .top1 .cm-rank,.cm-board .top2 .cm-rank,.cm-board .top3 .cm-rank{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;color:#fff;font-size:14px}
+.cm-board .top1 .cm-rank{background:#d9a514}.cm-board .top2 .cm-rank{background:#8e9aa3}.cm-board .top3 .cm-rank{background:#b9773f}
+.cm-av{display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--brand-50);color:var(--brand-700);font-weight:var(--w-bold)}
+.cm-who{min-width:0}.cm-who b{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cm-who small{display:block;font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cm-km{text-align:right}.cm-km b{font-size:19px;font-variant-numeric:tabular-nums;letter-spacing:-.02em}.cm-km small{margin-left:3px;font-size:12px;color:var(--muted)}
+.cm-hide{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:14px;background:var(--surface-2);font-size:14px;cursor:pointer}
+.cm-hide input{width:20px;height:20px;margin-top:2px;flex:none;accent-color:var(--brand-700)}
+.cm-hide small{display:block;font-size:12.5px;color:var(--muted);margin-top:2px;line-height:1.45}
+.cm-post{padding:14px 16px;display:grid;gap:6px}
+.cm-post small{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted)}.cm-post small .ic{width:15px;height:15px}
+.cm-post b{font-size:16px;line-height:1.35}.cm-post p{margin:0;font-size:14.5px;line-height:1.55;color:#3c5249;white-space:pre-line}
+.cm-post a{display:inline-flex;align-items:center;gap:5px;font-size:14px;font-weight:var(--w-semi);color:var(--brand-700);text-decoration:none}.cm-post a .ic{width:15px;height:15px}
+.cm-area{padding:14px 16px;border-left:4px solid var(--tc)!important}
+.cm-area-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.cm-area-top small{display:block;font-size:var(--fs-cap);letter-spacing:.07em;color:var(--muted);font-weight:var(--w-semi);text-transform:uppercase}
+.cm-area-top b{font-size:18px}
+.cm-score{flex:none;padding:5px 11px;border-radius:999px;background:var(--tb);color:var(--tc);font-size:13px;font-weight:var(--w-semi)}
+.cm-score b{font-size:17px}
+.cm-area-line{margin:6px 0 0;font-size:14.5px;color:#3c5249}
+.cm-alerts{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:6px}
+.cm-alerts li{display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:10px;background:var(--tb);color:var(--tc);font-size:13.5px;font-weight:var(--w-med);line-height:1.4}
+.cm-alerts .ic{width:16px;height:16px;flex:none;margin-top:1px}
+.cm-calm{margin:8px 0 0;font-size:13.5px;color:var(--muted)}
+.cm-area-foot{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap}
+.cm-area-foot span{display:flex;flex-direction:column;gap:3px;font-size:13.5px;min-width:0}
+.cm-area-foot span,.cm-area-foot em{display:flex}
+.cm-area-foot em{font-style:normal;color:var(--muted);align-items:center;gap:5px;flex-direction:row}
+.cm-area-foot .ic{width:15px;height:15px;margin-right:5px;vertical-align:-2px;display:inline-block}
+.cm-area-foot span{display:block}
+
+/* ---------- Cẩm nang ---------- */
+.gd-quick{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:10px}
+.gd-quick li{display:flex;gap:12px;padding:14px;border-radius:16px;background:var(--surface);border:1px solid var(--hairline)}
+.gd-num{display:grid;place-items:center;width:32px;height:32px;flex:none;border-radius:50%;background:var(--brand-900);color:#fff;font-weight:var(--w-bold);font-size:15px}
+.gd-quick b{display:flex;align-items:center;gap:7px;font-size:15.5px}.gd-quick b .ic{width:18px;height:18px;color:var(--brand-700)}
+.gd-quick p{margin:4px 0 0;font-size:14.5px;line-height:1.55;color:#3c5249}
+.gd-quick .chip-btn{margin-top:10px;text-decoration:none}
+.gd-quick.compact{margin-top:10px;gap:6px}.gd-quick.compact li{padding:10px 12px;border:0;background:var(--surface-2)}
+.gd-page .hub-h,.cm-page .hub-h{margin:22px 0 10px}
+.gd-topics{display:grid;gap:8px}
+.gd-topic dl{margin:0;padding:6px 16px 4px}
+.gd-topic dt{margin-top:12px;font-size:12.5px;font-weight:var(--w-semi);letter-spacing:.04em;text-transform:uppercase;color:#3f7f69}
+.gd-topic dd{margin:3px 0 0;font-size:15px;line-height:1.6;color:#22382f}
+.gd-go{display:inline-flex!important;align-items:center;gap:7px;width:auto!important;min-height:44px;margin:14px 16px 16px;padding:0 16px;text-decoration:none}
+.gd-go .ic{width:16px;height:16px}
+.gd-foot{margin-top:18px;padding:16px;border-radius:16px;background:var(--surface-2);display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.gd-foot p{flex:1 1 100%;margin:0 0 4px;font-size:14.5px;color:#3c5249}
+.gd-foot .soft-btn{width:auto;min-height:42px;padding:0 14px;display:inline-flex;align-items:center;gap:7px}
+.gd-foot .ic{width:16px;height:16px}
+.welcome-dialog{width:min(440px,calc(100vw - 28px));border:0;border-radius:22px;padding:22px 18px 18px;box-shadow:0 24px 60px -20px rgba(5,47,39,.5)}
+.welcome-dialog::backdrop{background:rgba(5,30,24,.5)}
+.welcome-dialog h2{margin:2px 0 4px;font-size:21px;line-height:1.3}
+
+@media (max-width:560px){
+  .cp-bmi-top > div > b{font-size:40px}
+  .cp-program .wk{grid-template-columns:70px minmax(0,1fr)}
+  .cp-program .wk .chip-btn{grid-column:1/-1;justify-self:start}
+  .cp-week-head{flex-direction:column;align-items:stretch}
+  .cp-progress{max-width:none;text-align:left}
+  .help-btn{width:38px;height:38px}
+  .account-btn.logged #accountBtnText{max-width:70px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+}
+
+/* chỉnh sau kiểm thử: tiêu đề nhỏ không tạo cột lưới ẩn; chip khu vực cuộn ngang */
+.cm-page .hub-h,.gd-page .hub-h{grid-area:auto}
+.cm-areas{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px 0}
+.cm-areas::-webkit-scrollbar{display:none}
+.cm-areas button{flex:none;display:inline-flex;align-items:center;min-height:40px;padding:6px 14px;border-radius:999px;border:1px solid var(--hairline);background:var(--surface);color:var(--ink);font-size:14px;font-weight:var(--w-med);white-space:nowrap;cursor:pointer}
+.cm-areas button.on{background:var(--brand-900);border-color:var(--brand-900);color:#fff}
+.cm-area-top small:empty{display:none}
+.account-dialog,.welcome-dialog{max-height:calc(100dvh - 24px);overflow-y:auto}

@@ -13,7 +13,7 @@ const path = require('path');
 
 const PORT = Number(process.env.PORT) || 10000;
 const ROOT = __dirname;
-const VERSION = '9.5.0';
+const VERSION = '9.6.0';
 const OPENAI_API_KEY = (process.env.OPENAI_API_KEY || '').trim();
 const OPENAI_MODEL = (process.env.OPENAI_MODEL || 'gpt-4.1-mini').trim();
 const OPENAI_FALLBACK_MODEL = (process.env.OPENAI_FALLBACK_MODEL || 'gpt-4o-mini').trim();
@@ -159,17 +159,19 @@ async function handleRoute(res, url) {
 }
 
 /* ---------- AI Coach ---------- */
-const COACH_SYSTEM = `Bạn là "AIRUN Coach", trợ lý chạy bộ cho người chạy ở Đà Nẵng (Việt Nam).
+const COACH_SYSTEM = `Bạn là "AIRUN Coach" – huấn luyện viên chạy bộ online cho người chạy ở Đà Nẵng (Việt Nam). Bạn tư vấn trọn vẹn: điều kiện thời tiết/không khí, kỹ thuật và giáo án chạy, lộ trình tăng dần, dinh dưỡng – nước uống, phục hồi, phòng chấn thương, động lực tập luyện.
 Nguyên tắc bắt buộc:
-1. CHỈ dùng số liệu trong khối DỮ LIỆU do ứng dụng gửi (thời tiết, AQI, PM2.5, UV, gió, mưa, kế hoạch, điểm AIRUN, dự báo theo giờ, phản hồi cũ của người dùng). Không bịa số, không đoán số không có. Trường nào null/thiếu thì nói "chưa có dữ liệu".
-2. Khi nhận định, nêu kèm con số làm căn cứ (ví dụ: "cảm giác 36°C", "AQI 67").
+1. Số liệu môi trường (thời tiết, AQI, PM2.5, UV, gió, mưa, điểm AIRUN, dự báo theo giờ) và số liệu của người chạy CHỈ lấy từ khối DỮ LIỆU hoặc KẾT QUẢ TRA CỨU. Không bịa số. Trường nào null/thiếu thì nói "chưa có dữ liệu". Kiến thức huấn luyện, dinh dưỡng, sinh lý vận động thì dùng hiểu biết chuyên môn phổ biến, nói rõ là khuyến nghị chung.
+2. Khi nhận định, nêu kèm con số làm căn cứ (ví dụ: "cảm giác 36°C", "AQI 67", "BMI 24,1").
 3. Bối cảnh địa phương: người chạy ở Đà Nẵng đã quen nắng nóng ẩm. Nhiệt cảm nhận 30–35°C thường vẫn chạy được nếu chạy nhẹ, mang nước, chọn bóng râm hoặc ven biển/ven sông có gió — đừng khuyên bỏ chạy chỉ vì nóng ở mức này. Chỉ khuyên đổi giờ/hoãn rõ ràng khi: cảm giác ≥ 39°C, AQI > 150 (hoặc > 100 với nhóm nhạy cảm), có dông/mưa lớn, gió ≥ 35 km/h, UV ≥ 8 vào giữa trưa.
-4. Gợi ý phải cụ thể, làm được ngay: chạy lúc mấy giờ (lấy từ dự báo theo giờ), chạy nhẹ hơn bao nhiêu (pace/thời lượng), mang gì (lượng nước, mũ, áo mưa, đèn phản quang...).
+4. Gợi ý phải cụ thể, làm được ngay: chạy lúc mấy giờ, chạy nhẹ hơn bao nhiêu (pace/thời lượng), mang gì, ăn uống gì trước/sau buổi chạy.
 5. Nếu người dùng từng phản hồi khuyến nghị "quá khắt khe" hoặc "quá dễ dãi", hãy cân nhắc điều đó và nói rõ bạn đã cân nhắc.
-6. Không chẩn đoán hay thay thế tư vấn y tế. Với nhóm nhạy cảm (hen, tim mạch...), nhắc thận trọng hơn.
-7. Điểm AIRUN thang 0–10: điểm CAO hơn nghĩa là THUẬN LỢI hơn. Không bao giờ nói giờ có điểm thấp hơn là tốt hơn. Nếu giờ dự định có điểm thấp hơn giờ tốt nhất, hãy gợi ý giờ tốt nhất (hoặc cách chạy nhẹ nếu người dùng chỉ rảnh giờ dự định).
-8. Nếu có runner_profile (thói quen của người chạy: số buổi, km trung bình, pace trung bình, giờ hay chạy, khu vực quen, phản hồi cũ) thì cá nhân hoá lời khuyên theo đó (ví dụ: "bạn hay chạy 5:30 sáng, pace 7:10") và không đề xuất tăng quá 10–15% quãng đường so với thói quen.
-9. Xưng "mình", gọi người dùng là "bạn". Tiếng Việt tự nhiên, ngắn gọn, thân thiện.`;
+6. Điểm AIRUN thang 0–10: điểm CAO hơn nghĩa là THUẬN LỢI hơn. Không bao giờ nói giờ có điểm thấp hơn là tốt hơn.
+7. Cá nhân hoá: nếu có runner_profile (thói quen: số buổi, km, pace, giờ hay chạy) và athlete (tuổi, giới, chiều cao, cân nặng, BMI do ứng dụng tính sẵn, mục tiêu, trình độ, số buổi/tuần, lưu ý sức khoẻ) thì dùng chúng. KHÔNG tự tính lại BMI; dùng athlete.bmi và athlete.bmi_class. Không tăng quá 10% tổng quãng đường mỗi tuần; luôn có ngày nghỉ; người mới bắt đầu bằng chạy xen đi bộ. Nếu có program (lộ trình đang theo) thì bám theo tuần hiện tại của lộ trình.
+8. Dinh dưỡng và cân nặng: đưa hướng dẫn chung, an toàn (bữa trước chạy 1,5–3 giờ giàu tinh bột dễ tiêu; sau chạy 30–60 phút bổ sung tinh bột + đạm; uống nước theo thời lượng và độ nóng; ưu tiên món Việt quen thuộc). Giảm cân chỉ khuyên mức chậm (không quá 0,5 kg/tuần), không khuyên nhịn ăn, ăn kiêng cực đoan, thuốc/thực phẩm chức năng giảm cân hay liều thuốc. BMI chỉ là chỉ số sàng lọc, không phải chẩn đoán. Người dưới 18 tuổi: không tư vấn giảm cân hay cắt khẩu phần; khuyên ăn đủ bữa, ngủ đủ, và hỏi phụ huynh/giáo viên/bác sĩ. Nếu người dùng có dấu hiệu ám ảnh cân nặng, nhịn ăn, nôn sau ăn hay tập bù quá mức: không đưa con số, nhẹ nhàng khuyên gặp bác sĩ/chuyên gia dinh dưỡng.
+9. Không chẩn đoán hay thay thế tư vấn y tế. Đau ngực, khó thở bất thường, choáng, đau khớp kéo dài > 1 tuần → khuyên dừng tập và đi khám. Nhóm nhạy cảm (hen, tim mạch, mang thai, bệnh mạn tính) → thận trọng hơn và khuyên hỏi bác sĩ trước khi tăng tải.
+10. Câu hỏi NGOÀI nội dung đang tư vấn (thời tiết nơi khác hoặc ngày khác, địa điểm, đường đi, ngày giờ, đổi đơn vị, kiến thức chung, chuyện trò): vẫn trả lời tử tế, chính xác, đúng trọng tâm; không từ chối, không ép quay về chủ đề chạy bộ. Ngày giờ lấy từ now_vn. Thời tiết/địa điểm chưa có trong DỮ LIỆU thì yêu cầu tra cứu (xem phần lookup) thay vì đoán. Tin tức thời sự, giá cả, lịch sự kiện mới nhất mà không có dữ liệu thì nói thật là bạn không có nguồn trực tiếp.
+11. Xưng "mình", gọi người dùng là "bạn" (gọi tên nếu có runner_name). Tiếng Việt tự nhiên, ấm áp, ngắn gọn như một HLV thật; không dùng markdown đậm/nghiêng; có thể xuống dòng và gạch đầu dòng bằng "- ".`;
 
 const MODE_INSTRUCTIONS = {
   plan: `Nhiệm vụ: đọc toàn bộ DỮ LIỆU và trả về JSON đúng dạng sau (không thêm chữ ngoài JSON):
@@ -177,14 +179,20 @@ const MODE_INSTRUCTIONS = {
   run: `Nhiệm vụ: nhận xét buổi chạy vừa xong dựa vào kế hoạch, kết quả GPS, điều kiện và phản hồi của người dùng. Trả về JSON:
 {"headline":"một câu ≤ 14 từ","summary":"2–3 câu so sánh kế hoạch với thực tế và cảm nhận","next_time":["1–3 gợi ý cho lần chạy sau"],"score_review":"1 câu: phản hồi của người dùng cho thấy công thức chấm điểm cần chỉnh gì (nếu có)"}`,
   live: `Nhiệm vụ: người dùng ĐANG CHẠY. Đưa ra một lời nhắc ngắn (tối đa 2 câu, ≤ 35 từ) để đọc bằng giọng nói, dựa vào quãng đường, pace, thời gian và điều kiện hiện tại. Trả về JSON: {"cue":"..."}`,
-  chat: `Nhiệm vụ: trả lời câu hỏi mới nhất của người dùng dựa trên DỮ LIỆU. Tối đa 90 từ, có số liệu làm căn cứ, kết thúc bằng một gợi ý hành động cụ thể. Trả lời dạng văn bản thường (không JSON, không markdown đậm).`,
-  agent: `Nhiệm vụ: bạn là trợ lý xuất hiện ở mọi tab của app AIRUN (tab hiện tại: current_tab). Trả lời câu hỏi mới nhất (tối đa 90 từ, có số liệu nếu liên quan) VÀ nếu người dùng muốn app LÀM một việc thì đề xuất đúng một hành động. Trả về JSON:
-{"reply":"câu trả lời bằng lời","action":null}
-hoặc action là một trong:
+  chat: `Nhiệm vụ: trả lời câu hỏi mới nhất của người dùng dựa trên DỮ LIỆU. Tối đa 150 từ, có số liệu làm căn cứ, kết thúc bằng một gợi ý hành động cụ thể. Trả lời dạng văn bản thường (không JSON, không markdown đậm).`,
+  agent: `Nhiệm vụ: bạn là HLV xuất hiện ở mọi tab của app AIRUN (tab hiện tại: current_tab). Trả lời câu hỏi mới nhất của người dùng. Câu hỏi đơn giản trả lời 1–3 câu; câu hỏi huấn luyện/dinh dưỡng/lộ trình trả lời tối đa 170 từ, chia ý rõ. Nếu người dùng muốn app LÀM một việc thì đề xuất đúng một hành động. Trả về JSON (không thêm chữ ngoài JSON):
+{"reply":"câu trả lời bằng lời","action":null,"lookup":null}
+action là null hoặc một trong:
 {"type":"plan_route","start_text":"tên địa điểm xuất phát hoặc null","use_current_start":true|false,"waypoints":["tên địa điểm muốn đi qua"],"distance_km":số hoặc null,"loop":true|false}
 {"type":"set_plan","time":"HH:MM hoặc null","duration_min":số hoặc null,"intensity":"Nhẹ|Vừa|Cao hoặc null","area":"tên khu vực trong available_areas hoặc null"}
-{"type":"open_tab","tab":"home|plan|coach|run|journal"}
-Quy tắc: chỉ tạo action khi người dùng yêu cầu rõ (ví dụ "tạo cung 5 km qua cầu Rồng", "đổi sang 6 giờ sáng", "mở nhật ký"). Địa điểm phải là tên cụ thể ở Đà Nẵng/Hội An (thêm "Đà Nẵng" nếu cần). "từ đây", "chỗ mình" → use_current_start=true. Không bịa toạ độ.`,
+{"type":"open_tab","tab":"home|weather|plan|coach|run|community|journal|guide"}
+Quy tắc action: chỉ tạo khi người dùng yêu cầu rõ (ví dụ "tạo cung 5 km qua cầu Rồng", "đổi sang 6 giờ sáng", "mở bảng xếp hạng" → community, "hướng dẫn dùng app" → guide). Địa điểm phải là tên cụ thể ở Đà Nẵng/Hội An (thêm "Đà Nẵng" nếu cần). "từ đây", "chỗ mình" → use_current_start=true. Không bịa toạ độ.
+lookup là null hoặc MỘT yêu cầu tra cứu khi DỮ LIỆU chưa đủ để trả lời:
+{"type":"weather","place":"tên nơi cần xem (ví dụ 'Hội An', 'Hà Nội', 'Bà Nà Hills Đà Nẵng')"} → dùng khi hỏi thời tiết ở nơi KHÁC khu vực đang xem, hoặc ngày xa hơn next_hours (ngày kia, cuối tuần, 3–7 ngày tới; với khu vực đang xem thì place = location.name).
+{"type":"place","query":"cụm tìm kiếm (ví dụ 'cửa hàng giày chạy bộ Đà Nẵng', 'nhà vệ sinh công cộng gần cầu Rồng', 'công viên Biển Đông')"} → dùng khi hỏi địa điểm, địa chỉ, chỗ gửi xe, chỗ mua đồ, bệnh viện, quán nước… gần người dùng hoặc ở nơi được nêu.
+Khi đặt lookup thì reply để một câu ngắn kiểu "Để mình xem…" và action=null. Nếu trong hội thoại đã có KẾT QUẢ TRA CỨU thì KHÔNG đặt lookup nữa: trả lời dứt khoát dựa trên kết quả đó (nêu tên, địa chỉ, khoảng cách hoặc số liệu dự báo); nếu kết quả rỗng thì nói rõ chưa tìm thấy và gợi ý cách hỏi khác.`,
+  program: `Nhiệm vụ: ứng dụng đã lập sẵn một lộ trình chạy nhiều tuần (trường program: mục tiêu, số tuần, km mỗi tuần, buổi dài) theo quy tắc an toàn. KHÔNG đổi các con số của lộ trình. Hãy viết phần nhận xét và hướng dẫn của HLV dựa trên athlete, runner_profile, program và điều kiện thời tiết. Trả về JSON:
+{"headline":"≤ 14 từ","summary":"2–3 câu: lộ trình này hợp với người chạy thế nào (nêu BMI, mục tiêu, thói quen nếu có)","focus":["3 ý trọng tâm kỹ thuật/tập luyện cho giai đoạn đầu"],"nutrition":["3 gợi ý ăn uống cụ thể, món Việt quen thuộc, theo nguyên tắc 8"],"recovery":["2 gợi ý phục hồi/ngủ/giãn cơ"],"caution":"1 câu lưu ý an toàn riêng cho người này (tuổi, BMI, lưu ý sức khoẻ, nắng nóng Đà Nẵng)"}`,
   route_intent: `Nhiệm vụ: người dùng mô tả cung chạy họ muốn. Phân tích thành JSON (không thêm chữ ngoài JSON):
 {"start_text":"tên địa điểm xuất phát cụ thể (kèm 'Đà Nẵng' nếu cần) hoặc null","use_current_start":true|false,"waypoints":["tối đa 5 địa điểm muốn đi qua, theo thứ tự"],"distance_km":số hoặc null,"loop":true nếu muốn quay về điểm xuất phát,"reply":"1–2 câu xác nhận bạn sẽ tạo cung thế nào, kèm lưu ý thời tiết/không khí nếu đáng chú ý (dựa trên DỮ LIỆU)"}
 Nếu người dùng không nêu điểm xuất phát → use_current_start=true, start_text=null. Nếu không nêu số km nhưng nêu thời gian chạy → quy đổi bằng pace trong plan. Không bịa toạ độ.`,
@@ -193,9 +201,10 @@ Nếu người dùng không nêu điểm xuất phát → use_current_start=true
 Có 3–5 buổi chạy và ít nhất 1 ngày nghỉ. Giờ chạy ưu tiên sáng sớm hoặc chiều tối (Đà Nẵng nóng).`
 };
 const ACTION_TYPES = new Set(['plan_route', 'set_plan', 'open_tab']);
+const TAB_NAMES = ['home', 'weather', 'plan', 'coach', 'run', 'community', 'journal', 'guide'];
 function cleanAction(a) {
   if (!a || typeof a !== 'object' || !ACTION_TYPES.has(a.type)) return null;
-  if (a.type === 'open_tab') return ['home', 'plan', 'coach', 'run', 'journal'].includes(a.tab) ? { type: 'open_tab', tab: a.tab } : null;
+  if (a.type === 'open_tab') return TAB_NAMES.includes(a.tab) ? { type: 'open_tab', tab: a.tab } : null;
   if (a.type === 'set_plan') return { type: 'set_plan', time: /^\d{1,2}:\d{2}$/.test(String(a.time || '')) ? String(a.time).padStart(5, '0') : null, duration_min: Number(a.duration_min) > 0 ? Math.min(240, Math.round(Number(a.duration_min))) : null, intensity: ['Nhẹ', 'Vừa', 'Cao'].includes(a.intensity) ? a.intensity : null, area: a.area ? String(a.area).slice(0, 40) : null };
   return { type: 'plan_route', start_text: a.start_text ? String(a.start_text).slice(0, 100) : null, use_current_start: Boolean(a.use_current_start) || !a.start_text, waypoints: (Array.isArray(a.waypoints) ? a.waypoints : []).map(w => String(w).slice(0, 100)).filter(Boolean).slice(0, 5), distance_km: Number(a.distance_km) > 0 ? Math.min(42, Number(a.distance_km)) : null, loop: a.loop !== false };
 }
@@ -209,7 +218,7 @@ function trimContext(ctx) {
   return text.length > 18000 ? text.slice(0, 18000) : text;
 }
 
-async function callOpenAI(messages, { wantJSON, maxTokens }) {
+async function callOpenAI(messages, { wantJSON, maxTokens, timeout = 25000 }) {
   const models = [OPENAI_MODEL, OPENAI_FALLBACK_MODEL].filter((m, i, a) => m && a.indexOf(m) === i);
   let lastError = null;
   for (const model of models) {
@@ -222,7 +231,7 @@ async function callOpenAI(messages, { wantJSON, maxTokens }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${OPENAI_API_KEY}` },
         body: JSON.stringify(body)
-      }, 25000);
+      }, timeout);
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
         const message = data?.error?.message || `OpenAI HTTP ${response.status}`;
@@ -249,13 +258,52 @@ function parseJSONLoose(text) {
   return null;
 }
 
+
+/* ---------- V9.6: tra cứu thật cho câu hỏi ngoài lề (thời tiết nơi khác/ngày khác, địa điểm) ---------- */
+const WMO_VI = { 0: 'trời quang', 1: 'ít mây', 2: 'mây rải rác', 3: 'nhiều mây', 45: 'sương mù', 48: 'sương mù', 51: 'mưa phùn nhẹ', 53: 'mưa phùn', 55: 'mưa phùn dày', 61: 'mưa nhỏ', 63: 'mưa vừa', 65: 'mưa to', 66: 'mưa lạnh', 67: 'mưa lạnh', 71: 'tuyết nhẹ', 73: 'tuyết', 75: 'tuyết dày', 80: 'mưa rào nhẹ', 81: 'mưa rào', 82: 'mưa rào rất to', 95: 'dông', 96: 'dông kèm mưa đá', 99: 'dông kèm mưa đá' };
+const WEEKDAYS_VI = ['Chủ nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+function nowVN() {
+  const d = new Date(Date.now() + 7 * 3600e3);
+  return { date: d.toISOString().slice(0, 10), time: d.toISOString().slice(11, 16), weekday: WEEKDAYS_VI[d.getUTCDay()], text: `${WEEKDAYS_VI[d.getUTCDay()]}, ngày ${d.getUTCDate()}/${d.getUTCMonth() + 1}/${d.getUTCFullYear()}, ${d.toISOString().slice(11, 16)} (giờ Việt Nam)` };
+}
+const r1 = v => (Number.isFinite(Number(v)) && v !== null ? Math.round(Number(v) * 10) / 10 : null);
+async function lookupWeather(place, near) {
+  const name = String(place || '').trim().slice(0, 80);
+  if (name.length < 2) return { found: false, reason: 'Chưa rõ nơi cần xem thời tiết' };
+  const hit = (await searchPlaces(name, near, { wide: true }))[0];
+  if (!hit) return { found: false, place: name, reason: 'Không tìm thấy địa điểm này' };
+  const qs = `latitude=${hit.lat.toFixed(3)}&longitude=${hit.lon.toFixed(3)}&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,precipitation&daily=weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,precipitation_probability_max,precipitation_sum,wind_speed_10m_max,uv_index_max&timezone=Asia%2FHo_Chi_Minh&forecast_days=7`;
+  const [w, a] = await Promise.all([
+    cachedJSON(`lw:${hit.lat.toFixed(2)},${hit.lon.toFixed(2)}`, `${WEATHER_BASE}?${qs}`, 30 * 60 * 1000),
+    cachedJSON(`la:${hit.lat.toFixed(2)},${hit.lon.toFixed(2)}`, `${AIR_BASE}?latitude=${hit.lat.toFixed(3)}&longitude=${hit.lon.toFixed(3)}&current=us_aqi,pm2_5&timezone=Asia%2FHo_Chi_Minh`, 30 * 60 * 1000).catch(() => null)
+  ]);
+  const c = w.current || {}, d = w.daily || {};
+  const days = (d.time || []).slice(0, 7).map((t, i) => { const dt = new Date(`${t}T00:00:00Z`); return { date: t, weekday: WEEKDAYS_VI[dt.getUTCDay()], weather: WMO_VI[d.weather_code?.[i]] || null, temp_min_c: r1(d.temperature_2m_min?.[i]), temp_max_c: r1(d.temperature_2m_max?.[i]), feels_max_c: r1(d.apparent_temperature_max?.[i]), rain_prob_pct: r1(d.precipitation_probability_max?.[i]), rain_mm: r1(d.precipitation_sum?.[i]), wind_max_kmh: r1(d.wind_speed_10m_max?.[i]), uv_max: r1(d.uv_index_max?.[i]) }; });
+  return { found: true, place: hit.name, address: hit.address || null, source: 'Open-Meteo', now: { weather: WMO_VI[c.weather_code] || null, temp_c: r1(c.temperature_2m), feels_like_c: r1(c.apparent_temperature), humidity_pct: r1(c.relative_humidity_2m), wind_kmh: r1(c.wind_speed_10m), rain_mm: r1(c.precipitation), us_aqi: r1(a?.current?.us_aqi), pm25: r1(a?.current?.pm2_5) }, daily: days };
+}
+async function lookupPlace(query, near) {
+  const q = String(query || '').trim().slice(0, 120);
+  if (q.length < 2) return { found: false, reason: 'Chưa rõ cần tìm gì' };
+  const origin = near && validCoord(near.lat, near.lon) ? { lat: Number(near.lat), lon: Number(near.lon) } : null;
+  const list = (await searchPlaces(q, near, { wide: true })).slice(0, 5).map(p => ({ name: p.name, address: p.address || null, distance_km: origin ? Math.round(haversineKm(origin, p) * 10) / 10 : null, map_link: `https://www.google.com/maps/search/?api=1&query=${p.lat.toFixed(5)},${p.lon.toFixed(5)}` }));
+  if (origin) list.sort((x, y) => x.distance_km - y.distance_km);
+  return { found: list.length > 0, query: q, distance_from: origin ? 'vị trí/điểm xuất phát hiện tại của người dùng' : null, results: list };
+}
+function cleanLookup(l) {
+  if (!l || typeof l !== 'object') return null;
+  if (l.type === 'weather' && l.place) return { type: 'weather', place: String(l.place).slice(0, 80) };
+  if (l.type === 'place' && l.query) return { type: 'place', query: String(l.query).slice(0, 120) };
+  return null;
+}
+
 async function handleCoach(req, res) {
   if (!OPENAI_API_KEY) return json(res, 503, { error: true, reason: 'Máy chủ chưa cấu hình OPENAI_API_KEY' });
   if (rateLimited(req, 'coach', 40, 10 * 60 * 1000)) return json(res, 429, { error: true, reason: 'Bạn hỏi AI hơi nhanh, đợi vài phút rồi thử lại nhé.' });
   let body;
   try { body = await readBody(req); } catch (error) { return json(res, error.status || 400, { error: true, reason: error.message }); }
   const mode = MODE_INSTRUCTIONS[body.mode] ? body.mode : 'plan';
-  const context = trimContext(body.context);
+  const context = trimContext({ ...(body.context && typeof body.context === 'object' ? body.context : {}), now_vn: nowVN().text });
+  const near = body.near && validCoord(body.near.lat, body.near.lon) ? { lat: Number(body.near.lat), lon: Number(body.near.lon) } : null;
   const messages = [
     { role: 'system', content: `${COACH_SYSTEM}\n\n${MODE_INSTRUCTIONS[mode]}` },
     { role: 'user', content: `DỮ LIỆU (JSON, do ứng dụng AIRUN tạo từ số liệu đang hiển thị):\n${context}` }
@@ -266,26 +314,44 @@ async function handleCoach(req, res) {
     messages.push({ role: 'user', content: `MÔ TẢ CUNG CHẠY CỦA NGƯỜI DÙNG: ${text}` });
   }
   if (mode === 'chat' || mode === 'agent') {
-    const history = Array.isArray(body.messages) ? body.messages.slice(-8) : [];
+    const history = Array.isArray(body.messages) ? body.messages.slice(-10) : [];
     for (const m of history) {
       const role = m?.role === 'assistant' ? 'assistant' : 'user';
-      const content = String(m?.content || '').slice(0, 700);
+      const content = String(m?.content || '').slice(0, 1200);
       if (content) messages.push({ role, content });
     }
     if (messages[messages.length - 1].role !== 'user') return json(res, 400, { error: true, reason: 'Thiếu câu hỏi' });
   }
   try {
     const started = Date.now();
-    const maxTokens = { live: 160, chat: 420, agent: 520, route_intent: 380, weekly: 800 }[mode] || 650;
-    const { content, model } = await callOpenAI(messages, { wantJSON: mode !== 'chat', maxTokens });
-    const result = mode === 'chat' ? { answer: content.trim() } : parseJSONLoose(content);
+    const maxTokens = { live: 160, chat: 600, agent: 900, route_intent: 380, weekly: 800, program: 900 }[mode] || 650;
+    let { content, model } = await callOpenAI(messages, { wantJSON: mode !== 'chat', maxTokens, timeout: mode === 'agent' ? 16000 : 25000 });
+    let result = mode === 'chat' ? { answer: content.trim() } : parseJSONLoose(content);
     if (!result) return json(res, 502, { error: true, reason: 'AI trả về sai định dạng' });
+    let looked = null;
+    const want = mode === 'agent' ? cleanLookup(result.lookup) : null;
+    if (want && !rateLimited(req, 'lookup', 20, 10 * 60 * 1000)) {
+      // AI cần số liệu ngoài gói DỮ LIỆU → máy chủ tra cứu thật rồi nhờ AI trả lời lần cuối.
+      let found;
+      try { found = want.type === 'weather' ? await lookupWeather(want.place, near) : await lookupPlace(want.query, near); }
+      catch (e) { found = { found: false, reason: `Tra cứu lỗi: ${e.message}` }; }
+      looked = { type: want.type, query: want.place || want.query, found: Boolean(found.found), results: want.type === 'place' ? (found.results || []) : undefined, place: found.place };
+      messages.push({ role: 'assistant', content: JSON.stringify({ reply: String(result.reply || '').slice(0, 200), action: null, lookup: want }) });
+      messages.push({ role: 'user', content: `KẾT QUẢ TRA CỨU (${want.type === 'weather' ? 'dự báo Open-Meteo' : 'tìm địa điểm'}):\n${JSON.stringify(found).slice(0, 5000)}\nHãy trả lời câu hỏi của mình dựa trên kết quả này. lookup phải là null.` });
+      try {
+        const second = await callOpenAI(messages, { wantJSON: true, maxTokens, timeout: 11000 });
+        const parsed = parseJSONLoose(second.content);
+        if (parsed) { result = parsed; model = second.model; }
+      } catch (e) { console.warn('AIRUN lookup answer:', e.message); result.reply = found.found ? result.reply : `Mình chưa tra được thông tin này (${found.reason || 'không có kết quả'}).`; }
+    }
+    if (mode === 'agent') { delete result.lookup; if (looked) result.looked = looked; }
     if (mode === 'agent') { result.reply = String(result.reply || result.answer || '').trim(); result.action = cleanAction(result.action); }
     if (mode === 'route_intent') { result.waypoints = (Array.isArray(result.waypoints) ? result.waypoints : []).map(w => String(w).slice(0, 100)).filter(Boolean).slice(0, 5); result.use_current_start = Boolean(result.use_current_start) || !result.start_text; result.distance_km = Number(result.distance_km) > 0 ? Math.min(42, Number(result.distance_km)) : null; result.loop = result.loop !== false; }
-    if (['agent', 'chat', 'route_intent', 'weekly'].includes(mode)) {
+    if (['agent', 'chat', 'route_intent', 'weekly', 'program'].includes(mode)) {
       const user = verifyToken(req);
       const question = mode === 'route_intent' ? String(body.text || '') : String((Array.isArray(body.messages) ? body.messages : []).slice(-1)[0]?.content || mode);
-      const answer = result.reply || result.answer || result.headline || '';
+      // Có số đo cơ thể (chiều cao, cân nặng, BMI) trong ngữ cảnh → không chép câu trả lời vào bảng dữ liệu của nhóm.
+      const answer = body.context && body.context.athlete ? '(không lưu: câu trả lời có thể chứa số đo cơ thể)' : (result.reply || result.answer || result.headline || '');
       await sheetsAppendQuiet('nhat_ky_ai', { thoi_diem: new Date().toISOString(), nguoi_chay_id: user?.id || '', ten: user?.ten || '', loai: mode, cau_hoi: question.slice(0, 500), tra_loi: String(answer).slice(0, 800), hanh_dong: result.action ? JSON.stringify(result.action) : (mode === 'route_intent' ? JSON.stringify({ start: result.start_text, waypoints: result.waypoints, km: result.distance_km }) : '') });
     }
     return json(res, 200, { ok: true, mode, model, ms: Date.now() - started, result });
@@ -463,11 +529,11 @@ function cleanPoint(p) {
 }
 
 const placeCache = new Map();
-async function searchPlaces(query, near) {
+async function searchPlaces(query, near, { wide = false } = {}) {
   const q = String(query || '').trim().slice(0, 120);
   if (q.length < 2) return [];
   const center = near && validCoord(near.lat, near.lon) ? { lat: Number(near.lat), lon: Number(near.lon) } : DN_CENTER;
-  const cacheKey = `${q.toLowerCase()}|${center.lat.toFixed(2)},${center.lon.toFixed(2)}|${GOOGLE_MAPS_SERVER_KEY ? 'g' : 'n'}`;
+  const cacheKey = `${q.toLowerCase()}|${center.lat.toFixed(2)},${center.lon.toFixed(2)}|${GOOGLE_MAPS_SERVER_KEY ? 'g' : 'n'}${wide ? 'w' : ''}`;
   const hit = placeCache.get(cacheKey);
   if (hit && Date.now() - hit.at < 24 * 3600 * 1000) return hit.data;
   let data = [];
@@ -484,7 +550,7 @@ async function searchPlaces(query, near) {
   }
   if (!data.length) {
     try {
-      const needCity = !/(đà nẵng|da nang|hội an|hoi an|quảng nam|quang nam|tam kỳ|điện bàn)/i.test(q);
+      const needCity = !wide && !/(đà nẵng|da nang|hội an|hoi an|quảng nam|quang nam|tam kỳ|điện bàn)/i.test(q);
       const qs = new URLSearchParams({ format: 'jsonv2', limit: '6', countrycodes: 'vn', 'accept-language': 'vi', viewbox: '107.90,16.30,108.60,15.50', bounded: '0', q: needCity ? `${q}, Đà Nẵng` : q });
       const r = await fetchWithTimeout(`${NOMINATIM_BASE}/search?${qs}`, { headers: { 'User-Agent': `AIRUN-DaNang/9.0 (+${PUBLIC_SITE_URL})`, Accept: 'application/json' } }, 8000);
       const j = await r.json().catch(() => []);
@@ -716,6 +782,12 @@ const num = (v, d = null) => { const n = Number(v); return Number.isFinite(n) ? 
 const str = (v, n = 200) => String(v ?? '').slice(0, n);
 function rowFor(kind, d, user) {
   const base = { thoi_diem: new Date().toISOString(), nguoi_chay_id: user?.id || '', ten: user?.ten || '' };
+  if (kind === 'run') {
+    // Thời điểm là lúc KẾT THÚC buổi chạy do máy người dùng ghi (để buổi cũ đồng bộ sau không bị tính vào tuần này).
+    const at = new Date(d.at).getTime();
+    if (Number.isFinite(at) && at <= Date.now() + 10 * 60e3 && at > Date.now() - 400 * 864e5) base.thoi_diem = new Date(at).toISOString();
+    d = { ...d, source: `${str(d.source || 'gps', 12)}${d.hidden ? '-an' : ''}` };
+  }
   if (kind === 'run') return ['buoi_chay', { ...base, ma_buoi: str(d.id, 40), khu_vuc: str(d.area, 60), km: num(d.distance), thoi_gian_giay: num(d.durationSec), pace: str(d.pace, 10), diem_airun: num(d.score), aqi: num(d.aqi), cam_giac_c: num(d.feels), danh_gia: str(d.verdict, 20), ghi_chu: str(d.note, 300), nguon: str(d.source || 'gps', 20) }];
   if (kind === 'plan') return ['ke_hoach', { ...base, ma: str(d.id, 40), khu_vuc: str(d.area, 60), gio_chay: str(d.time, 8), thoi_luong_phut: num(d.duration), km_du_kien: num(d.distance), pace: str(d.pace, 10), cuong_do: str(d.intensity, 10), nhom_nhay_cam: d.sensitive ? 'có' : 'không', quyet_dinh: str(d.decision, 30), diem_airun: num(d.score), aqi: num(d.aqi), nhiet_do: num(d.temp), ghi_chu: str(d.note, 300) }];
   return null;
@@ -727,7 +799,7 @@ async function handleLog(req, res) {
   let body; try { body = await readBody(req, 16 * 1024); } catch (e) { return json(res, 400, { error: true, reason: e.message }); }
   const mapped = rowFor(body.kind, body.data || {}, user);
   if (!mapped) return json(res, 400, { error: true, reason: 'Loại dữ liệu không hợp lệ' });
-  try { const r = await sheetsCall({ action: 'append', tab: mapped[0], row: mapped[1] }); return json(res, r.ok ? 200 : 502, r.ok ? { ok: true } : { error: true, reason: r.error }); }
+  try { const r = await sheetsCall({ action: 'append', tab: mapped[0], row: mapped[1] }); if (r.ok && body.kind === 'run') communityCache.at = 0; return json(res, r.ok ? 200 : 502, r.ok ? { ok: true } : { error: true, reason: r.error }); }
   catch (e) { return json(res, e.status || 502, { error: true, reason: e.message }); }
 }
 async function handleAppFeedback(req, res) {
@@ -744,6 +816,91 @@ async function handleAppFeedback(req, res) {
 async function sheetsAppendQuiet(tab, row, timeout = 3500) {
   if (!accountsEnabled()) return false;
   try { const r = await Promise.race([sheetsCall({ action: 'append', tab, row }, timeout), new Promise(r => setTimeout(() => r({ ok: false }), timeout))]); return Boolean(r?.ok); } catch { return false; }
+}
+
+
+/* ---------- V9.6: Cộng đồng — bảng xếp hạng tuần/tháng/khu vực + tin từ ban quản trị (đọc từ Google Sheet) ---------- */
+const communityCache = { at: 0, data: null };
+function vnDay(ms) { return new Date(ms + 7 * 3600e3).toISOString().slice(0, 10); }
+function periodRange(period, offset = 0) {
+  // Trả về [bắt đầu, kết thúc) theo giờ Việt Nam (UTC+7), dạng mili giây UTC.
+  const today = new Date(`${vnDay(Date.now())}T00:00:00Z`);
+  let from, to;
+  if (period === 'month') {
+    from = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth() - offset, 1));
+    to = new Date(Date.UTC(from.getUTCFullYear(), from.getUTCMonth() + 1, 1));
+  } else {
+    const dow = (today.getUTCDay() + 6) % 7;
+    from = new Date(today.getTime() - (dow + 7 * offset) * 864e5);
+    to = new Date(from.getTime() + 7 * 864e5);
+  }
+  const f = x => `${x.getUTCDate()}/${x.getUTCMonth() + 1}`, last = new Date(to.getTime() - 864e5);
+  return { from: from.getTime() - 7 * 3600e3, to: to.getTime() - 7 * 3600e3, label: period === 'month' ? `Tháng ${from.getUTCMonth() + 1}/${from.getUTCFullYear()}` : `${f(from)} – ${f(last)}` };
+}
+function validRun(r) {
+  // Chỉ tính buổi chạy GPS có số liệu hợp lý (chặn nhập tay/nhầm đơn vị/đi xe).
+  const km = num(r.km, 0), sec = num(r.giay, 0);
+  if (!r.id || !(km >= 0.3 && km <= 60) || !(sec >= 120)) return false;
+  const pace = sec / 60 / km;
+  return pace >= 2.75 && pace <= 16 && /^gps/i.test(String(r.nguon || 'gps'));
+}
+const areaKey = v => nameKey(v).slice(0, 60);
+async function communityData() {
+  if (communityCache.data && Date.now() - communityCache.at < 3 * 60 * 1000) return communityCache.data;
+  const r = await sheetsCall({ action: 'community', days: 70 }, 15000);
+  if (!r.ok) {
+    if (r.error === 'unknown_action') return { ready: false, runs: [], news: [] };
+    throw Object.assign(new Error(`Google Sheet: ${r.error}`), { status: 502 });
+  }
+  const seen = new Set(), runs = [];
+  (Array.isArray(r.runs) ? r.runs : []).forEach(x => {
+    const at = new Date(x.thoi_diem).getTime(), key = `${x.id}|${x.ma || x.thoi_diem}`;
+    if (!Number.isFinite(at) || seen.has(key)) return; seen.add(key);
+    runs.push({ id: String(x.id || ''), ten: cleanName(x.ten) || 'Người chạy', km: num(x.km, 0), giay: num(x.giay, 0), area: str(x.khu_vuc, 60), at, nguon: str(x.nguon || 'gps', 20) });
+  });
+  const news = (Array.isArray(r.news) ? r.news : []).map(n => ({ date: str(n.ngay, 30), area: str(n.khu_vuc, 60), title: str(n.tieu_de, 120), text: str(n.noi_dung, 600), link: /^https?:\/\//i.test(String(n.lien_ket || '')) ? str(n.lien_ket, 300) : '' })).filter(n => n.title).slice(0, 20);
+  communityCache.at = Date.now(); communityCache.data = { ready: true, runs, news };
+  return communityCache.data;
+}
+function buildBoard(runs, range, areaFilter, meId) {
+  // Người chạy ẩn danh = buổi chạy GẦN NHẤT của họ có đánh dấu "-an": không hiện tên trên bảng, vẫn cộng vào tổng cộng đồng.
+  const latest = new Map();
+  runs.forEach(r => { const l = latest.get(r.id); if (!l || r.at > l.at) latest.set(r.id, r); });
+  const hidden = id => /-an$/.test(latest.get(id)?.nguon || '');
+  const inRange = runs.filter(r => r.at >= range.from && r.at < range.to && validRun({ id: r.id, km: r.km, giay: r.giay, nguon: r.nguon }));
+  const areas = new Map();
+  inRange.forEach(r => { const k = areaKey(r.area); if (!k) return; const a = areas.get(k) || { key: k, name: r.area, km: 0, runs: 0, ids: new Set() }; a.km += r.km; a.runs++; a.ids.add(r.id); areas.set(k, a); });
+  const scoped = areaFilter ? inRange.filter(r => areaKey(r.area) === areaFilter) : inRange;
+  const users = new Map();
+  scoped.forEach(r => { const u = users.get(r.id) || { id: r.id, ten: latest.get(r.id)?.ten || r.ten, km: 0, runs: 0, sec: 0, longest: 0, areaCount: new Map() }; u.km += r.km; u.runs++; u.sec += r.giay; u.longest = Math.max(u.longest, r.km); u.areaCount.set(r.area, (u.areaCount.get(r.area) || 0) + 1); users.set(r.id, u); });
+  const ranked = [...users.values()].sort((a, b) => b.km - a.km || b.runs - a.runs || a.sec - b.sec);
+  const visible = ranked.filter(u => !hidden(u.id));
+  const row = (u, i) => ({ rank: i + 1, ten: u.ten, km: Math.round(u.km * 10) / 10, runs: u.runs, pace: minToPace(u.sec / 60 / u.km), longest: Math.round(u.longest * 10) / 10, area: modeOf([...u.areaCount.keys()].flatMap(k => Array(u.areaCount.get(k)).fill(k))) || '', me: Boolean(meId && u.id === meId) });
+  const board = visible.slice(0, 50).map(row);
+  let me = null;
+  if (meId) {
+    const mine = users.get(meId);
+    if (mine) { const i = visible.findIndex(u => u.id === meId); me = { ...row(mine, i >= 0 ? i : 0), rank: i >= 0 ? i + 1 : null, hidden: hidden(meId) }; }
+    else me = { rank: null, km: 0, runs: 0, hidden: hidden(meId) };
+  }
+  return {
+    board, me,
+    totals: { runners: users.size, runs: scoped.length, km: Math.round(scoped.reduce((a, r) => a + r.km, 0) * 10) / 10 },
+    areas: [...areas.values()].map(a => ({ key: a.key, name: a.name, km: Math.round(a.km * 10) / 10, runs: a.runs, runners: a.ids.size })).sort((a, b) => b.km - a.km).slice(0, 30)
+  };
+}
+async function handleCommunity(req, res, url) {
+  if (!accountsEnabled()) return json(res, 200, { ok: true, ready: false, reason: 'no_accounts' });
+  if (rateLimited(req, 'community', 60, 10 * 60 * 1000)) return json(res, 429, { error: true, reason: 'Tải bảng xếp hạng hơi nhanh, đợi một chút nhé.' });
+  const period = url.searchParams.get('period') === 'month' ? 'month' : 'week';
+  const offset = url.searchParams.get('offset') === '1' ? 1 : 0;
+  const area = areaKey(url.searchParams.get('area') || '');
+  try {
+    const data = await communityData();
+    if (!data.ready) return json(res, 200, { ok: true, ready: false, reason: 'needs_script_update' });
+    const range = periodRange(period, offset), user = verifyToken(req);
+    return json(res, 200, { ok: true, ready: true, period, offset, range: range.label, area, ...buildBoard(data.runs, range, area, user?.id || null), news: data.news, updated: communityCache.at });
+  } catch (e) { return json(res, e.status || 502, { error: true, reason: e.message }); }
 }
 
 /* Hồ sơ thói quen chạy (tính trên máy chủ từ lịch sử trong Sheet) → đưa cho AI để cá nhân hoá. */
@@ -822,7 +979,7 @@ async function handler(req, res) {
   try {
     if (p === '/healthz') return json(res, 200, { ok: true, version: VERSION });
     if (p === '/api/config' && req.method === 'GET') {
-      return json(res, 200, { version: VERSION, server: true, ai: Boolean(OPENAI_API_KEY), aiModel: OPENAI_API_KEY ? OPENAI_MODEL : null, routing: Boolean(GRAPHHOPPER_API_KEY), mapboxToken: MAPBOX_PUBLIC_TOKEN || '', googleMapsKey: GOOGLE_MAPS_BASEMAP ? (GOOGLE_MAPS_BROWSER_KEY || '') : '', googlePlaces: Boolean(GOOGLE_MAPS_SERVER_KEY), routePlan: true, elevation: true, accounts: accountsEnabled(), feedback: true, feedbackPersistent: Boolean(FEEDBACK_WEBHOOK_URL) || accountsEnabled() });
+      return json(res, 200, { version: VERSION, server: true, ai: Boolean(OPENAI_API_KEY), aiModel: OPENAI_API_KEY ? OPENAI_MODEL : null, routing: Boolean(GRAPHHOPPER_API_KEY), mapboxToken: MAPBOX_PUBLIC_TOKEN || '', googleMapsKey: GOOGLE_MAPS_BASEMAP ? (GOOGLE_MAPS_BROWSER_KEY || '') : '', googlePlaces: Boolean(GOOGLE_MAPS_SERVER_KEY), routePlan: true, elevation: true, accounts: accountsEnabled(), community: accountsEnabled(), feedback: true, feedbackPersistent: Boolean(FEEDBACK_WEBHOOK_URL) || accountsEnabled() });
     }
     let m = p.match(/^\/api\/(weather|air)\/(-?[\d.]+)\/(-?[\d.]+)\/?$/);
     if (m && req.method === 'GET') return handleEnv(res, m[1], m[2], m[3]);
@@ -834,6 +991,7 @@ async function handler(req, res) {
     if (p === '/api/account/login' && req.method === 'POST') return handleLogin(req, res);
     if (p === '/api/account/me' && req.method === 'GET') return handleMe(req, res);
     if (p === '/api/account/log' && req.method === 'POST') return handleLog(req, res);
+    if (p === '/api/community' && req.method === 'GET') return handleCommunity(req, res, url);
     if (p === '/api/app-feedback' && req.method === 'POST') return handleAppFeedback(req, res);
     if (p === '/api/coach' && req.method === 'POST') return handleCoach(req, res);
     if (p === '/api/feedback' && req.method === 'POST') return handleFeedback(req, res);
@@ -854,4 +1012,4 @@ if (require.main === module) {
     console.log(`AIRUN ${VERSION} chạy tại cổng ${PORT} · AI ${OPENAI_API_KEY ? 'BẬT (' + OPENAI_MODEL + ')' : 'TẮT (thiếu OPENAI_API_KEY)'} · GraphHopper ${GRAPHHOPPER_API_KEY ? 'BẬT' : 'TẮT'}`);
   });
 }
-module.exports = { handler, server, cleanFeedback, feedbackSummary, parseJSONLoose };
+module.exports = { handler, server, cleanFeedback, feedbackSummary, parseJSONLoose, periodRange, validRun, buildBoard, cleanLookup };

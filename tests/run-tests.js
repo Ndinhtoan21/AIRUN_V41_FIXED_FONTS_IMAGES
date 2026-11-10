@@ -39,3 +39,20 @@ assert.deepStrictEqual(parseJSONLoose('```json\n{"a":1}\n```'), { a: 1 });
 
 console.log('✓ AIRUN tests passed', { mild: mild.score, warm: warm.score, hot: hot.score, smog: smog.score });
 process.exit(0);
+
+// V9.6: bảng xếp hạng chỉ tính buổi chạy GPS hợp lý, người ẩn tên không hiện trên bảng.
+{
+  const assert = require('assert');
+  const s = require('../server.js');
+  const now = Date.now(), range = s.periodRange('week');
+  assert.ok(range.from <= now && now < range.to, 'tuần hiện tại phải chứa thời điểm này');
+  assert.ok(s.validRun({ id: 'a', km: 5, giay: 1800, nguon: 'gps' }));
+  assert.ok(!s.validRun({ id: 'a', km: 20, giay: 1200, nguon: 'gps' }), 'đi xe (1:00/km) không được tính');
+  assert.ok(!s.validRun({ id: 'a', km: 5, giay: 1800, nguon: 'manual' }), 'nhập tay không được tính');
+  const runs = [{ id: 'a', ten: 'An', km: 5, giay: 1800, area: 'Hải Châu', at: now - 1000, nguon: 'gps' }, { id: 'b', ten: 'Bình', km: 9, giay: 3200, area: 'Sơn Trà', at: now - 1000, nguon: 'gps-an' }];
+  const b = s.buildBoard(runs, range, '', 'b');
+  assert.strictEqual(b.board.length, 1); assert.strictEqual(b.board[0].ten, 'An'); assert.strictEqual(b.me.hidden, true); assert.strictEqual(b.totals.km, 14);
+  assert.deepStrictEqual(s.cleanLookup({ type: 'weather', place: 'Hội An' }), { type: 'weather', place: 'Hội An' });
+  assert.strictEqual(s.cleanLookup({ type: 'shell', cmd: 'x' }), null);
+  console.log('✓ V9.6 community/lookup tests passed');
+}

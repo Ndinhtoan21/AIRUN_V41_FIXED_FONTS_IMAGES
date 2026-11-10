@@ -1703,7 +1703,8 @@ async function finishRun(){
   else showToast('Chưa đủ điểm GPS để lưu thành một buổi chạy.');
   lastRunInfo={id:runId,at:Date.now(),seconds,distanceKm:tracker.distanceKm,pace:pace?formatPace(pace):'',area:near.name,score:tracker.lastEnvResult?.score??activeResult?.score??null,env:tracker.lastEnv?{...tracker.lastEnv,time:vnIso()}:null};
   syncFeedbackContext();speak(`Đã kết thúc. ${tracker.distanceKm.toFixed(1)} ki lô mét. Hãy đánh giá khuyến nghị của AIRUN nhé.`);
-  setTimeout(()=>$('feedbackForm')?.scrollIntoView({behavior:'smooth',block:'start'}),600);
+  {const ff=$('feedbackFold');if(ff)ff.open=true;}
+  setTimeout(()=>$('runSummary')?.scrollIntoView({behavior:'smooth',block:'start'}),600);
   trackerAlert(tracker.lastEnvResult?.tone||'good','Đã kết thúc.',`Quãng đường ${tracker.distanceKm.toFixed(2)} km · ${formatDuration(seconds)}. Bản đồ hành trình chỉ lưu trên máy này, không gửi lên máy chủ.`,'✓');
 }
 
@@ -1779,7 +1780,7 @@ function initPWA(){const button=$('installBtn');if(button)button.hidden=true;}
 
 async function runDiagnostics(){
   const button=$('diagnosticBtn');setBusy(button,true,'Đang kiểm tra…');
-  setSystemStatus('js','ok','V9.5 · chế độ chạy, chỉ đường');updateConnection();
+  setSystemStatus('js','ok','V9.6 · HLV online, cộng đồng');updateConnection();
   try{
     const permission=await geolocationPermissionState();
     setSystemStatus('gps',permission==='denied'?'error':permission==='granted'?'ok':'warn',permission==='denied'?'Bị chặn':permission==='granted'?'Đã cấp quyền':'Chưa cấp quyền');
@@ -1858,7 +1859,7 @@ function coachContext(){
     app:'AIRUN Đà Nẵng',now_local:vnIso().replace('T',' '),
     location:{name:data?.location?.label||area.name,mode:data?.location?.mode==='gps'?'GPS (chỉ gửi tên khu vực)':'khu vực chọn sẵn',area_note:area.desc},
     data_source:sourceLabel(data?.source),data_updated:data?.updated?new Date(data.updated).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'}):null,
-    plan:{start_time:plan.time,duration_min:plan.duration,pace_min_per_km:formatPace(est.pace),distance_km:round(est.distance,2),intensity:plan.intensity,sensitive_group:plan.sensitive},
+    plan:{start_time:plan.time,start_day:targetIso(plan.time).slice(0,10)===vnIso().slice(0,10)?'hôm nay':'ngày mai (giờ này hôm nay đã qua)',duration_min:plan.duration,pace_min_per_km:formatPace(est.pace),distance_km:round(est.distance,2),intensity:plan.intensity,sensitive_group:plan.sensitive},
     at_planned_time:coachSnapshot(snap),
     now:coachSnapshot({...(data?.current||{}),time:vnIso()}),
     airun_score:res?{score:res.score,verdict:res.title,reasons:res.reasons,scale:'0–10, càng cao càng thuận lợi. Công thức cố định; AI không đổi điểm.'}:null,
@@ -1867,7 +1868,8 @@ function coachContext(){
     suggested_route:routePlanner.current?{distance_km:round(routePlanner.current.distanceKm,2),type:routePlanner.current.source==='graphhopper'?'cung vòng GraphHopper':routePlanner.current.source==='network'?'cung vòng theo đường đi bộ':'phác thảo'}:null,
     user_feedback_history:feedbackHistory(),
     runner_profile:typeof compactProfile==='function'?compactProfile():null,
-    runner_name:session?.user?.ten||null
+    runner_name:session?.user?.ten||null,
+    ...(typeof window!=='undefined'&&typeof window.__airunCoachExtra==='function'?window.__airunCoachExtra():{})
   };
 }
 function coachSignature(){
@@ -1888,7 +1890,7 @@ function ruleCoach(){
   if(hasNum(s.rain)&&s.rain>=40)adjust.push('Chuẩn bị phương án chạy trong nhà nếu trời chuyển mưa.');
   if(!adjust.length)adjust.push(`Giữ kế hoạch ${est.distance.toFixed(1)} km với pace ${formatPace(est.pace)}/km.`);
   const bring=[...document.querySelectorAll('#kitList li')].map(li=>li.textContent).slice(2,5);
-  return {headline:r?.title||'Đã có dữ liệu',summary:`Lúc ${String(s.time||'').slice(11,16)||'bạn chọn'} ở ${activeData?.location?.label||ward().name}: ${parts.join(', ')}. AIRUN chấm ${r?.score??'—'}/10.`,
+  return {headline:r?.title||'Đã có dữ liệu',summary:`Lúc ${String(s.time||'').slice(11,16)||'bạn chọn'}${String(s.time||'').slice(0,10)>vnIso().slice(0,10)?' ngày mai':''} ở ${activeData?.location?.label||ward().name}: ${parts.join(', ')}. AIRUN chấm ${r?.score??'—'}/10.`,
     when:best?`${best.row.time.slice(11,16)}${best.row.time.slice(0,10)!==vnIso().slice(0,10)?' ngày mai':''} có điểm cao nhất (${best.result.score}/10) trong các khung giờ chạy phổ biến sắp tới.`:'Chưa có dự báo theo giờ.',
     adjust,bring:bring.length?bring:['Nước uống','Điện thoại đủ pin'],watch:['Chóng mặt, buồn nôn, tim đập bất thường hoặc khó thở → dừng, vào bóng râm, uống nước.'],score_comment:''};
 }
@@ -1908,7 +1910,7 @@ function renderCoachResult(result,{source='ai',model=''}={}){
 }
 
 async function postCoach(mode,context,messages,extra={}){
-  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),30000);
+  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),45000);
   try{
     const res=await fetch('/api/coach',{method:'POST',headers:{'Content-Type':'application/json',...authHeaders()},body:JSON.stringify({mode,context,messages,...extra}),signal:controller.signal});
     const data=await res.json().catch(()=>({}));
@@ -2064,7 +2066,7 @@ function bindCoachEvents(){
 }
 
 /* ===================== V8.3 · ĐIỀU HƯỚNG THEO TAB ===================== */
-const VIEWS=['home','weather','plan','coach','run','journal'];
+const VIEWS=['home','weather','plan','coach','run','community','journal','guide'];
 let currentView='home';
 function viewOfElement(el){return el?.closest?.('.view')?.dataset.view||null;}
 function resizeVisibleMaps(name){
@@ -2080,10 +2082,13 @@ function activateView(name,{scroll=true}={}){
   document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.dataset.view===name));
   document.querySelectorAll('[data-tab]').forEach(t=>{const on=t.dataset.tab===name||(t.dataset.tabAlso||'').split(' ').includes(name);t.classList.toggle('active',on);if(on)t.setAttribute('aria-current','page');else t.removeAttribute('aria-current');});
   document.body.dataset.view=name;
+  // Giữ địa chỉ khớp với trang đang hiện (AI hoặc nút bấm có thể đổi trang mà không đổi hash → bấm lại tab cũ không ăn).
+  try{const h=location.hash||'',hv=h.startsWith('#/')?h.slice(2).split('-')[0]:null;if(hv!==name)history.replaceState(history.state,'',`#/${name}`);}catch{}
   if(scroll&&changed)window.scrollTo({top:0,behavior:'auto'});
   if(changed)resizeVisibleMaps(name);
   $('mainNav')?.classList.remove('open');
   if(changed){try{if(!$('aiDrawer')?.hidden)renderDrawerSuggest();if(name==='journal')renderProfile();}catch{}}
+  try{document.dispatchEvent(new CustomEvent('airun:view',{detail:{view:name,changed}}));}catch{}
 }
 // Các đoạn code cũ dùng el.scrollIntoView() để "nhảy tới" một phần → tự mở đúng tab trước khi cuộn.
 (function patchScrollIntoView(){
@@ -2098,7 +2103,7 @@ function activateView(name,{scroll=true}={}){
 })();
 function handleRoute(){
   const h=decodeURIComponent(location.hash||'');
-  if(h==='#/run-feedback'){activateView('run');setTimeout(()=>$('feedbackForm')?.scrollIntoView({behavior:'smooth',block:'start'}),80);return;}
+  if(h==='#/run-feedback'){activateView('run');const ff=$('feedbackFold');if(ff)ff.open=true;setTimeout(()=>$('feedbackFold')?.scrollIntoView({behavior:'smooth',block:'start'}),80);return;}
   if(h==='#/run-gps'){activateView('run');setTimeout(()=>$('tracker')?.scrollIntoView({behavior:'smooth',block:'start'}),80);return;}
   if(h.startsWith('#/')){activateView(h.slice(2));return;}
   const target=h.length>1?document.getElementById(h.slice(1)):null;
@@ -2438,7 +2443,7 @@ function mergeCloudHistory(h){
 }
 function cloudLog(kind,data){
   if(!session?.token||!SERVER_CFG.accounts)return;
-  fetch('/api/account/log',{method:'POST',headers:{'Content-Type':'application/json',...authHeaders()},body:JSON.stringify({kind,data})})
+  fetch('/api/account/log',{method:'POST',headers:{'Content-Type':'application/json',...authHeaders()},body:JSON.stringify({kind,data:kind==='run'?{...data,hidden:localGet('airun-v96-lb-hidden',false)===true}:data})})
     .then(r=>{if(r.ok){clearTimeout(cloudLog.timer);cloudLog.timer=setTimeout(()=>void refreshAccount(),1500);}}).catch(()=>{});
 }
 function pushLocalHistoryToCloud(){journalRows().filter(r=>r.source!=='cloud').slice(0,20).reverse().forEach(r=>{if(r.type==='run')cloudLog('run',r);else if(r.type==='plan')cloudLog('plan',r);});}
@@ -2480,11 +2485,14 @@ const agent={chat:[],busy:false};
 const TAB_SUGGEST={
   home:['Hôm nay chạy lúc nào là tốt nhất?','Tạo cho mình cung 5 km gần đây','Tuần này mình nên chạy thế nào?'],
   plan:['Giờ mình chọn có ổn không?','Đổi sang 5:30 sáng mai, chạy 40 phút','Nên chạy pace bao nhiêu?'],
-  coach:['Mình bị hen nhẹ thì sao?','Ven biển hay ven sông tốt hơn?'],
+  coach:['BMI của mình như vậy nên tập thế nào?','Ăn gì trước và sau buổi chạy?','Lập giúp mình lộ trình chạy 5 km'],
   run:['Tạo cung 5 km qua Cầu Rồng và Cầu Tình Yêu','Cung này có hợp thời tiết không?','Khởi động thế nào trước khi chạy?'],
-  journal:['Nhận xét thói quen chạy của mình','Mình nên tăng quãng đường thế nào?']
+  journal:['Nhận xét thói quen chạy của mình','Mình nên tăng quãng đường thế nào?'],
+  weather:['Cuối tuần này thời tiết thế nào?','Hội An ngày mai có mưa không?','Giờ nào ít nắng nhất hôm nay?'],
+  community:['Làm sao để lên bảng xếp hạng?','Tuần này mình nên chạy bao nhiêu km?'],
+  guide:['Hướng dẫn mình chạy buổi đầu tiên','GPS không bắt được thì làm sao?']
 };
-const TAB_NAMES={home:'Trang chủ',plan:'Kế hoạch',coach:'AI Coach',run:'Chạy',journal:'Nhật ký'};
+const TAB_NAMES={home:'Trang chủ',weather:'Thời tiết',plan:'Kế hoạch',coach:'AI Coach',run:'Chạy',community:'Cộng đồng',journal:'Nhật ký',guide:'Cẩm nang'};
 function agentContext(){
   const o=routeOrigin(),r=routePlanner.current;
   return {...coachContext(),current_tab:currentView,available_areas:WARDS.map(w=>w.name),current_start:{label:o.label,mode:o.mode},current_route:r?{distance_km:round(r.distanceKm,2),source:r.source,waypoints:(r.waypoints||[]).map(w=>w.label),ai:Boolean(r.ai)}:null,run_status:tracker.status,is_logged_in:Boolean(session)};
@@ -2515,6 +2523,12 @@ function appendAction(kind,action){
   card.querySelector('button').addEventListener('click',async e=>{const b=e.currentTarget;b.disabled=true;b.textContent='Đang làm…';try{await runAgentAction(action);b.textContent='✓ Xong';}catch{b.disabled=false;b.textContent='Thử lại';}});
   box.appendChild(card);box.scrollTop=box.scrollHeight;
 }
+function appendPlaces(kind,list){
+  const box=msgBox(kind);if(!box)return;
+  const card=document.createElement('div');card.className='ai-places';
+  card.innerHTML=list.slice(0,4).map(p=>`<a href="${escapeHTML(/^https:\/\/www\.google\.com\/maps\//.test(String(p.map_link||''))?p.map_link:'#')}" target="_blank" rel="noopener"><b>${escapeHTML(p.name||'Địa điểm')}</b><small>${escapeHTML([hasNum(p.distance_km)?`${p.distance_km} km`:'',p.address||''].filter(Boolean).join(' · '))}</small></a>`).join('');
+  box.appendChild(card);box.scrollTop=box.scrollHeight;
+}
 function findWardByName(name){
   const n=String(name||'').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/đ/gi,'d').toLowerCase();
   return WARDS.find(w=>w.name.normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/đ/gi,'d').toLowerCase()===n)||WARDS.find(w=>n.includes(w.name.normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/đ/gi,'d').toLowerCase()));
@@ -2538,12 +2552,14 @@ async function sendAgent(question,{box='drawer'}={}){
   appendMsg(box,'user',q);agent.chat.push({role:'user',content:q});
   if(box==='drawer'){const i=$('aiDrawerInput');if(i)i.value='';}else{const i=$('coachInput');if(i)i.value='';}
   if(!SERVER_CFG.ai){appendMsg(box,'err','Máy chủ AIRUN chưa bật AI (thiếu OPENAI_API_KEY) nên chưa trả lời được câu hỏi tự do.');agent.chat.pop();return;}
-  agent.busy=true;const pending=appendMsg(box,'ai','AI đang trả lời…');
+  agent.busy=true;const pending=appendMsg(box,'ai','HLV đang trả lời…');
   ['aiDrawerSend','coachSendBtn'].forEach(id=>{const b=$(id);if(b)b.disabled=true;});
   try{
-    const data=await postCoach('agent',agentContext(),agent.chat.slice(-10));
+    const o=routeOrigin();
+    const data=await postCoach('agent',agentContext(),agent.chat.slice(-10),{near:hasNum(o?.lat)&&hasNum(o?.lon)?{lat:round(o.lat,3),lon:round(o.lon,3)}:null});
     const r=data.result||{};const answer=String(r.reply||'').trim()||'Mình chưa có câu trả lời.';
     pending.textContent=answer;agent.chat.push({role:'assistant',content:answer});
+    if(r.looked?.type==='place'&&Array.isArray(r.looked.results)&&r.looked.results.length)appendPlaces(box,r.looked.results);
     if(r.action){if(r.action.type==='open_tab')void runAgentAction(r.action);else appendAction(box,r.action);}
   }catch(error){pending.className='coach-msg err';pending.textContent=`AI chưa trả lời được: ${error.message}`;agent.chat.pop();}
   finally{agent.busy=false;['aiDrawerSend','coachSendBtn'].forEach(id=>{const b=$(id);if(b)b.disabled=false;});}
@@ -2591,8 +2607,8 @@ let airunInitialized=false;
 async function init(){
   if(airunInitialized)return;airunInitialized=true;
   if(await clearLegacyServiceWorkerControl()) return;
-  if(typeof window!=='undefined')window.__AIRUN_APP_READY='v95';
-  setSystemStatus('js','ok','V9.5 · chế độ chạy, chỉ đường');
+  if(typeof window!=='undefined')window.__AIRUN_APP_READY='v96';
+  setSystemStatus('js','ok','V9.6 · HLV online, cộng đồng');
   safeCall('khu vực',()=>{$('area').innerHTML=WARDS.map(item=>`<option value="${item.key}">${escapeHTML(item.name)}</option>`).join('');});
   safeCall('khôi phục cài đặt',restorePlanSettings);
   safeCall('chọn khu vực',()=>{$('area').value=selectedKey;});
