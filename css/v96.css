@@ -296,3 +296,7 @@ body[data-view="coach"] .coachpro{scroll-margin-top:130px}
 .ph-hub{height:clamp(150px,36vw,220px)}
 .ph-wx{height:clamp(130px,30vw,200px)}
 .ph-guide{height:clamp(150px,36vw,250px)}
+/* Ô danh mục xếp dọc trên điện thoại: phần chữ không được rộng hơn ô */
+.cat-txt{max-width:100%;align-self:stretch}
+/* Ảnh banner: ưu tiên phần thành phố/cảnh ở nửa dưới thay vì bầu trời */
+.ph-hub img,.ph-wx img,.ph-guide img,.ph-hero img{object-position:center 68%}

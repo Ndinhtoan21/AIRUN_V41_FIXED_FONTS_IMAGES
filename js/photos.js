@@ -7,7 +7,7 @@
   const W = 'https://commons.wikimedia.org/wiki/File:';
   // Chỉ dùng ảnh chụp từ 2020 trở lại đây (năm chụp ghi trong dòng nguồn).
   const P = {
-    hanRiver: { src: T + '6/66/Han_River%2C_Da_Nang%2C_Vietnam_-_20230819.jpg/960px-Han_River%2C_Da_Nang%2C_Vietnam_-_20230819.jpg', page: W + 'Han_River,_Da_Nang,_Vietnam_-_20230819.jpg', title: 'Hai bờ sông Hàn', year: 2023, by: 'Somerset999', lic: 'CC BY-SA 4.0' },
+    hanRiver: { src: T + '6/66/Han_River%2C_Da_Nang%2C_Vietnam_-_20230819.jpg/960px-Han_River%2C_Da_Nang%2C_Vietnam_-_20230819.jpg', page: W + 'Han_River,_Da_Nang,_Vietnam_-_20230819.jpg', title: 'Hai bờ sông Hàn', year: 2023, pos: 'center 85%', by: 'Somerset999', lic: 'CC BY-SA 4.0' },
     hanBridgeNight: { src: T + '7/77/Da_Nang_-_DaNang1492.jpg/960px-Da_Nang_-_DaNang1492.jpg', page: W + 'Da_Nang_-_DaNang1492.jpg', title: 'Cầu Sông Hàn lên đèn', year: 2024, by: 'lumoplank', lic: 'CC0' },
     dragonNight: { src: T + '7/7e/Dragon_Bridge%2C_Da_Nang_at_night_-_20230819.jpg/960px-Dragon_Bridge%2C_Da_Nang_at_night_-_20230819.jpg', page: W + 'Dragon_Bridge,_Da_Nang_at_night_-_20230819.jpg', title: 'Cầu Rồng về đêm', year: 2023, by: 'Somerset999', lic: 'CC BY-SA 4.0' },
     riverCity: { src: T + 'd/d0/2024-11-08_Da_Nang_2.jpg/960px-2024-11-08_Da_Nang_2.jpg', page: W + '2024-11-08_Da_Nang_2.jpg', title: 'Sông Hàn và trung tâm Đà Nẵng', year: 2024, by: 'Alexkom000', lic: 'CC BY 4.0' },
@@ -38,7 +38,7 @@
   // Khung ảnh có dòng nguồn bấm được (mở trang gốc có đầy đủ tác giả và giấy phép).
   function figure(id, { cls = '', caption = '', eager = false } = {}) {
     const p = P[id]; if (!p) return '';
-    return `<figure class="ph ${cls}"><img src="${p.src}" alt="${esc(p.title)}" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async" onerror="this.closest('figure').classList.add('ph-off')">${caption ? `<span class="ph-cap">${caption}</span>` : ''}<figcaption><a href="${p.page}" target="_blank" rel="noopener" title="${esc(p.title)} — xem tác giả và giấy phép">${credit(p)}</a></figcaption></figure>`;
+    return `<figure class="ph ${cls}"><img src="${p.src}" alt="${esc(p.title)}"${p.pos ? ` style="object-position:${p.pos}"` : ''} ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async" onerror="this.closest('figure').classList.add('ph-off')">${caption ? `<span class="ph-cap">${caption}</span>` : ''}<figcaption><a href="${p.page}" target="_blank" rel="noopener" title="${esc(p.title)} — xem tác giả và giấy phép">${credit(p)}</a></figcaption></figure>`;
   }
   window.AIRUN_PHOTOS = { P, AREA, SPOTS, figure, credit, area: (key) => AREA[key] || 'skyline' };
 })();
