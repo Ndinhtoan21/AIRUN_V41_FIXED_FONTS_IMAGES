@@ -1780,7 +1780,7 @@ function initPWA(){const button=$('installBtn');if(button)button.hidden=true;}
 
 async function runDiagnostics(){
   const button=$('diagnosticBtn');setBusy(button,true,'Đang kiểm tra…');
-  setSystemStatus('js','ok','V9.6 · HLV online, cộng đồng');updateConnection();
+  setSystemStatus('js','ok','V9.7 · bản tin hằng ngày, sự kiện');updateConnection();
   try{
     const permission=await geolocationPermissionState();
     setSystemStatus('gps',permission==='denied'?'error':permission==='granted'?'ok':'warn',permission==='denied'?'Bị chặn':permission==='granted'?'Đã cấp quyền':'Chưa cấp quyền');
@@ -2607,8 +2607,8 @@ let airunInitialized=false;
 async function init(){
   if(airunInitialized)return;airunInitialized=true;
   if(await clearLegacyServiceWorkerControl()) return;
-  if(typeof window!=='undefined')window.__AIRUN_APP_READY='v96';
-  setSystemStatus('js','ok','V9.6 · HLV online, cộng đồng');
+  if(typeof window!=='undefined')window.__AIRUN_APP_READY='v97';
+  setSystemStatus('js','ok','V9.7 · bản tin hằng ngày, sự kiện');
   safeCall('khu vực',()=>{$('area').innerHTML=WARDS.map(item=>`<option value="${item.key}">${escapeHTML(item.name)}</option>`).join('');});
   safeCall('khôi phục cài đặt',restorePlanSettings);
   safeCall('chọn khu vực',()=>{$('area').value=selectedKey;});
