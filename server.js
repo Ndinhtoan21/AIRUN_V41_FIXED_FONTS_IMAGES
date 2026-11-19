@@ -955,12 +955,12 @@ function ruleDaily(facts) {
   const ok = facts.areas.filter(a => a.temp_c !== null);
   if (!ok.length) return { headline: 'Bản tin chạy bộ hôm nay', summary: 'Chưa lấy được dự báo thời tiết cho các khu vực.', highlights: [] };
   const air = [...ok].filter(a => a.us_aqi !== null).sort((a, b) => a.us_aqi - b.us_aqi)[0];
-  const tmax = Math.max(...ok.map(a => a.temp_max_c ?? -99)), tmin = Math.min(...ok.map(a => a.temp_min_c ?? 99)), rain = Math.max(...ok.map(a => a.rain_prob_max ?? 0));
+  const tmax = Math.round(Math.max(...ok.map(a => a.temp_max_c ?? -99))), tmin = Math.round(Math.min(...ok.map(a => a.temp_min_c ?? 99))), rain = Math.round(Math.max(...ok.map(a => a.rain_prob_max ?? 0)));
   const c = facts.community, cool = ok[0].coolest_run;
   const hl = [];
   if (air) hl.push(`Không khí sạch nhất: ${air.name}, AQI ${air.us_aqi}.`);
-  if (cool) hl.push(`Giờ mát nhất còn lại ở Hải Châu: ${cool.time}, cảm giác ${cool.feels_c}°C.`);
-  if (c?.yesterday?.runs) hl.push(`Hôm qua cộng đồng chạy ${c.yesterday.km} km qua ${c.yesterday.runs} buổi.`);
+  if (cool) hl.push(`Giờ mát nhất còn lại ở Hải Châu: ${cool.time}, cảm giác ${Math.round(cool.feels_c)}°C.`);
+  if (c?.yesterday?.runs) hl.push(`Hôm qua cộng đồng chạy ${String(c.yesterday.km).replace('.', ',')} km qua ${c.yesterday.runs} buổi.`);
   else if (rain >= 60) hl.push(`Khả năng mưa cao nhất trong ngày ${rain}%, nhớ mang áo mưa mỏng.`);
   return { headline: rain >= 70 ? 'Hôm nay có mưa, chọn giờ chạy khéo' : tmax >= 34 ? 'Trời nắng nóng, chạy sớm hoặc chiều muộn' : 'Hôm nay thuận lợi để chạy bộ', summary: `Nhiệt độ các khu vực từ ${tmin}°C đến ${tmax}°C, khả năng mưa cao nhất ${rain}%.${air ? ` ${air.name} có không khí tốt nhất (AQI ${air.us_aqi}).` : ''}`, highlights: hl.slice(0, 3) };
 }
