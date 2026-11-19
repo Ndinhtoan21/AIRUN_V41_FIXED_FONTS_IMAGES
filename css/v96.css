@@ -291,3 +291,8 @@ body[data-view="coach"] .coachpro{scroll-margin-top:130px}
 .spots{grid-template-columns:minmax(0,1fr)}
 @media (min-width:781px){.ph-hub{aspect-ratio:auto;height:210px;max-height:none}}
 .cat-grid > .cat{min-width:0}.cat-txt{flex:1 1 0;min-width:0;overflow:hidden}
+/* Ảnh banner luôn rộng hết khung; chiều cao co giãn theo màn hình thay vì theo tỉ lệ */
+.ph-hub,.ph-wx,.ph-guide{width:100%;aspect-ratio:auto!important;max-height:none!important}
+.ph-hub{height:clamp(150px,36vw,220px)}
+.ph-wx{height:clamp(130px,30vw,200px)}
+.ph-guide{height:clamp(150px,36vw,250px)}
