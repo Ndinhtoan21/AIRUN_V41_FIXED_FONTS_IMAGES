@@ -50,7 +50,7 @@
     const box = el('wxPhoto'), name = el('wxAreaName')?.textContent?.trim(); if (!box || !name) return;
     const w = WARDS.find((x) => x.name === name), key = w?.key || 'gps';
     if (key === wxKey) return; wxKey = key;
-    const pid = w ? PH.area(w.key) : 'cityView', p = PH.P[pid];
+    const pid = w ? PH.area(w.key) : 'skyline', p = PH.P[pid];
     box.innerHTML = PH.figure(pid, { cls: 'ph-wx', caption: `<b>${esc(w?.name || 'Vị trí của bạn')}</b><span>${esc(p.title)}</span>` });
   }
   const wxName = el('wxAreaName');

@@ -84,7 +84,7 @@
     const box = el('guidePage'); if (!box || box.dataset.ready) return;
     box.dataset.ready = '1';
     const PH = window.AIRUN_PHOTOS;
-    const credits = PH ? Object.values(PH.P).map((p) => `<li><a href="${p.page}" target="_blank" rel="noopener">${p.title}</a><span>${p.by} · ${p.lic}</span></li>`).join('') : '';
+    const credits = PH ? Object.values(PH.P).map((p) => `<li><a href="${p.page}" target="_blank" rel="noopener">${p.title}</a><span>${p.by} · chụp năm ${p.year} · ${p.lic}</span></li>`).join('') : '';
     box.innerHTML = `${PH ? PH.figure('mykheDawn', { cls: 'ph-guide', eager: true, caption: '<b>Chào mừng đến AIRUN</b><span>Chạy thông minh hơn giữa Đà Nẵng</span>' }) : ''}<div class="wx-head"><div><p class="eyebrow">CẨM NANG AIRUN</p><h2>Dùng AIRUN trong 1 phút</h2><p class="step-lead">Ba bước để có buổi chạy đầu tiên. Bên dưới là hướng dẫn chi tiết từng tính năng.</p></div></div>
       <ol class="gd-quick">${QUICK.map(([ic, t, d, href, label], i) => `<li><span class="gd-num">${i + 1}</span><div><b>${icon(ic)}${t}</b><p>${d}</p><a class="chip-btn" href="${href}">${label}</a></div></li>`).join('')}</ol>
       <h3 class="hub-h">Hướng dẫn từng tính năng</h3>
