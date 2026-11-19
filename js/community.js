@@ -81,18 +81,9 @@
     st.bulletins = out.filter((b) => b.ok).sort((a, b) => b.score - a.score);
     st.bulletinsAt = Date.now(); st.bulletinsLoading = false; render();
   }
-  /* ---------- Ảnh khu vực (Wikimedia Commons, giấy phép cho phép dùng lại kèm ghi công) ---------- */
-  const C = 'https://upload.wikimedia.org/wikipedia/commons/thumb/';
-  const PHOTOS = {
-    HaiChau: { src: C + 'd/d1/Da_nang_dragon_bridge.jpg/960px-Da_nang_dragon_bridge.jpg', alt: 'Cầu Rồng bắc qua sông Hàn', by: 'Thangphan', lic: 'CC0', page: 'https://commons.wikimedia.org/wiki/File:Da_nang_dragon_bridge.jpg' },
-    AnHai: { src: C + 'e/e5/My_Khe_Beach_Danang_Coastline.jpg/960px-My_Khe_Beach_Danang_Coastline.jpg', alt: 'Bờ biển Mỹ Khê nhìn từ trên cao', by: 'Jpatokal', lic: 'CC BY-SA 4.0', page: 'https://commons.wikimedia.org/wiki/File:My_Khe_Beach_Danang_Coastline.jpg' },
-    SonTra: { src: C + '4/46/Son_Tra_Peninsula.jpg/960px-Son_Tra_Peninsula.jpg', alt: 'Bán đảo Sơn Trà nhìn từ đường lên chùa Linh Ứng', by: 'Christophe95', lic: 'CC BY-SA 4.0', page: 'https://commons.wikimedia.org/wiki/File:Son_Tra_Peninsula.jpg' },
-    NguHanhSon: { src: C + '4/44/Marble_Mountains%2C_Vietnam.jpg/960px-Marble_Mountains%2C_Vietnam.jpg', alt: 'Núi Ngũ Hành Sơn', by: 'Bernard Gagnon', lic: 'CC BY-SA 3.0', page: 'https://commons.wikimedia.org/wiki/File:Marble_Mountains,_Vietnam.jpg' },
-    ThanhKhe: { src: C + '0/0f/Da_Nang_view_from_top_of_Son_Tra.jpg/960px-Da_Nang_view_from_top_of_Son_Tra.jpg', alt: 'Toàn cảnh Đà Nẵng nhìn từ Sơn Trà', by: 'Fa2f', lic: 'CC BY 3.0', page: 'https://commons.wikimedia.org/wiki/File:Da_Nang_view_from_top_of_Son_Tra.jpg' },
-    LienChieu: { src: C + '7/7f/Hai_Van_Pass.jpg/960px-Hai_Van_Pass.jpg', alt: 'Đèo Hải Vân', by: 'Andre Hospers', lic: 'CC BY 4.0', page: 'https://commons.wikimedia.org/wiki/File:Hai_Van_Pass.jpg' },
-    HoiAn: { src: C + '9/9e/Hoi_An_Ancient_town.jpg/960px-Hoi_An_Ancient_town.jpg', alt: 'Phố cổ Hội An', by: 'Andre Hospers', lic: 'CC BY 4.0', page: 'https://commons.wikimedia.org/wiki/File:Hoi_An_Ancient_town.jpg' }
-  };
-  const photo = (key, cls = '') => { const p = PHOTOS[key]; return p ? `<figure class="cm-photo ${cls}"><img src="${p.src}" alt="${esc(p.alt)}" loading="lazy" decoding="async" onerror="this.closest('figure').classList.add('noimg')"><figcaption><a href="${p.page}" target="_blank" rel="noopener">Ảnh: ${esc(p.by)} · ${esc(p.lic)}</a></figcaption></figure>` : ''; };
+  /* ---------- Ảnh khu vực: lấy từ kho ảnh chung js/photos.js (luôn kèm tác giả · giấy phép · nguồn) ---------- */
+  const PH = window.AIRUN_PHOTOS;
+  const photo = (key, cls = '') => PH ? PH.figure(PH.area(key), { cls: cls === 'hero' ? 'ph-hero' : 'ph-thumb' }) : '';
   const WEEK = ['Chủ nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
   const dayLabel = (iso) => { const m = String(iso || '').match(/^(\d{4})-(\d{2})-(\d{2})$/); if (!m) return { wd: '', d: '', m: '', text: esc(iso || '') }; const d = new Date(Date.UTC(+m[1], +m[2] - 1, +m[3])); return { wd: WEEK[d.getUTCDay()], d: m[3], m: `Th${Number(m[2])}`, text: `${WEEK[d.getUTCDay()]}, ${Number(m[3])}/${Number(m[2])}` }; };
 
@@ -233,7 +224,7 @@
         ${b.alerts.length ? `<ul class="cm-alerts">${b.alerts.map((a) => `<li class="t-${a.tone}">${icon('i-triangle-alert')}${esc(a.text)}</li>`).join('')}</ul>` : '<p class="cm-calm">Không có cảnh báo trong 12 giờ tới.</p>'}
         <div class="cm-area-foot"><span>${b.bestText ? `${icon('i-timer')}Giờ đẹp: ${esc(b.bestText)}` : ''}${s ? `<em>${icon('i-users')}${s.runners} người · ${vn(s.km)} km tuần này</em>` : ''}</span><button type="button" class="chip-btn" data-plan-area="${esc(b.key)}">Lên kế hoạch ở đây</button></div></div></article>`;
     }).join('')}</div>`;
-    return `<h3 class="hub-h">Khu vực chạy hôm nay</h3>${auto}<p class="wx-note">Điểm chạy của từng khu vực tính từ dự báo Open-Meteo, cùng công thức với trang Kế hoạch. Ảnh khu vực từ Wikimedia Commons, bấm vào dòng tên tác giả để xem giấy phép.</p>`;
+    return `<h3 class="hub-h">Khu vực chạy hôm nay</h3>${auto}<p class="wx-note">Điểm chạy của từng khu vực tính từ dự báo Open-Meteo, cùng công thức với trang Kế hoạch. Ảnh khu vực từ Wikimedia Commons; bấm vào dòng nguồn trên ảnh để xem tác giả và giấy phép.</p>`;
   }
   function newsHtml() { return composerHtml() + dailyHtml() + eventsHtml() + postsHtml() + areasHtml(); }
 

@@ -247,3 +247,46 @@ body[data-view="coach"] .coachpro{scroll-margin-top:130px}
 .cm-area{padding:0!important;overflow:hidden}
 .cm-area-in{padding:12px 14px 14px}
 @media (max-width:560px){.ev-body{gap:12px;padding:12px 14px}.ev-date{width:48px;height:54px}.cm-area-grid{grid-template-columns:1fr}.cm-photo.hero{aspect-ratio:16/9}}
+
+/* ---------- V9.8: ảnh địa danh có nguồn (js/photos.js) ---------- */
+.ph{position:relative;margin:0;overflow:hidden;background:var(--surface-2)}
+.ph img{display:block;width:100%;height:100%;object-fit:cover}
+.ph.ph-off{display:none}
+.ph figcaption{position:absolute;right:6px;bottom:6px;max-width:calc(100% - 12px);z-index:2}
+.ph figcaption a{display:inline-block;max-width:100%;padding:3px 8px;border-radius:999px;background:rgba(5,30,24,.66);color:#fff;font-size:10.5px;line-height:1.45;text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ph figcaption a:hover,.ph figcaption a:focus-visible{background:rgba(5,30,24,.85);text-decoration:underline}
+.ph-cap{position:absolute;left:0;right:0;bottom:0;padding:28px 14px 30px;background:linear-gradient(180deg,transparent,rgba(4,24,19,.72));color:#fff;display:flex;flex-direction:column;gap:1px;pointer-events:none}
+.ph-cap b{font-size:17px;line-height:1.25}.ph-cap span{font-size:12.5px;opacity:.9}
+.ph-hero{aspect-ratio:16/8;max-height:300px}
+.ph-thumb{aspect-ratio:16/7}
+.ph-hub{aspect-ratio:16/7;border-radius:20px;max-height:220px}
+.hub-photo:empty{display:none}
+.hub-photo{grid-column:1/-1}
+.ph-wx{aspect-ratio:16/6;border-radius:18px;max-height:220px;margin:12px 0 4px}
+.ph-guide{aspect-ratio:16/7;border-radius:20px;max-height:260px;margin-bottom:6px}
+.ph-spot{aspect-ratio:4/3}
+.spots{grid-column:1/-1;display:grid;gap:10px;min-width:0}
+.spots:empty{display:none}
+.spots .hub-h{margin:6px 0 0}
+.spots-row{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(240px,72%);gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px;scrollbar-width:thin}
+@media (min-width:760px){.spots-row{grid-auto-columns:minmax(260px,31%)}}
+.spot{scroll-snap-align:start;display:flex;flex-direction:column;border-radius:18px;overflow:hidden;background:var(--surface);border:1px solid var(--hairline);min-width:0}
+.spot-body{padding:12px 14px 14px;display:grid;gap:6px;flex:1;align-content:start}
+.spot-body b{font-size:15.5px;line-height:1.3}
+.spot-body p{margin:0;font-size:13.5px;line-height:1.5;color:#3c5249}
+.spot-body .chip-btn{justify-self:start;margin-top:4px}
+.ph-src{display:block;margin:2px 0 6px;font-size:11.5px}
+.ph-src a{color:var(--muted);text-decoration:underline;text-underline-offset:2px}
+.gd-credits ul{list-style:none;margin:0;padding:4px 16px 14px;display:grid;gap:0}
+.gd-credits li{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 12px;padding:8px 0;border-bottom:1px solid var(--hairline);font-size:13.5px}
+.gd-credits li:last-child{border-bottom:0}
+.gd-credits li a{color:var(--brand-700);font-weight:var(--w-med)}
+.gd-credits li span{color:var(--muted)}
+.gd-credits-note{margin:10px 16px 4px;font-size:13.5px;line-height:1.55;color:#3c5249}
+/* Trang chủ: thêm hàng ảnh khu vực và hàng "Góc chạy đẹp" vào lưới của hub */
+.hub{grid-template-areas:"top top" "photo photo" "now h" "now cats" "spots spots"}
+.hub-photo{grid-area:photo}.spots{grid-area:spots}
+@media (max-width:780px){.hub{grid-template-areas:"top" "photo" "now" "h" "cats" "spots"}}
+.spots .hub-h{grid-area:auto}
+.spots{grid-template-columns:minmax(0,1fr)}
+@media (min-width:781px){.ph-hub{aspect-ratio:auto;height:210px;max-height:none}}

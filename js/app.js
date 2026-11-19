@@ -2607,7 +2607,7 @@ let airunInitialized=false;
 async function init(){
   if(airunInitialized)return;airunInitialized=true;
   if(await clearLegacyServiceWorkerControl()) return;
-  if(typeof window!=='undefined')window.__AIRUN_APP_READY='v97';
+  if(typeof window!=='undefined')window.__AIRUN_APP_READY='v98';
   setSystemStatus('js','ok','V9.7 · bản tin hằng ngày, sự kiện');
   safeCall('khu vực',()=>{$('area').innerHTML=WARDS.map(item=>`<option value="${item.key}">${escapeHTML(item.name)}</option>`).join('');});
   safeCall('khôi phục cài đặt',restorePlanSettings);

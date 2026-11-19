@@ -83,10 +83,13 @@
   function render() {
     const box = el('guidePage'); if (!box || box.dataset.ready) return;
     box.dataset.ready = '1';
-    box.innerHTML = `<div class="wx-head"><div><p class="eyebrow">CẨM NANG AIRUN</p><h2>Dùng AIRUN trong 1 phút</h2><p class="step-lead">Ba bước để có buổi chạy đầu tiên. Bên dưới là hướng dẫn chi tiết từng tính năng.</p></div></div>
+    const PH = window.AIRUN_PHOTOS;
+    const credits = PH ? Object.values(PH.P).map((p) => `<li><a href="${p.page}" target="_blank" rel="noopener">${p.title}</a><span>${p.by} · ${p.lic}</span></li>`).join('') : '';
+    box.innerHTML = `${PH ? PH.figure('mykheDawn', { cls: 'ph-guide', eager: true, caption: '<b>Chào mừng đến AIRUN</b><span>Chạy thông minh hơn giữa Đà Nẵng</span>' }) : ''}<div class="wx-head"><div><p class="eyebrow">CẨM NANG AIRUN</p><h2>Dùng AIRUN trong 1 phút</h2><p class="step-lead">Ba bước để có buổi chạy đầu tiên. Bên dưới là hướng dẫn chi tiết từng tính năng.</p></div></div>
       <ol class="gd-quick">${QUICK.map(([ic, t, d, href, label], i) => `<li><span class="gd-num">${i + 1}</span><div><b>${icon(ic)}${t}</b><p>${d}</p><a class="chip-btn" href="${href}">${label}</a></div></li>`).join('')}</ol>
       <h3 class="hub-h">Hướng dẫn từng tính năng</h3>
       <div class="gd-topics">${TOPICS.map((t) => `<details class="fold gd-topic" id="guide-${t.id}"><summary><span class="cat-ic">${icon(t.ic)}</span><span><b>${t.title}</b></span>${icon('i-chevron-down')}</summary><dl>${t.body.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>${t.go ? `<a class="primary gd-go" href="${t.go[0]}">${t.go[1]} ${icon('i-arrow-right')}</a>` : ''}</details>`).join('')}</div>
+      ${credits ? `<details class="fold gd-topic gd-credits" id="guide-photos"><summary><span class="cat-ic">${icon('i-info')}</span><span><b>Nguồn ảnh</b></span>${icon('i-chevron-down')}</summary><p class="gd-credits-note">Mọi ảnh địa danh trong AIRUN lấy từ Wikimedia Commons, theo giấy phép CC0 (dùng tự do), CC BY hoặc CC BY-SA (dùng lại khi ghi tên tác giả và giấy phép). Bấm tên ảnh để mở trang gốc.</p><ul>${credits}</ul></details>` : ''}
       <div class="gd-foot"><p>Chưa rõ chỗ nào? Hỏi thẳng AI Coach, ví dụ: "Hướng dẫn mình chạy buổi đầu tiên".</p><button type="button" class="soft-btn" id="gdAsk">${icon('i-sparkles')}Hỏi AI Coach</button><button type="button" class="soft-btn" id="gdWelcome">Xem lại lời chào</button></div>`;
     el('gdAsk')?.addEventListener('click', () => { if (typeof openAiDrawer === 'function') openAiDrawer(); });
     el('gdWelcome')?.addEventListener('click', () => showWelcome(true));
