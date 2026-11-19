@@ -38,7 +38,6 @@ assert.strictEqual(cleanFeedback({ verdict: 'hack' }).verdict, null);
 assert.deepStrictEqual(parseJSONLoose('```json\n{"a":1}\n```'), { a: 1 });
 
 console.log('✓ AIRUN tests passed', { mild: mild.score, warm: warm.score, hot: hot.score, smog: smog.score });
-process.exit(0);
 
 // V9.6: bảng xếp hạng chỉ tính buổi chạy GPS hợp lý, người ẩn tên không hiện trên bảng.
 {
@@ -56,3 +55,25 @@ process.exit(0);
   assert.strictEqual(s.cleanLookup({ type: 'shell', cmd: 'x' }), null);
   console.log('✓ V9.6 community/lookup tests passed');
 }
+
+// V9.7: sự kiện, ảnh, bản tin theo quy tắc.
+{
+  const assert = require('assert');
+  const s = require('../server.js');
+  assert.strictEqual(s.cleanImage('https://drive.google.com/file/d/1AbCdEfGhIjKlMn/view?usp=sharing'), 'https://drive.google.com/thumbnail?id=1AbCdEfGhIjKlMn&sz=w1200');
+  assert.strictEqual(s.cleanImage('javascript:alert(1)'), null);
+  assert.strictEqual(s.cleanImage('http://x.com/a.jpg'), null);
+  const day = new Date(Date.now() + 7 * 3600e3), iso = (d) => new Date(day.getTime() + d * 864e5).toISOString().slice(0, 10);
+  const data = { events: [
+    { id: 'e_1', date: iso(2), time: '05:00', title: 'A', slots: 2, people: [{ id: 'u1', ten: 'An' }, { id: 'u2', ten: 'Bình' }] },
+    { id: 'e_0', date: iso(-1), time: '05:00', title: 'Đã qua', slots: 0, people: [] },
+    { id: 'e_2', date: iso(1), time: '06:00', title: 'B', slots: 0, people: [] }] };
+  const up = s.upcomingEvents(data, 'u1');
+  assert.deepStrictEqual(up.map((e) => e.id), ['e_2', 'e_1'], 'bỏ sự kiện đã qua, xếp theo ngày');
+  assert.ok(up[1].joined && up[1].full && up[1].count === 2);
+  const d = s.ruleDaily({ areas: [{ name: 'Hải Châu', temp_c: 27, temp_max_c: 31, temp_min_c: 24, rain_prob_max: 20, us_aqi: 60, coolest_run: { time: '05:00', feels_c: 26 } }], community: null });
+  assert.ok(d.headline && d.summary.includes('24°C') && d.highlights.length >= 2);
+  console.log('✓ V9.7 bulletin/events tests passed');
+}
+
+process.exit(0);

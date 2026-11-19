@@ -13,7 +13,7 @@ const path = require('path');
 
 const PORT = Number(process.env.PORT) || 10000;
 const ROOT = __dirname;
-const VERSION = '9.6.0';
+const VERSION = '9.7.0';
 const OPENAI_API_KEY = (process.env.OPENAI_API_KEY || '').trim();
 const OPENAI_MODEL = (process.env.OPENAI_MODEL || 'gpt-4.1-mini').trim();
 const OPENAI_FALLBACK_MODEL = (process.env.OPENAI_FALLBACK_MODEL || 'gpt-4o-mini').trim();
@@ -858,8 +858,11 @@ async function communityData() {
     if (!Number.isFinite(at) || seen.has(key)) return; seen.add(key);
     runs.push({ id: String(x.id || ''), ten: cleanName(x.ten) || 'Người chạy', km: num(x.km, 0), giay: num(x.giay, 0), area: str(x.khu_vuc, 60), at, nguon: str(x.nguon || 'gps', 20) });
   });
-  const news = (Array.isArray(r.news) ? r.news : []).map(n => ({ date: str(n.ngay, 30), area: str(n.khu_vuc, 60), title: str(n.tieu_de, 120), text: str(n.noi_dung, 600), link: /^https?:\/\//i.test(String(n.lien_ket || '')) ? str(n.lien_ket, 300) : '' })).filter(n => n.title).slice(0, 20);
-  communityCache.at = Date.now(); communityCache.data = { ready: true, runs, news };
+  const httpsOr = (v, n) => /^https:\/\//i.test(String(v || '').trim()) ? str(String(v).trim(), n) : '';
+  const news = (Array.isArray(r.news) ? r.news : []).map(n => ({ id: str(n.id, 40), date: str(n.ngay, 30), area: str(n.khu_vuc, 60), title: str(n.tieu_de, 120), text: str(n.noi_dung, 1500), image: httpsOr(n.hinh_anh, 500), link: httpsOr(n.lien_ket, 300) })).filter(n => n.title).slice(0, 20);
+  const events = (Array.isArray(r.events) ? r.events : []).map(e => ({ id: str(e.id, 40), date: str(e.ngay, 10), time: str(e.gio, 5), area: str(e.khu_vuc, 60), place: str(e.dia_diem, 120), title: str(e.tieu_de, 120), desc: str(e.mo_ta, 1500), km: Math.max(0, num(e.cu_ly_km, 0)), slots: Math.max(0, Math.round(num(e.so_cho, 0))), contact: str(e.lien_he, 120), image: httpsOr(e.hinh_anh, 500), link: httpsOr(e.lien_ket, 300), by: str(e.nguoi_dang, 30), people: (Array.isArray(e.nguoi) ? e.nguoi : []).map(x => ({ id: str(x.id, 40), ten: cleanName(x.ten) || 'Người chạy' })) })).filter(e => e.id && e.title);
+  let bulletin = null; try { bulletin = r.bulletin ? JSON.parse(r.bulletin) : null; } catch {}
+  communityCache.at = Date.now(); communityCache.data = { ready: true, runs, news, events, bulletin };
   return communityCache.data;
 }
 function buildBoard(runs, range, areaFilter, meId) {
@@ -900,6 +903,190 @@ async function handleCommunity(req, res, url) {
     if (!data.ready) return json(res, 200, { ok: true, ready: false, reason: 'needs_script_update' });
     const range = periodRange(period, offset), user = verifyToken(req);
     return json(res, 200, { ok: true, ready: true, period, offset, range: range.label, area, ...buildBoard(data.runs, range, area, user?.id || null), news: data.news, updated: communityCache.at });
+  } catch (e) { return json(res, e.status || 502, { error: true, reason: e.message }); }
+}
+
+/* ---------- V9.7: Bản tin hằng ngày (tự tổng hợp) + sự kiện tìm thành viên + quản trị đăng bài ---------- */
+const NEWS_AREAS = [
+  { key: 'HaiChau', name: 'Hải Châu', lat: 16.0603, lon: 108.2208 }, { key: 'AnHai', name: 'An Hải', lat: 16.0678, lon: 108.2352 },
+  { key: 'SonTra', name: 'Sơn Trà', lat: 16.1063, lon: 108.2770 }, { key: 'NguHanhSon', name: 'Ngũ Hành Sơn', lat: 16.0052, lon: 108.2643 },
+  { key: 'ThanhKhe', name: 'Thanh Khê', lat: 16.0668, lon: 108.1846 }, { key: 'LienChieu', name: 'Liên Chiểu', lat: 16.1044, lon: 108.1323 },
+  { key: 'CamLe', name: 'Cẩm Lệ', lat: 16.0142, lon: 108.1977 }, { key: 'HoiAn', name: 'Hội An', lat: 15.8794, lon: 108.3350 }
+];
+const dailyCache = { date: '', data: null, building: null };
+const roleCache = new Map();
+const hhmm = iso => String(iso || '').slice(11, 16) || null;
+async function areaFacts() {
+  // Open-Meteo nhận nhiều toạ độ trong một lần gọi → 2 lượt gọi cho cả 8 khu vực, lưu 30 phút.
+  const lat = NEWS_AREAS.map(a => a.lat).join(','), lon = NEWS_AREAS.map(a => a.lon).join(','), slot = Math.floor(Date.now() / 1800e3);
+  const wq = `latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m&hourly=apparent_temperature,precipitation_probability&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,uv_index_max,sunrise,sunset,weather_code&timezone=Asia%2FHo_Chi_Minh&forecast_days=1`;
+  const [w, a] = await Promise.all([
+    cachedJSON(`daily-w:${slot}`, `${WEATHER_BASE}?${wq}`, 30 * 60e3),
+    cachedJSON(`daily-a:${slot}`, `${AIR_BASE}?latitude=${lat}&longitude=${lon}&current=us_aqi,pm2_5&timezone=Asia%2FHo_Chi_Minh`, 30 * 60e3).catch(() => null)
+  ]);
+  const W = Array.isArray(w) ? w : [w], A = Array.isArray(a) ? a : (a ? [a] : []);
+  const nowH = Number(new Date(Date.now() + 7 * 3600e3).toISOString().slice(11, 13));
+  return NEWS_AREAS.map((ar, i) => {
+    const x = W[i] || {}, y = A[i] || {}, c = x.current || {}, d = x.daily || {}, h = x.hourly || {};
+    // Giờ chạy mát nhất còn lại trong ngày (5–8h, 16–20h), ưu tiên giờ ít mưa.
+    const cand = (h.time || []).map((t, k) => ({ t, hour: Number(String(t).slice(11, 13)), feels: h.apparent_temperature?.[k], rain: h.precipitation_probability?.[k] }))
+      .filter(r => ((r.hour >= 5 && r.hour <= 8) || (r.hour >= 16 && r.hour <= 20)) && r.hour > nowH && Number.isFinite(Number(r.feels)));
+    const cool = cand.sort((p, q) => (Number(p.rain) >= 60) - (Number(q.rain) >= 60) || p.feels - q.feels)[0];
+    return { key: ar.key, name: ar.name, weather: WMO_VI[c.weather_code] || WMO_VI[d.weather_code?.[0]] || null, temp_c: r1(c.temperature_2m), feels_c: r1(c.apparent_temperature), wind_kmh: r1(c.wind_speed_10m), us_aqi: r1(y.current?.us_aqi), pm25: r1(y.current?.pm2_5), temp_max_c: r1(d.temperature_2m_max?.[0]), temp_min_c: r1(d.temperature_2m_min?.[0]), rain_prob_max: r1(d.precipitation_probability_max?.[0]), uv_max: r1(d.uv_index_max?.[0]), sunrise: hhmm(d.sunrise?.[0]), sunset: hhmm(d.sunset?.[0]), coolest_run: cool ? { time: hhmm(cool.t), feels_c: r1(cool.feels), rain_pct: r1(cool.rain) } : null };
+  });
+}
+function communityFacts(data) {
+  if (!data?.ready) return null;
+  const today = new Date(`${vnDay(Date.now())}T00:00:00+07:00`).getTime(), day = 864e5;
+  const valid = data.runs.filter(r => validRun({ id: r.id, km: r.km, giay: r.giay, nguon: r.nguon }));
+  const sum = (from, to) => { const rs = valid.filter(r => r.at >= from && r.at < to); return { runs: rs.length, km: Math.round(rs.reduce((a, r) => a + r.km, 0) * 10) / 10, runners: new Set(rs.map(r => r.id)).size }; };
+  const wk = periodRange('week'), week = valid.filter(r => r.at >= wk.from && r.at < wk.to);
+  const areaKm = new Map(); week.forEach(r => areaKm.set(r.area, (areaKm.get(r.area) || 0) + r.km));
+  const topArea = [...areaKm.entries()].sort((a, b) => b[1] - a[1])[0];
+  const longest = [...week].sort((a, b) => b.km - a.km)[0];
+  return { yesterday: sum(today - day, today), today: sum(today, today + day), this_week: { ...sum(wk.from, wk.to), range: wk.label, top_area: topArea ? { name: topArea[0], km: Math.round(topArea[1] * 10) / 10 } : null, longest_km: longest ? Math.round(longest.km * 10) / 10 : null } };
+}
+function upcomingEvents(data, meId) {
+  const today = vnDay(Date.now());
+  return (data?.events || []).filter(e => !e.date || e.date >= today).sort((a, b) => `${a.date}${a.time}`.localeCompare(`${b.date}${b.time}`)).slice(0, 12)
+    .map(({ people, ...e }) => ({ ...e, count: people.length, names: people.slice(0, 4).map(p => p.ten), joined: Boolean(meId && people.some(p => p.id === meId)), full: e.slots > 0 && people.length >= e.slots }));
+}
+function ruleDaily(facts) {
+  const ok = facts.areas.filter(a => a.temp_c !== null);
+  if (!ok.length) return { headline: 'Bản tin chạy bộ hôm nay', summary: 'Chưa lấy được dự báo thời tiết cho các khu vực.', highlights: [] };
+  const air = [...ok].filter(a => a.us_aqi !== null).sort((a, b) => a.us_aqi - b.us_aqi)[0];
+  const tmax = Math.max(...ok.map(a => a.temp_max_c ?? -99)), tmin = Math.min(...ok.map(a => a.temp_min_c ?? 99)), rain = Math.max(...ok.map(a => a.rain_prob_max ?? 0));
+  const c = facts.community, cool = ok[0].coolest_run;
+  const hl = [];
+  if (air) hl.push(`Không khí sạch nhất: ${air.name}, AQI ${air.us_aqi}.`);
+  if (cool) hl.push(`Giờ mát nhất còn lại ở Hải Châu: ${cool.time}, cảm giác ${cool.feels_c}°C.`);
+  if (c?.yesterday?.runs) hl.push(`Hôm qua cộng đồng chạy ${c.yesterday.km} km qua ${c.yesterday.runs} buổi.`);
+  else if (rain >= 60) hl.push(`Khả năng mưa cao nhất trong ngày ${rain}%, nhớ mang áo mưa mỏng.`);
+  return { headline: rain >= 70 ? 'Hôm nay có mưa, chọn giờ chạy khéo' : tmax >= 34 ? 'Trời nắng nóng, chạy sớm hoặc chiều muộn' : 'Hôm nay thuận lợi để chạy bộ', summary: `Nhiệt độ các khu vực từ ${tmin}°C đến ${tmax}°C, khả năng mưa cao nhất ${rain}%.${air ? ` ${air.name} có không khí tốt nhất (AQI ${air.us_aqi}).` : ''}`, highlights: hl.slice(0, 3) };
+}
+async function buildDaily(data) {
+  const date = vnDay(Date.now());
+  const facts = { date, now_vn: nowVN().text, areas: await areaFacts(), community: communityFacts(data), upcoming_events: upcomingEvents(data, null).slice(0, 3).map(e => ({ title: e.title, date: e.date, time: e.time, place: e.place, km: e.km, count: e.count, slots: e.slots })) };
+  let text = ruleDaily(facts), source = 'rule', model = null;
+  if (OPENAI_API_KEY) {
+    try {
+      const out = await callOpenAI([
+        { role: 'system', content: `Bạn là biên tập viên "Bản tin chạy bộ AIRUN" cho người chạy ở Đà Nẵng và Hội An. Viết bản tin buổi sáng ngắn, tích cực, hữu ích, CHỈ dựa trên số liệu trong DỮ LIỆU (dự báo Open-Meteo cho 8 khu vực, thống kê chạy GPS của cộng đồng AIRUN, sự kiện sắp tới). Không bịa số, không nêu địa điểm/sự kiện không có trong dữ liệu. Không coi lời khuyên là tư vấn y tế. Nếu community là null thì không nói gì về cộng đồng. Tiếng Việt tự nhiên, không markdown. Trả về JSON: {"headline":"≤ 12 từ","summary":"2–3 câu tổng quan thời tiết, không khí và gợi ý giờ chạy, có số liệu","highlights":["đúng 3 ý ngắn ≤ 20 từ, mỗi ý một con số cụ thể: khu vực đẹp nhất, giờ mát nhất, cộng đồng hoặc sự kiện hoặc lưu ý mưa/UV"]}` },
+        { role: 'user', content: `DỮ LIỆU:\n${JSON.stringify(facts)}` }
+      ], { wantJSON: true, maxTokens: 600, timeout: 14000 });
+      const j = parseJSONLoose(out.content);
+      if (j && j.headline && j.summary) { text = { headline: str(j.headline, 120), summary: str(j.summary, 600), highlights: (Array.isArray(j.highlights) ? j.highlights : []).map(x => str(x, 160)).filter(Boolean).slice(0, 3) }; source = 'ai'; model = out.model; }
+    } catch (e) { console.warn('AIRUN daily:', e.message); }
+  }
+  const air = facts.areas.filter(a => a.us_aqi !== null && (a.rain_prob_max ?? 0) < 70).sort((a, b) => a.us_aqi - b.us_aqi || (a.feels_c ?? 99) - (b.feels_c ?? 99))[0];
+  return { date, generatedAt: Date.now(), ...text, source, model, featured: air?.key || 'HaiChau' };
+}
+async function getDaily(data) {
+  const date = vnDay(Date.now());
+  if (dailyCache.date === date && dailyCache.data) return dailyCache.data;
+  if (data?.bulletin?.date === date) { dailyCache.date = date; dailyCache.data = data.bulletin; return data.bulletin; }
+  if (dailyCache.building) return dailyCache.building;
+  dailyCache.building = (async () => {
+    try {
+      const daily = await buildDaily(data);
+      dailyCache.date = date; dailyCache.data = daily;
+      // Lưu vào Google Sheet để mọi máy chủ dùng chung một bản tin trong ngày (AI chỉ viết 1 lần/ngày).
+      if (data?.ready) sheetsCall({ action: 'putBulletin', ngay: `'${date}`, json: JSON.stringify(daily) }, 8000).catch(() => {});
+      return daily;
+    } finally { dailyCache.building = null; }
+  })();
+  return dailyCache.building;
+}
+async function handleBulletin(req, res) {
+  if (rateLimited(req, 'bulletin', 60, 10 * 60 * 1000)) return json(res, 429, { error: true, reason: 'Tải bản tin hơi nhanh, đợi một chút nhé.' });
+  let data = null, ready = false;
+  if (accountsEnabled()) { try { data = await communityData(); ready = Boolean(data.ready); } catch (e) { console.warn('AIRUN bulletin data:', e.message); } }
+  const user = verifyToken(req);
+  try {
+    const [daily, areas] = await Promise.all([getDaily(data), areaFacts().catch(() => [])]);
+    return json(res, 200, { ok: true, ready, daily, areas, community: communityFacts(data), events: upcomingEvents(data, user?.id || null), news: data?.news || [], admin: ready && user ? await isAdmin(user) : false });
+  } catch (e) { return json(res, 502, { error: true, reason: `Chưa tổng hợp được bản tin: ${e.message}` }); }
+}
+
+/* Quản trị: tài khoản có cột vai_tro = "admin" trong tab nguoi_chay của Google Sheet. */
+async function isAdmin(user) {
+  if (!user || !accountsEnabled()) return false;
+  const hit = roleCache.get(user.id);
+  // Đã là admin: nhớ 5 phút. Chưa phải admin: chỉ nhớ 30 giây, để vừa ghi "admin" vào Sheet là dùng được ngay.
+  if (hit && Date.now() - hit.at < (hit.admin ? 5 * 60e3 : 30e3)) return hit.admin;
+  let admin = false;
+  try { const r = await sheetsCall({ action: 'role', id: user.id }, 8000); admin = Boolean(r.ok && String(r.role || '').toLowerCase() === 'admin'); } catch {}
+  roleCache.set(user.id, { at: Date.now(), admin });
+  return admin;
+}
+function cleanImage(v) {
+  let u = String(v || '').trim();
+  if (!u) return '';
+  // Link chia sẻ Google Drive → link ảnh hiển thị được.
+  const m = u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:export=\w+&)?id=)([\w-]{10,})/);
+  if (m) u = `https://drive.google.com/thumbnail?id=${m[1]}&sz=w1200`;
+  return /^https:\/\/[^\s"'<>]+$/i.test(u) && u.length <= 500 ? u : null;
+}
+async function handleAdminMe(req, res) {
+  const user = verifyToken(req);
+  return json(res, 200, { ok: true, admin: await isAdmin(user) });
+}
+async function handleAdminPost(req, res) {
+  const user = verifyToken(req);
+  if (!user) return json(res, 401, { error: true, reason: 'Cần đăng nhập' });
+  if (rateLimited(req, `admin:${user.id}`, 30, 10 * 60 * 1000)) return json(res, 429, { error: true, reason: 'Đăng quá nhanh, đợi một chút.' });
+  if (!(await isAdmin(user))) return json(res, 403, { error: true, reason: 'Tài khoản này chưa có quyền quản trị. Ghi "admin" vào cột vai_tro của bạn trong tab nguoi_chay.' });
+  let b; try { b = await readBody(req, 16 * 1024); } catch (e) { return json(res, 400, { error: true, reason: e.message }); }
+  const t = (v, n) => String(v ?? '').replace(/\s+\n/g, '\n').trim().slice(0, n);
+  const title = t(b.title, 120), image = cleanImage(b.image), link = t(b.link, 300);
+  if (title.length < 4) return json(res, 400, { error: true, reason: 'Tiêu đề cần ít nhất 4 ký tự.' });
+  if (image === null) return json(res, 400, { error: true, reason: 'Link ảnh phải bắt đầu bằng https:// (ảnh trên web hoặc link chia sẻ Google Drive).' });
+  if (link && !/^https:\/\//i.test(link)) return json(res, 400, { error: true, reason: 'Liên kết phải bắt đầu bằng https://' });
+  const now = new Date().toISOString(), id = `${b.kind === 'event' ? 'e' : 'n'}_${crypto.randomBytes(5).toString('hex')}`;
+  let tab, row;
+  if (b.kind === 'event') {
+    const date = t(b.date, 10), time = t(b.time, 5), place = t(b.place, 120);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || date < vnDay(Date.now())) return json(res, 400, { error: true, reason: 'Chọn ngày diễn ra (từ hôm nay trở đi).' });
+    if (time && !/^\d{2}:\d{2}$/.test(time)) return json(res, 400, { error: true, reason: 'Giờ theo dạng HH:MM.' });
+    if (place.length < 3) return json(res, 400, { error: true, reason: 'Nhập địa điểm tập trung.' });
+    tab = 'su_kien'; row = { id, ngay: `'${date}`, gio: time ? `'${time}` : '', khu_vuc: t(b.area, 60), dia_diem: place, tieu_de: title, mo_ta: t(b.text, 1500), cu_ly_km: Math.max(0, Math.min(100, num(b.km, 0))), so_cho: Math.max(0, Math.min(1000, Math.round(num(b.slots, 0)))), lien_he: t(b.contact, 120), hinh_anh: image, lien_ket: link, hien: 'x', nguoi_dang: user.ten, tao_luc: now };
+  } else {
+    tab = 'tin_tuc'; row = { id, ngay: `'${new Intl.DateTimeFormat('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date())}`, khu_vuc: t(b.area, 60), tieu_de: title, noi_dung: t(b.text, 1500), hinh_anh: image, lien_ket: link, hien: 'x', nguoi_dang: user.ten, tao_luc: now };
+  }
+  try {
+    const r = await sheetsCall({ action: 'append', tab, row });
+    if (!r.ok) return json(res, 502, { error: true, reason: `Google Sheet: ${r.error}` });
+    communityCache.at = 0;
+    return json(res, 200, { ok: true, id });
+  } catch (e) { return json(res, e.status || 502, { error: true, reason: e.message }); }
+}
+async function handleAdminHide(req, res) {
+  const user = verifyToken(req);
+  if (!user || !(await isAdmin(user))) return json(res, 403, { error: true, reason: 'Cần quyền quản trị' });
+  let b; try { b = await readBody(req, 2048); } catch (e) { return json(res, 400, { error: true, reason: e.message }); }
+  const tab = b.kind === 'event' ? 'su_kien' : 'tin_tuc', id = String(b.id || '').slice(0, 40);
+  if (!/^[en]_[a-f0-9]{6,}$/.test(id)) return json(res, 400, { error: true, reason: 'Mã bài không hợp lệ' });
+  try { const r = await sheetsCall({ action: 'setHidden', tab, id, hidden: b.hidden !== false }); communityCache.at = 0; return json(res, r.ok ? 200 : 404, r.ok ? { ok: true } : { error: true, reason: 'Không tìm thấy bài này trong Google Sheet' }); }
+  catch (e) { return json(res, e.status || 502, { error: true, reason: e.message }); }
+}
+async function handleEventJoin(req, res) {
+  const user = verifyToken(req);
+  if (!user) return json(res, 401, { error: true, reason: 'Đăng nhập để tham gia sự kiện' });
+  if (rateLimited(req, `join:${user.id}`, 20, 10 * 60 * 1000)) return json(res, 429, { error: true, reason: 'Thao tác hơi nhanh, đợi một chút.' });
+  let b; try { b = await readBody(req, 2048); } catch (e) { return json(res, 400, { error: true, reason: e.message }); }
+  try {
+    communityCache.at = 0;
+    const data = await communityData();
+    const ev = upcomingEvents(data, user.id).find(e => e.id === String(b.id || ''));
+    if (!ev) return json(res, 404, { error: true, reason: 'Sự kiện không còn mở đăng ký' });
+    const join = b.join !== false;
+    if (join && ev.joined) return json(res, 200, { ok: true, joined: true, count: ev.count });
+    if (!join && !ev.joined) return json(res, 200, { ok: true, joined: false, count: ev.count });
+    if (join && ev.full) return json(res, 409, { error: true, reason: 'Sự kiện đã đủ người' });
+    const r = await sheetsCall({ action: 'append', tab: 'dang_ky', row: { thoi_diem: new Date().toISOString(), su_kien_id: ev.id, nguoi_chay_id: user.id, ten: user.ten, trang_thai: join ? 'tham_gia' : 'huy' } });
+    if (!r.ok) return json(res, 502, { error: true, reason: `Google Sheet: ${r.error}` });
+    communityCache.at = 0;
+    return json(res, 200, { ok: true, joined: join, count: ev.count + (join ? 1 : -1) });
   } catch (e) { return json(res, e.status || 502, { error: true, reason: e.message }); }
 }
 
@@ -992,6 +1179,11 @@ async function handler(req, res) {
     if (p === '/api/account/me' && req.method === 'GET') return handleMe(req, res);
     if (p === '/api/account/log' && req.method === 'POST') return handleLog(req, res);
     if (p === '/api/community' && req.method === 'GET') return handleCommunity(req, res, url);
+    if (p === '/api/bulletin' && req.method === 'GET') return handleBulletin(req, res);
+    if (p === '/api/events/join' && req.method === 'POST') return handleEventJoin(req, res);
+    if (p === '/api/admin/me' && req.method === 'GET') return handleAdminMe(req, res);
+    if (p === '/api/admin/post' && req.method === 'POST') return handleAdminPost(req, res);
+    if (p === '/api/admin/hide' && req.method === 'POST') return handleAdminHide(req, res);
     if (p === '/api/app-feedback' && req.method === 'POST') return handleAppFeedback(req, res);
     if (p === '/api/coach' && req.method === 'POST') return handleCoach(req, res);
     if (p === '/api/feedback' && req.method === 'POST') return handleFeedback(req, res);
@@ -1012,4 +1204,4 @@ if (require.main === module) {
     console.log(`AIRUN ${VERSION} chạy tại cổng ${PORT} · AI ${OPENAI_API_KEY ? 'BẬT (' + OPENAI_MODEL + ')' : 'TẮT (thiếu OPENAI_API_KEY)'} · GraphHopper ${GRAPHHOPPER_API_KEY ? 'BẬT' : 'TẮT'}`);
   });
 }
-module.exports = { handler, server, cleanFeedback, feedbackSummary, parseJSONLoose, periodRange, validRun, buildBoard, cleanLookup };
+module.exports = { handler, server, cleanFeedback, feedbackSummary, parseJSONLoose, periodRange, validRun, buildBoard, cleanLookup, cleanImage, upcomingEvents, ruleDaily };
