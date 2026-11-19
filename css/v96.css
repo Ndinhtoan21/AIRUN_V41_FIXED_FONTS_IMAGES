@@ -290,3 +290,4 @@ body[data-view="coach"] .coachpro{scroll-margin-top:130px}
 .spots .hub-h{grid-area:auto}
 .spots{grid-template-columns:minmax(0,1fr)}
 @media (min-width:781px){.ph-hub{aspect-ratio:auto;height:210px;max-height:none}}
+.cat-grid > .cat{min-width:0}.cat-txt{overflow:hidden}
