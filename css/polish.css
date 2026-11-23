@@ -150,8 +150,8 @@ body.pl-scrolled .nav{box-shadow:0 6px 24px -16px rgba(6,46,36,.35)}
   .ai-fab b{font-weight:600!important;font-size:14.5px!important}
   main{padding-bottom:12px}
 }
-@media (max-width:780px){
-  .nav{height:60px!important}
+@media (max-width:780px){.nav{height:60px!important}}
+@media (max-width:1050px){
   /* nút Hỏi AI thu gọn thành nút tròn để không che danh mục/nội dung */
   .ai-fab{padding:9px!important}
   .ai-fab b{max-width:0!important;opacity:0}
