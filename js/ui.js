@@ -168,3 +168,6 @@
   paintJourney();
   paintSubnav();
 })();
+
+/* V9.9: bóng nhẹ cho thanh trên khi cuộn */
+(()=>{let t=false;const on=()=>{t=false;document.body.classList.toggle('pl-scrolled',scrollY>8);};addEventListener('scroll',()=>{if(!t){t=true;requestAnimationFrame(on);}},{passive:true});on();})();
