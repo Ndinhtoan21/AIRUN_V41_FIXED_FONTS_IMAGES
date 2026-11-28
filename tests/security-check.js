@@ -15,9 +15,10 @@ const results = [];
 const ok = (name, detail = '') => { results.push(['ĐẠT', name, detail]); };
 
 // ---------- 1) Quét mã phía trình duyệt ----------
-const PUBLIC = ['index.html', 'manifest.webmanifest'];
-for (const dir of ['js', 'css', 'assets']) {
-  (function walk(d) { for (const f of fs.readdirSync(path.join(ROOT, d))) { const p = path.join(d, f); const st = fs.statSync(path.join(ROOT, p)); if (st.isDirectory()) walk(p); else if (/\.(js|css|html|json|webmanifest|svg|txt)$/i.test(f)) PUBLIC.push(p); } })(dir);
+// Vercel phục vụ cả thư mục dự án như tệp tĩnh, nên quét toàn bộ kho (trừ .git, node_modules), không chỉ js/css.
+const PUBLIC = [];
+for (const dir of ['.']) {
+  (function walk(d) { for (const f of fs.readdirSync(path.join(ROOT, d))) { if (f === '.git' || f === 'node_modules') continue; const p = path.join(d, f); const st = fs.statSync(path.join(ROOT, p)); if (st.isDirectory()) walk(p); else if (/\.(js|css|html|json|webmanifest|svg|txt|md|gs|yaml|yml)$/i.test(f)) PUBLIC.push(p); } })(dir);
 }
 const PATTERNS = [
   ['Khoá Google (AIza…)', /AIza[0-9A-Za-z_-]{20,}/],
@@ -26,20 +27,23 @@ const PATTERNS = [
   ['Token GitHub', /\bgh[pousr]_[A-Za-z0-9]{30,}/],
   ['Địa chỉ Apps Script của Google Sheet', /script\.google\.com\/macros\/s\/[A-Za-z0-9_-]{20,}/],
   ['Khoá GraphHopper dán thẳng', /graphhopper\.com[^"'`\s]*key=[A-Za-z0-9-]{10,}/i],
-  ['Biến môi trường máy chủ', /process\.env\./],
+  
   ['Khoá trong URL (key=…)', /[?&](?:key|api_key|access_token)=[A-Za-z0-9_-]{16,}/]
 ];
 const hits = [];
 for (const f of PUBLIC) { const text = fs.readFileSync(path.join(ROOT, f), 'utf8'); for (const [name, re] of PATTERNS) { const m = text.match(re); if (m) hits.push(`${f}: ${name} → ${m[0].slice(0, 12)}…`); } }
 assert.deepStrictEqual(hits, [], 'Phát hiện thông tin bí mật trong mã trình duyệt:\n' + hits.join('\n'));
-ok('Mã trình duyệt không chứa khoá bí mật', `${PUBLIC.length} tệp đã quét, ${PATTERNS.length} mẫu khoá`);
+ok('Toàn bộ kho mã (mọi tệp Vercel phục vụ) không chứa khoá bí mật', `${PUBLIC.length} tệp đã quét, ${PATTERNS.length} mẫu khoá`);
+// Riêng mã chạy trên trình duyệt: không được đọc biến môi trường máy chủ.
+for (const f of PUBLIC.filter((x) => /^(js|css)\/|index\.html$/.test(x.replace(/\\/g, '/')))) assert.ok(!/process\.env\./.test(fs.readFileSync(path.join(ROOT, f), 'utf8')), `${f} đọc biến môi trường máy chủ`);
 
 // ---------- 2–4) Chạy máy chủ với khoá giả và nguồn Open-Meteo giả ----------
 const FAKE = {
-  OPENAI_API_KEY: 'sk-test-FAKEOPENAIKEY1234567890',
-  GOOGLE_MAPS_BROWSER_KEY: 'AIzaFAKEBROWSERKEY12345678901234567',
-  GOOGLE_MAPS_SERVER_KEY: 'AIzaFAKESERVERKEY123456789012345678',
-  MAPBOX_PUBLIC_TOKEN: 'pk.eyJ1IjoiZmFrZSIsImEiOiJmYWtlIn0.FAKE',
+  // Khoá giả được ghép lúc chạy để chính tệp kiểm thử không chứa chuỗi giống khoá thật.
+  OPENAI_API_KEY: ['sk', 'test', 'FAKEOPENAIKEY1234567890'].join('-'),
+  GOOGLE_MAPS_BROWSER_KEY: 'AI' + 'za' + 'FAKEBROWSERKEY12345678901234567',
+  GOOGLE_MAPS_SERVER_KEY: 'AI' + 'za' + 'FAKESERVERKEY123456789012345678',
+  MAPBOX_PUBLIC_TOKEN: 'pk.' + 'eyJ1IjoiZmFrZSIsImEiOiJmYWtlIn0.FAKE',
   GRAPHHOPPER_API_KEY: 'gh-fake-key-1234567890',
   SHEETS_SECRET: 'sheets-fake-secret-123456',
   GOOGLE_MAPS_BASEMAP: '1'

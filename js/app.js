@@ -606,7 +606,7 @@ function renderHero(data){
   $('heroArea').textContent=label;$('heroTemp').textContent=fmt(current.temp,0,dash);$('heroWeather').textContent=weather[0];$('weatherSymbol').textContent=weather[1];
   $('heroAqi').textContent=fmt(current.aqi,0,dash);$('heroPm').textContent=fmt(current.pm,1,dash);$('heroWind').textContent=fmt(current.wind,0,dash);$('heroUv').textContent=fmt(current.uv,1,dash);if($('heroFeels'))$('heroFeels').textContent=fmt(current.feels,0,dash);
   setLvl('heroAqiLvl',levelAir(current.aqi));setLvl('heroFeelsLvl',levelHeat(current.feels));setLvl('heroUvLvl',levelUv(current.uv));setLvl('heroWindLvl',levelWind(current.wind));renderHeroVerdict(data);
-  $('heroUpdated').textContent=new Date(data.updated).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});
+  {const pv=dataProvenance(data);$('heroUpdated').textContent=pv.obs?`Số liệu lúc ${hhmm(pv.obs)}`:new Date(data.updated).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});}
   $('liveBadge').textContent=noData?(data.failed?'CHƯA CÓ DỮ LIỆU THẬT':'ĐANG TẢI DỮ LIỆU THẬT'):sourceLabel(data.source).toUpperCase();
   $('liveBadge').className=`source-badge ${data.source==='live'?'':noData?(data.failed?'demo':'loading'):data.source}`;
   if(data.location?.mode==='gps'&&!noData) $('heroLocationNote').textContent=`GPS ±${round(data.location.accuracy||0)} m · dữ liệu được lấy theo tọa độ hiện tại của thiết bị.`;
@@ -642,7 +642,7 @@ function renderResult(data,snapshot,result){
   }
   const info=hasNum(snapshot.aqi)?aqiInfo(snapshot.aqi):{label:'Chưa có'},uv=hasNum(snapshot.uv)?uvInfo(snapshot.uv):{label:'Chưa có'},best=bestTimeFor(data,currentPlan());
   const missing=[];if(!hasNum(snapshot.aqi))missing.push('AQI');if(!hasNum(snapshot.feels))missing.push('nhiệt độ');
-  $('resultSource').textContent=`${sourceLabel(data.source)} · ${label} · ${snapshot.time?.slice(11,16)||'hiện tại'}${missing.length?` · thiếu ${missing.join(', ')}`:''}`;
+  {const pv=dataProvenance(data);$('resultSource').textContent=`${pv.badge} · ${label} · ${snapshot.time?.slice(11,16)||'hiện tại'}${missing.length?` · thiếu ${missing.join(', ')}`:''} · ${pv.line}`;}
   $('resultStatusPill').textContent=result.title;$('resultStatusPill').className=`result-pill ${result.tone}`;
   $('decisionPanel').className=`decision-panel ${result.tone}`;$('decisionIcon').textContent=verdictEmoji(result);$('decisionTitle').textContent=result.title;$('decisionText').textContent=result.text;
   renderFriendlyGrid(snapshot);renderHourStrip(data,currentPlan());
@@ -653,7 +653,7 @@ function renderResult(data,snapshot,result){
   $('metricTemp').textContent=hasNum(snapshot.temp)?`${round(snapshot.temp)}°`:'—';$('metricFeels').textContent=`Cảm giác ${hasNum(snapshot.feels)?round(snapshot.feels)+'°':'—'}`;$('metricWind').textContent=fmt(snapshot.wind,1);
   $('metricRain').textContent=hasNum(snapshot.rain)?`${round(snapshot.rain)}%`:'—';$('metricHumidity').textContent=`Độ ẩm ${hasNum(snapshot.humidity)?round(snapshot.humidity)+'%':'—'}`;
   $('metricUv').textContent=fmt(snapshot.uv,1);$('metricUvLabel').textContent=uv.label;
-  if($('planSummarySource'))$('planSummarySource').textContent=sourceLabel(data.source);
+  if($('planSummarySource'))$('planSummarySource').textContent=dataProvenance(data).badge;
   if($('planSummaryForecast')){
     const fs=data.forecastSource||data.source;
     $('planSummaryForecast').textContent=fs==='live'?'Forecast trực tiếp đã sẵn sàng':fs==='partial'?'Forecast trực tiếp một phần':fs==='cached'?'Forecast đã lưu gần đây':'Chưa có forecast';
@@ -1160,7 +1160,7 @@ async function renderMapLibreRoute(route){
 
 async function fetchGraphHopperRoundTrip(origin,targetKm,seed=0){
   if(!routeConfig().graphhopper)throw new Error('Máy chủ chưa cấu hình GraphHopper');
-  const qs=new URLSearchParams({lat:String(Number(origin.lat).toFixed(5)),lon:String(Number(origin.lon).toFixed(5)),km:String(Math.max(.8,targetKm).toFixed(2)),seed:String(seed)});
+  const qs=new URLSearchParams({lat:String(Number(origin.lat).toFixed(4)),lon:String(Number(origin.lon).toFixed(4)),km:String(Math.max(.8,targetKm).toFixed(2)),seed:String(seed)});
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12000);
   try{
     const res=await fetch(`/api/route?${qs}`,{cache:'no-store',signal:controller.signal});const data=await res.json();
@@ -1877,7 +1877,7 @@ function coachContext(){
   return {
     app:'AIRUN Đà Nẵng',now_local:vnIso().replace('T',' '),
     location:{name:data?.location?.label||area.name,mode:data?.location?.mode==='gps'?'GPS (chỉ gửi tên khu vực)':'khu vực chọn sẵn',area_note:area.desc},
-    data_source:sourceLabel(data?.source),data_updated:data?.updated?new Date(data.updated).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'}):null,
+    data_source:sourceLabel(data?.source),data_updated:data?.updated?new Date(data.updated).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'}):null,data_provenance:(()=>{const pv=dataProvenance(data);return {state:pv.state,provider:'Open-Meteo (dự báo mô hình, không phải trạm đo)',weather_time:data?.meta?.weather?.observedAt?hhmm(data.meta.weather.observedAt):null,air_time:data?.meta?.air?.observedAt?hhmm(data.meta.air.observedAt):null};})(),
     plan:{start_time:plan.time,start_day:targetIso(plan.time).slice(0,10)===vnIso().slice(0,10)?'hôm nay':'ngày mai (giờ này hôm nay đã qua)',duration_min:plan.duration,pace_min_per_km:formatPace(est.pace),distance_km:round(est.distance,2),intensity:plan.intensity,sensitive_group:plan.sensitive},
     at_planned_time:coachSnapshot(snap),
     now:coachSnapshot({...(data?.current||{}),time:vnIso()}),

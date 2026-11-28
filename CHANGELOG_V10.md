@@ -24,3 +24,8 @@
 
 ## Việc chủ dự án làm trên Vercel
 - Có thể xoá biến `GOOGLE_MAPS_BROWSER_KEY` (không còn dùng). Giữ `GOOGLE_MAPS_SERVER_KEY` và nên giới hạn khoá này chỉ cho Places API và Routes API trong Google Cloud.
+
+## V10.0.2 (rà soát lại toàn bộ)
+- Nguồn và giờ dữ liệu hiện cả ở trang Thời tiết, trang Kế hoạch và ô giờ ở thẻ khu vực; AI Coach nhận kèm nguồn và giờ số liệu.
+- Điểm xuất phát gửi khi tạo vòng chạy làm tròn 4 chữ số (~11 m).
+- Bộ kiểm thử quét toàn bộ kho (52 tệp, vì Vercel phục vụ cả thư mục dự án); khoá giả trong tệp kiểm thử được ghép lúc chạy để không có chuỗi giống khoá thật.

@@ -17,7 +17,7 @@ Thẻ "Bây giờ" ghi nhãn **"Dữ liệu thật"** và dòng **"Nguồn: Open
 
 ![Thẻ Bây giờ có nhãn Dữ liệu thật và nguồn, giờ cập nhật](chang2/1-the-bay-gio-du-lieu-that.png)
 
-Bấm vào dòng nguồn để xem chi tiết: loại dữ liệu (dự báo mô hình, không phải trạm đo tại chỗ), giờ của số liệu, giờ máy chủ AIRUN lấy về, bản lưu tạm của máy chủ (tối đa 10 phút), liên kết tài liệu nguồn và cam kết **không dùng số minh họa**.
+Nguồn và giờ cũng hiện ở trang Thời tiết, trang Kế hoạch, và được gửi kèm cho AI Coach để AI nói rõ số liệu lúc mấy giờ. Bấm vào dòng nguồn để xem chi tiết: loại dữ liệu (dự báo mô hình, không phải trạm đo tại chỗ), giờ của số liệu, giờ máy chủ AIRUN lấy về, bản lưu tạm của máy chủ (tối đa 10 phút), liên kết tài liệu nguồn và cam kết **không dùng số minh họa**.
 
 ![Chi tiết nguồn và thời điểm dữ liệu](chang2/2-chi-tiet-nguon-thoi-diem.png)
 
@@ -46,6 +46,7 @@ Chrome DevTools → Network, bật Disable cache, tải lại trang, lọc `maps
 | Trước (V9.9.1) | Sau (V10) |
 |---|---|
 | Tọa độ gửi máy chủ để lấy thời tiết: 5 chữ số thập phân (~1 m) | 2 chữ số (~1 km); máy chủ làm tròn thêm một lần trước khi hỏi Open-Meteo |
+| Tạo vòng chạy: gửi điểm xuất phát 5 chữ số (~1 m) | 4 chữ số (~11 m), vẫn đủ để vẽ đường |
 | AI Coach nhận vị trí ~100 m | ~1 km, kèm tên khu vực |
 | Vị trí GPS gần nhất lưu trên máy: đầy đủ | Làm tròn ~100 m |
 | Bản đồ hành trình lưu trên máy, không có hạn | Vẫn chỉ trên máy (không gửi lên máy chủ), tự xóa sau 60 ngày, có nút "Xoá lịch sử GPS" |
@@ -60,7 +61,7 @@ Chrome DevTools → Network, bật Disable cache, tải lại trang, lọc `maps
 
 | Kết quả | Kiểm tra | Chi tiết |
 |---|---|---|
-| ĐẠT | Mã trình duyệt không chứa khoá bí mật | 24 tệp đã quét, 8 mẫu khoá (Google, OpenAI, Mapbox, GitHub, Apps Script, GraphHopper, `process.env`, `key=` trong URL) |
+| ĐẠT | Toàn bộ kho mã không chứa khoá bí mật (Vercel phục vụ cả thư mục dự án) | 52 tệp đã quét, 7 mẫu khoá (Google, OpenAI, Mapbox, GitHub, Apps Script, GraphHopper, `key=` trong URL); mã trình duyệt không đọc biến môi trường máy chủ. Lịch sử commit cũng đã rà, không có khoá thật |
 | ĐẠT | `/api/config` không trả khoá nào | thử với đủ khoá Google, Mapbox, OpenAI, GraphHopper, Sheets |
 | ĐẠT | Lớp chặn cuối xoá khoá nếu lỡ lọt vào thông báo lỗi | `…?key=***` và `***` |
 | ĐẠT | Dữ liệu môi trường có nguồn và thời điểm | có `observedAt`, `fetchedAt`; lần gọi thứ 2 cùng ô ~1 km dùng bản lưu tạm (`cached=true`) |

@@ -199,7 +199,7 @@
         + `<i class="pill t-${toneOf(res.tone)}">${res.score}</i></li>`;
     }).join('');
     const updated = new Date(data.updated).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
-    el('wxSource').textContent = `${sourceLabel(data.source)} · ${updated}${st.loading ? ' · đang cập nhật…' : ''}`;
+    el('wxSource').textContent = `${dataProvenance(data).badge} · ${dataProvenance(data).line}${st.loading ? ' · đang cập nhật…' : ''}`;
     if (useBtn) {
       useBtn.disabled = !s.best;
       el('wxUseText').textContent = s.best ? `Chạy lúc ${s.best.r.time.slice(11, 16)} ${st.day === 0 ? 'hôm nay' : 'ngày mai'} · ${areaLabel()}` : 'Đặt giờ chạy này';
