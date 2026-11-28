@@ -13,7 +13,7 @@ const path = require('path');
 
 const PORT = Number(process.env.PORT) || 10000;
 const ROOT = __dirname;
-const VERSION = '9.8.0';
+const VERSION = '10.0.0';
 const OPENAI_API_KEY = (process.env.OPENAI_API_KEY || '').trim();
 const OPENAI_MODEL = (process.env.OPENAI_MODEL || 'gpt-4.1-mini').trim();
 const OPENAI_FALLBACK_MODEL = (process.env.OPENAI_FALLBACK_MODEL || 'gpt-4o-mini').trim();
@@ -46,7 +46,21 @@ function send(res, status, body, headers = {}) {
   });
   res.end(payload);
 }
-const json = (res, status, data, headers = {}) => send(res, status, data, { 'Cache-Control': 'no-store', ...headers });
+/* V10 · Chặng 2: lớp chặn cuối cùng — mọi phản hồi JSON gửi về trình duyệt đều được quét,
+   nếu lỡ chứa giá trị của biến bí mật (khoá OpenAI, Google, GraphHopper, Sheets…) thì thay bằng "***". */
+const SECRET_ENV_NAMES = ['OPENAI_API_KEY', 'GRAPHHOPPER_API_KEY', 'GOOGLE_MAPS_SERVER_KEY', 'GOOGLE_MAPS_BROWSER_KEY', 'GOOGLE_MAPS_API_KEY', 'MAPBOX_PUBLIC_TOKEN', 'SHEETS_SECRET', 'SHEETS_WEBAPP_URL', 'SESSION_SECRET', 'FEEDBACK_WEBHOOK_URL'];
+function secretValues() { return SECRET_ENV_NAMES.map((n) => String(process.env[n] || '').trim()).filter((v) => v.length >= 8); }
+function scrubSecrets(text) {
+  let out = String(text ?? '');
+  for (const v of secretValues()) out = out.split(v).join('***');
+  return out.replace(/([?&](?:key|api_key|token|access_token)=)[^&\s"']+/gi, '$1***');
+}
+const json = (res, status, data, headers = {}) => {
+  let body = JSON.stringify(data);
+  const clean = scrubSecrets(body);
+  if (clean !== body) { console.warn('AIRUN: đã chặn một giá trị bí mật trong phản hồi'); body = clean; }
+  return send(res, status, body, { 'Cache-Control': 'no-store', 'Content-Type': 'application/json; charset=utf-8', ...headers });
+};
 
 function readBody(req, limit = 48 * 1024) {
   // Vercel (serverless) có thể đã đọc sẵn body vào req.body.
@@ -101,16 +115,34 @@ function rateLimited(req, key, max, windowMs) {
 
 /* ---------- Weather / Air proxy (có cache 10 phút) ---------- */
 const envCache = new Map();
-async function cachedJSON(cacheKey, url, ttl = 10 * 60 * 1000) {
+async function cachedJSON(cacheKey, url, ttl = 10 * 60 * 1000, withMeta = false) {
   const hit = envCache.get(cacheKey);
-  if (hit && Date.now() - hit.at < ttl) return hit.data;
+  if (hit && Date.now() - hit.at < ttl) return withMeta ? { data: hit.data, at: hit.at, cached: true } : hit.data;
   const response = await fetchWithTimeout(url, { headers: { Accept: 'application/json' } }, 9000);
   const text = await response.text();
   let data; try { data = JSON.parse(text); } catch { throw Object.assign(new Error('UPSTREAM_NOT_JSON'), { status: 502 }); }
   if (!response.ok || data.error) throw Object.assign(new Error(data.reason || `UPSTREAM_${response.status}`), { status: 502 });
-  envCache.set(cacheKey, { at: Date.now(), data });
+  const at = Date.now();
+  envCache.set(cacheKey, { at, data });
   if (envCache.size > 400) envCache.delete(envCache.keys().next().value);
-  return data;
+  return withMeta ? { data, at, cached: false } : data;
+}
+
+/* V10 · Chặng 2: nguồn và thời điểm của từng gói dữ liệu môi trường.
+   observedAt = mốc giờ Open-Meteo gắn cho số liệu "hiện tại" (giờ Việt Nam);
+   fetchedAt = lúc máy chủ AIRUN lấy từ Open-Meteo; cached = đang dùng bản lưu tạm của máy chủ. */
+const ENV_SOURCES = {
+  weather: { name: 'Open-Meteo Forecast API', url: 'https://open-meteo.com/en/docs', kind: 'Dự báo mô hình thời tiết (không phải trạm đo tại chỗ)' },
+  air: { name: 'Open-Meteo Air Quality API', url: 'https://open-meteo.com/en/docs/air-quality-api', kind: 'Mô hình chất lượng không khí CAMS (lưới khoảng 11 km)' }
+};
+function envMeta(kind, payload, at, cached) {
+  const observed = payload?.current?.time ? `${payload.current.time}:00+07:00` : null;
+  return {
+    kind, real: true, source: ENV_SOURCES[kind].name, sourceUrl: ENV_SOURCES[kind].url, method: ENV_SOURCES[kind].kind,
+    observedAt: observed, intervalSec: Number(payload?.current?.interval) || null,
+    fetchedAt: new Date(at).toISOString(), cached: Boolean(cached), ageSec: Math.max(0, Math.round((Date.now() - at) / 1000)),
+    coordPrecision: '0.01° (~1 km) — máy chủ làm tròn toạ độ trước khi hỏi Open-Meteo'
+  };
 }
 
 function weatherUrl(lat, lon) {
@@ -130,16 +162,18 @@ function airUrl(lat, lon) {
   return `${AIR_BASE}?${q}`;
 }
 
+// V10: toạ độ gửi cho Open-Meteo chỉ giữ 2 chữ số thập phân (~1 km), đủ cho lưới dự báo, không lộ vị trí chính xác.
+const coarse = (v) => Math.round(Number(v) * 100) / 100;
 async function handleEnv(res, kind, latRaw, lonRaw) {
   const coord = validCoord(latRaw, lonRaw);
   if (!coord) return json(res, 400, { error: true, reason: 'Tọa độ không hợp lệ' });
-  const [lat, lon] = coord;
-  const key = `${kind}:${lat.toFixed(3)},${lon.toFixed(3)}`;
+  const lat = coarse(coord[0]), lon = coarse(coord[1]);
+  const key = `${kind}:${lat.toFixed(2)},${lon.toFixed(2)}`;
   try {
-    const data = await cachedJSON(key, kind === 'weather' ? weatherUrl(lat, lon) : airUrl(lat, lon));
-    return json(res, 200, data, { 'Cache-Control': 'public, max-age=300' });
+    const r = await cachedJSON(key, kind === 'weather' ? weatherUrl(lat, lon) : airUrl(lat, lon), 10 * 60 * 1000, true);
+    return json(res, 200, { ...r.data, _meta: envMeta(kind, r.data, r.at, r.cached) });
   } catch (error) {
-    return json(res, error.status || 502, { error: true, reason: `Open-Meteo chưa phản hồi (${error.message})` });
+    return json(res, error.status || 502, { error: true, reason: `Open-Meteo chưa phản hồi (${scrubSecrets(error.message)})` });
   }
 }
 
@@ -303,7 +337,7 @@ async function handleCoach(req, res) {
   try { body = await readBody(req); } catch (error) { return json(res, error.status || 400, { error: true, reason: error.message }); }
   const mode = MODE_INSTRUCTIONS[body.mode] ? body.mode : 'plan';
   const context = trimContext({ ...(body.context && typeof body.context === 'object' ? body.context : {}), now_vn: nowVN().text });
-  const near = body.near && validCoord(body.near.lat, body.near.lon) ? { lat: Number(body.near.lat), lon: Number(body.near.lon) } : null;
+  const near = body.near && validCoord(body.near.lat, body.near.lon) ? { lat: coarse(body.near.lat), lon: coarse(body.near.lon) } : null; // V10: AI chỉ biết vị trí gần đúng ~1 km
   const messages = [
     { role: 'system', content: `${COACH_SYSTEM}\n\n${MODE_INSTRUCTIONS[mode]}` },
     { role: 'user', content: `DỮ LIỆU (JSON, do ứng dụng AIRUN tạo từ số liệu đang hiển thị):\n${context}` }
@@ -1166,7 +1200,7 @@ async function handler(req, res) {
   try {
     if (p === '/healthz') return json(res, 200, { ok: true, version: VERSION });
     if (p === '/api/config' && req.method === 'GET') {
-      return json(res, 200, { version: VERSION, server: true, ai: Boolean(OPENAI_API_KEY), aiModel: OPENAI_API_KEY ? OPENAI_MODEL : null, routing: Boolean(GRAPHHOPPER_API_KEY), mapboxToken: MAPBOX_PUBLIC_TOKEN || '', googleMapsKey: GOOGLE_MAPS_BASEMAP ? (GOOGLE_MAPS_BROWSER_KEY || '') : '', googlePlaces: Boolean(GOOGLE_MAPS_SERVER_KEY), routePlan: true, elevation: true, accounts: accountsEnabled(), community: accountsEnabled(), feedback: true, feedbackPersistent: Boolean(FEEDBACK_WEBHOOK_URL) || accountsEnabled() });
+      return json(res, 200, { version: VERSION, server: true, ai: Boolean(OPENAI_API_KEY), aiModel: OPENAI_API_KEY ? OPENAI_MODEL : null, routing: Boolean(GRAPHHOPPER_API_KEY), googlePlaces: Boolean(GOOGLE_MAPS_SERVER_KEY), routePlan: true, elevation: true, accounts: accountsEnabled(), community: accountsEnabled(), feedback: true, feedbackPersistent: Boolean(FEEDBACK_WEBHOOK_URL) || accountsEnabled(), secretsInBrowser: false, dataSources: [ENV_SOURCES.weather.name, ENV_SOURCES.air.name], privacy: { envCoordPrecision: 0.01, gpsTrackStoredOnServer: false } });
     }
     let m = p.match(/^\/api\/(weather|air)\/(-?[\d.]+)\/(-?[\d.]+)\/?$/);
     if (m && req.method === 'GET') return handleEnv(res, m[1], m[2], m[3]);
@@ -1204,4 +1238,4 @@ if (require.main === module) {
     console.log(`AIRUN ${VERSION} chạy tại cổng ${PORT} · AI ${OPENAI_API_KEY ? 'BẬT (' + OPENAI_MODEL + ')' : 'TẮT (thiếu OPENAI_API_KEY)'} · GraphHopper ${GRAPHHOPPER_API_KEY ? 'BẬT' : 'TẮT'}`);
   });
 }
-module.exports = { handler, server, cleanFeedback, feedbackSummary, parseJSONLoose, periodRange, validRun, buildBoard, cleanLookup, cleanImage, upcomingEvents, ruleDaily };
+module.exports = { scrubSecrets, envMeta, handler, server, cleanFeedback, feedbackSummary, parseJSONLoose, periodRange, validRun, buildBoard, cleanLookup, cleanImage, upcomingEvents, ruleDaily };

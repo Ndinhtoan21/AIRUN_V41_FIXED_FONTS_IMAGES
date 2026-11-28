@@ -245,6 +245,7 @@
       setText('nowScore', '—'); setText('nowTemp', '—°'); setText('nowFeels', 'Cảm giác —');
       setText('nowTitle', data?.failed ? 'Chưa lấy được dữ liệu thật' : 'Đang đọc thời tiết và không khí…');
       setText('nowSrc', data?.failed ? 'Lỗi kết nối' : 'Đang tải');
+      { const pv = dataProvenance(data); setText('nowProvLine', pv.line); const box = el('nowProvBody'); if (box) box.innerHTML = provenanceHTML(pv); }
       el('nowFacts').innerHTML = ''; setText('nowBest', '');
       ['catWeather', 'catAir', 'catBest'].forEach((id) => setText(id, data?.failed ? 'Chưa có dữ liệu' : 'Đang tải…'));
       return;
@@ -254,7 +255,9 @@
     card.dataset.tone = toneOf(res.tone);
     setText('nowScore', String(res.score));
     setText('nowTitle', res.title);
-    setText('nowSrc', data.source === 'live' ? 'Trực tiếp' : data.source === 'partial' ? 'Một phần' : 'Đã lưu');
+    const pv = dataProvenance(data);
+    setText('nowSrc', pv.badge); el('nowSrc').dataset.state = pv.state;
+    setText('nowProvLine', pv.line); { const box = el('nowProvBody'); if (box) box.innerHTML = provenanceHTML(pv); }
     setText('nowTemp', hasNum(c.temp) ? `${round(c.temp)}°` : '—°');
     setText('nowFeels', `Cảm giác ${hasNum(c.feels) ? round(c.feels) + '°' : '—'} · ${weatherText(c.code)[0]}`);
     const use = card.querySelector('.now-wx use'); if (use) use.setAttribute('href', `#${weatherIcon(c.code, h)}`);
@@ -356,3 +359,8 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => setTimeout(start, 0), { once: true });
   else setTimeout(start, 0);
 })();
+
+/* V10 · Chặng 2: dòng "cập nhật x phút trước" tự làm mới mỗi phút. */
+if (typeof document !== 'undefined') setInterval(() => {
+  try { if (typeof activeData === 'undefined' || !activeData) return; const pv = dataProvenance(activeData); const l = document.getElementById('nowProvLine'); if (l) l.textContent = pv.line; const s = document.getElementById('nowSrc'); if (s && pv.state !== 'none') { s.textContent = pv.badge; s.dataset.state = pv.state; } } catch {}
+}, 60000);

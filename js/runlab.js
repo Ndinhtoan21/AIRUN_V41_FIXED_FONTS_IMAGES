@@ -193,11 +193,46 @@
     if (rest >= 0.1 && pts.length) out.push({ km: +(nextKm - 1 + rest).toFixed(2), sec: Math.round(pts[pts.length - 1].t - lastT), partial: rest });
     return out;
   }
-  function gpx(row, track) {
-    const start = Number(track.start) || Date.parse(row.at) || Date.now();
-    const pts = trackPoints(track).map((p) => `<trkpt lat="${p.lat}" lon="${p.lon}"><time>${new Date(start + p.t * 1000).toISOString()}</time></trkpt>`).join('\n      ');
-    return `<?xml version="1.0" encoding="UTF-8"?>\n<gpx version="1.1" creator="AIRUN Da Nang" xmlns="http://www.topografix.com/GPX/1/1">\n  <metadata><name>AIRUN · ${esc(row.area || 'Buổi chạy')}</name><time>${new Date(start).toISOString()}</time></metadata>\n  <trk><name>AIRUN ${esc(row.area || '')} ${row.distance ?? ''} km</name><type>running</type><trkseg>\n      ${pts}\n  </trkseg></trk>\n</gpx>\n`;
+  /* V10 · Chặng 2: "vùng riêng tư" — khi xuất GPX, bỏ các điểm trong bán kính quanh điểm đầu và điểm cuối
+     (thường là nhà, trường, nơi làm việc). Mặc định 200 m; người dùng có thể tắt trong Nhật ký. */
+  const PRIVACY_KEY = 'airun-v10-privacy-zone';
+  const privacyMeters = () => { const v = localGet(PRIVACY_KEY, 200); return [0, 200, 500].includes(Number(v)) ? Number(v) : 200; };
+  function privacyTrim(points, meters) {
+    if (!meters || points.length < 3) return points;
+    const r = meters / 1000, a = points[0], b = points[points.length - 1];
+    const kept = points.filter((p) => km(a, p) > r && km(b, p) > r);
+    return kept.length >= 2 ? kept : [];
   }
+  function gpx(row, track, meters = privacyMeters()) {
+    const start = Number(track.start) || Date.parse(row.at) || Date.now();
+    const pts = privacyTrim(trackPoints(track), meters).map((p) => `<trkpt lat="${p.lat}" lon="${p.lon}"><time>${new Date(start + p.t * 1000).toISOString()}</time></trkpt>`).join('\n      ');
+    return `<?xml version="1.0" encoding="UTF-8"?>\n<gpx version="1.1" creator="AIRUN Da Nang" xmlns="http://www.topografix.com/GPX/1/1">\n  <metadata><name>AIRUN · ${esc(row.area || 'Buổi chạy')}</name><time>${new Date(start).toISOString()}</time><desc>${meters ? `Đã ẩn ${meters} m quanh điểm bắt đầu và kết thúc để bảo vệ quyền riêng tư.` : 'Không bật vùng riêng tư.'}</desc></metadata>\n  <trk><name>AIRUN ${esc(row.area || '')} ${row.distance ?? ''} km</name><type>running</type><trkseg>\n      ${pts}\n  </trkseg></trk>\n</gpx>\n`;
+  }
+  // Tự xoá bản đồ hành trình cũ hơn 60 ngày (chỉ nằm trên máy, không có trên máy chủ).
+  (function pruneOldTracks() {
+    try { const all = readTracks(), cut = Date.now() - 60 * 864e5; let changed = false;
+      for (const [id, t] of Object.entries(all)) if ((Number(t.start) || Number(id)) < cut) { delete all[id]; changed = true; }
+      if (changed) localSet(TRACKS, all); } catch {}
+  })();
+  function clearGpsHistory() {
+    const n = Object.keys(readTracks()).length;
+    try { localStorage.removeItem(TRACKS); localStorage.removeItem('airun-v54-last-gps'); } catch {}
+    if (typeof renderJournal === 'function') renderJournal();
+    showToast(n ? `Đã xoá ${n} bản đồ hành trình và vị trí GPS gần nhất trên máy này.` : 'Không còn lịch sử GPS nào trên máy này.');
+  }
+  function privacyToolsHTML() {
+    const m = privacyMeters(), n = Object.keys(readTracks()).length;
+    return `<span>Quyền riêng tư GPS: ${n} bản đồ hành trình lưu trên máy này (không gửi lên máy chủ, tự xoá sau 60 ngày).</span>
+      <label>Ẩn quanh điểm đầu/cuối khi xuất GPX <select id="privacyZoneSel">${[[0, 'Không ẩn'], [200, '200 m'], [500, '500 m']].map(([v, t]) => `<option value="${v}"${v === m ? ' selected' : ''}>${t}</option>`).join('')}</select></label>
+      <button type="button" class="text-btn danger" id="clearGpsBtn">Xoá lịch sử GPS</button>`;
+  }
+  function renderPrivacyTools() {
+    const host = el('privacyTools'); if (!host) return;
+    host.innerHTML = privacyToolsHTML();
+  }
+  document.addEventListener('click', (e) => { if (e.target.closest('#clearGpsBtn')) { e.preventDefault(); clearGpsHistory(); renderPrivacyTools(); } });
+  document.addEventListener('change', (e) => { if (e.target.id === 'privacyZoneSel') { localSet(PRIVACY_KEY, Number(e.target.value)); showToast(Number(e.target.value) ? `File GPX sẽ ẩn ${e.target.value} m quanh điểm đầu và cuối.` : 'File GPX sẽ giữ toàn bộ đường chạy.'); } });
+
   function downloadGpx(id) {
     const row = journalRows().find((r) => String(r.id) === String(id)), track = readTracks()[id];
     if (!row || !track) { showToast('Buổi chạy này chưa có bản đồ hành trình.'); return; }
@@ -205,7 +240,7 @@
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
     a.download = `airun-${new Date(row.at).toISOString().slice(0, 10)}-${row.distance || 0}km.gpx`;
     document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
-    showToast('Đã tải file GPX. Trên Strava: Tải lên hoạt động → chọn file này.');
+    showToast(privacyMeters() ? `Đã tải file GPX (đã ẩn ${privacyMeters()} m quanh điểm đầu và cuối).` : 'Đã tải file GPX. Trên Strava: Tải lên hoạt động → chọn file này.');
   }
 
   /* Hộp thoại xem lại một buổi chạy */
@@ -263,6 +298,7 @@
   const originalJournal = renderJournal;
   renderJournal = function () { // eslint-disable-line no-global-assign
     const out = originalJournal.apply(this, arguments);
+    try { renderPrivacyTools(); } catch {}
     try {
       const rows = journalRows(), tracks = readTracks(), ids = new Set(rows.map((r) => String(r.id)));
       let changed = false; for (const id of Object.keys(tracks)) if (!ids.has(id)) { delete tracks[id]; changed = true; }
@@ -302,5 +338,5 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => setTimeout(start, 0), { once: true }); else setTimeout(start, 0);
 
   // Cho kiểm thử
-  window.__airunRunLab = { simplifyTrack, splits, gpx, analyzeElevation, sampleByDistance, saveTrack, readTracks };
+  window.__airunRunLab = { privacyTrim, simplifyTrack, splits, gpx, analyzeElevation, sampleByDistance, saveTrack, readTracks };
 })();

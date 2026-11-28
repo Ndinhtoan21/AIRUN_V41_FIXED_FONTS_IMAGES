@@ -6,29 +6,29 @@ const round = (value, digits = 0) => Number(Number(value).toFixed(digits));
 const escapeHTML = value => String(value ?? '').replace(/[&<>'"]/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
 
 const WARDS = [
-  {key:'HaiChau',name:'Hải Châu',lat:16.0603,lon:108.2208,desc:'Trung tâm đô thị; gần sông Hàn, công viên và nhiều tuyến đường bằng phẳng.',mock:[64,18,29,33,72,9]},
-  {key:'HoaCuong',name:'Hòa Cường',lat:16.0367,lon:108.2165,desc:'Khu vực nội đô phía nam trung tâm, thuận tiện cho các vòng chạy ngắn.',mock:[61,17,29,33,73,8]},
-  {key:'ThanhKhe',name:'Thanh Khê',lat:16.0668,lon:108.1846,desc:'Khu dân cư đông; nên ưu tiên khung giờ ít xe và tuyến đường thông thoáng.',mock:[72,21,30,34,71,10]},
-  {key:'AnKhe',name:'An Khê',lat:16.0598,lon:108.1735,desc:'Khu vực phía tây trung tâm, có thể kết hợp các đoạn đường dân cư yên tĩnh.',mock:[70,20,30,34,70,9]},
-  {key:'AnHai',name:'An Hải',lat:16.0678,lon:108.2352,desc:'Phía đông sông Hàn, tiếp cận nhanh các tuyến ven sông và hướng ra biển.',mock:[58,16,29,32,74,11]},
-  {key:'SonTra',name:'Sơn Trà',lat:16.1063,lon:108.2770,desc:'Bán đảo và vùng ven biển; địa hình đa dạng, cần chú ý độ dốc và gió.',mock:[42,11,28,31,76,13]},
-  {key:'NguHanhSon',name:'Ngũ Hành Sơn',lat:16.0052,lon:108.2643,desc:'Dải ven biển phía nam, có nhiều đoạn chạy thoáng nhưng nắng và gió rõ hơn.',mock:[51,14,29,33,75,14]},
-  {key:'HoaKhanh',name:'Hòa Khánh',lat:16.0760,lon:108.1454,desc:'Khu đô thị và công nghiệp phía tây bắc; nên tránh giờ giao thông cao điểm.',mock:[79,24,30,35,69,8]},
-  {key:'LienChieu',name:'Liên Chiểu',lat:16.1044,lon:108.1323,desc:'Gần vịnh Đà Nẵng, có các đoạn ven biển và khu dân cư tương đối rộng.',mock:[68,19,29,33,73,12]},
-  {key:'HaiVan',name:'Hải Vân',lat:16.1561,lon:108.0875,desc:'Diện tích rộng, có địa hình đồi núi; chỉ chạy ở tuyến quen thuộc và an toàn.',mock:[47,12,27,30,80,16]},
-  {key:'CamLe',name:'Cẩm Lệ',lat:16.0142,lon:108.1977,desc:'Khu vực đô thị phía nam, phù hợp các vòng chạy vừa và ngắn.',mock:[66,19,30,34,72,8]},
-  {key:'HoaXuan',name:'Hòa Xuân',lat:15.9928,lon:108.2142,desc:'Khu đô thị mới, đường rộng; lưu ý nắng, gió và mật độ xe theo từng giờ.',mock:[62,17,29,33,74,10]},
-  {key:'TamKy',name:'Tam Kỳ',lat:15.5686,lon:108.4835,desc:'Khu vực đô thị phía nam thành phố, có nhiều tuyến tương đối bằng phẳng.',mock:[55,15,29,33,77,9]},
-  {key:'QuangPhu',name:'Quảng Phú',lat:15.5920,lon:108.4700,desc:'Khu vực phía bắc Tam Kỳ, nên chọn tuyến sáng rõ và ít phương tiện.',mock:[57,16,29,33,76,8]},
-  {key:'HuongTra',name:'Hương Trà',lat:15.5949,lon:108.5040,desc:'Khu vực chuyển tiếp đô thị - ven biển, phù hợp chạy nhẹ khi thời tiết ổn định.',mock:[49,13,28,32,78,11]},
-  {key:'BanThach',name:'Bàn Thạch',lat:15.5604,lon:108.4972,desc:'Khu vực đô thị Tam Kỳ, nên ưu tiên công viên và các tuyến ít giao cắt.',mock:[53,14,29,33,77,9]},
-  {key:'DienBan',name:'Điện Bàn',lat:15.8904,lon:108.2319,desc:'Khu vực đô thị hóa nhanh; chọn cung đường quen và quan sát giao thông.',mock:[63,18,29,34,74,10]},
-  {key:'DienBanDong',name:'Điện Bàn Đông',lat:15.8863,lon:108.3037,desc:'Gần biển và sông, không gian thoáng; gió có thể mạnh vào một số thời điểm.',mock:[48,13,28,32,78,15]},
-  {key:'AnThang',name:'An Thắng',lat:15.8956,lon:108.2209,desc:'Khu vực trung tâm Điện Bàn, phù hợp vòng chạy ngắn trong khu dân cư.',mock:[60,17,29,33,75,9]},
-  {key:'DienBanBac',name:'Điện Bàn Bắc',lat:15.9441,lon:108.2218,desc:'Địa bàn rộng và phân tán; cần kiểm tra mặt đường, ánh sáng và thời tiết.',mock:[59,16,29,33,75,10]},
-  {key:'HoiAn',name:'Hội An',lat:15.8794,lon:108.3350,desc:'Khu vực di sản và ven sông; nên chạy sớm, tránh giờ đông khách.',mock:[46,12,28,32,80,8]},
-  {key:'HoiAnDong',name:'Hội An Đông',lat:15.8898,lon:108.3655,desc:'Hướng ra biển, không gian thoáng; chú ý gió và độ ẩm cao.',mock:[43,11,28,32,81,14]},
-  {key:'HoiAnTay',name:'Hội An Tây',lat:15.8748,lon:108.2946,desc:'Khu vực phía tây Hội An, phù hợp chạy nhẹ trên tuyến quen thuộc.',mock:[52,14,29,33,79,8]}
+  {key:'HaiChau',name:'Hải Châu',lat:16.0603,lon:108.2208,desc:'Trung tâm đô thị; gần sông Hàn, công viên và nhiều tuyến đường bằng phẳng.'},
+  {key:'HoaCuong',name:'Hòa Cường',lat:16.0367,lon:108.2165,desc:'Khu vực nội đô phía nam trung tâm, thuận tiện cho các vòng chạy ngắn.'},
+  {key:'ThanhKhe',name:'Thanh Khê',lat:16.0668,lon:108.1846,desc:'Khu dân cư đông; nên ưu tiên khung giờ ít xe và tuyến đường thông thoáng.'},
+  {key:'AnKhe',name:'An Khê',lat:16.0598,lon:108.1735,desc:'Khu vực phía tây trung tâm, có thể kết hợp các đoạn đường dân cư yên tĩnh.'},
+  {key:'AnHai',name:'An Hải',lat:16.0678,lon:108.2352,desc:'Phía đông sông Hàn, tiếp cận nhanh các tuyến ven sông và hướng ra biển.'},
+  {key:'SonTra',name:'Sơn Trà',lat:16.1063,lon:108.2770,desc:'Bán đảo và vùng ven biển; địa hình đa dạng, cần chú ý độ dốc và gió.'},
+  {key:'NguHanhSon',name:'Ngũ Hành Sơn',lat:16.0052,lon:108.2643,desc:'Dải ven biển phía nam, có nhiều đoạn chạy thoáng nhưng nắng và gió rõ hơn.'},
+  {key:'HoaKhanh',name:'Hòa Khánh',lat:16.0760,lon:108.1454,desc:'Khu đô thị và công nghiệp phía tây bắc; nên tránh giờ giao thông cao điểm.'},
+  {key:'LienChieu',name:'Liên Chiểu',lat:16.1044,lon:108.1323,desc:'Gần vịnh Đà Nẵng, có các đoạn ven biển và khu dân cư tương đối rộng.'},
+  {key:'HaiVan',name:'Hải Vân',lat:16.1561,lon:108.0875,desc:'Diện tích rộng, có địa hình đồi núi; chỉ chạy ở tuyến quen thuộc và an toàn.'},
+  {key:'CamLe',name:'Cẩm Lệ',lat:16.0142,lon:108.1977,desc:'Khu vực đô thị phía nam, phù hợp các vòng chạy vừa và ngắn.'},
+  {key:'HoaXuan',name:'Hòa Xuân',lat:15.9928,lon:108.2142,desc:'Khu đô thị mới, đường rộng; lưu ý nắng, gió và mật độ xe theo từng giờ.'},
+  {key:'TamKy',name:'Tam Kỳ',lat:15.5686,lon:108.4835,desc:'Khu vực đô thị phía nam thành phố, có nhiều tuyến tương đối bằng phẳng.'},
+  {key:'QuangPhu',name:'Quảng Phú',lat:15.5920,lon:108.4700,desc:'Khu vực phía bắc Tam Kỳ, nên chọn tuyến sáng rõ và ít phương tiện.'},
+  {key:'HuongTra',name:'Hương Trà',lat:15.5949,lon:108.5040,desc:'Khu vực chuyển tiếp đô thị - ven biển, phù hợp chạy nhẹ khi thời tiết ổn định.'},
+  {key:'BanThach',name:'Bàn Thạch',lat:15.5604,lon:108.4972,desc:'Khu vực đô thị Tam Kỳ, nên ưu tiên công viên và các tuyến ít giao cắt.'},
+  {key:'DienBan',name:'Điện Bàn',lat:15.8904,lon:108.2319,desc:'Khu vực đô thị hóa nhanh; chọn cung đường quen và quan sát giao thông.'},
+  {key:'DienBanDong',name:'Điện Bàn Đông',lat:15.8863,lon:108.3037,desc:'Gần biển và sông, không gian thoáng; gió có thể mạnh vào một số thời điểm.'},
+  {key:'AnThang',name:'An Thắng',lat:15.8956,lon:108.2209,desc:'Khu vực trung tâm Điện Bàn, phù hợp vòng chạy ngắn trong khu dân cư.'},
+  {key:'DienBanBac',name:'Điện Bàn Bắc',lat:15.9441,lon:108.2218,desc:'Địa bàn rộng và phân tán; cần kiểm tra mặt đường, ánh sáng và thời tiết.'},
+  {key:'HoiAn',name:'Hội An',lat:15.8794,lon:108.3350,desc:'Khu vực di sản và ven sông; nên chạy sớm, tránh giờ đông khách.'},
+  {key:'HoiAnDong',name:'Hội An Đông',lat:15.8898,lon:108.3655,desc:'Hướng ra biển, không gian thoáng; chú ý gió và độ ẩm cao.'},
+  {key:'HoiAnTay',name:'Hội An Tây',lat:15.8748,lon:108.2946,desc:'Khu vực phía tây Hội An, phù hợp chạy nhẹ trên tuyến quen thuộc.'}
 ];
 
 const WEATHER_TEXT = {
@@ -141,20 +141,13 @@ function vnIso(date = new Date()){
 }
 
 function fallbackData(item, location = null){
-  const [aqi,pm,temp,feels,humidity,wind] = item.mock;
+  // V10 · Chặng 2: KHÔNG còn số minh hoạ. Khi chưa có dữ liệu thật, mọi chỉ số là null và nhãn nguồn là "none".
   const now = new Date(); const hourly = [];
-  for(let i=0;i<48;i++){
-    const date = new Date(now.getTime() + i*3600000);
-    const hour = Number(new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Ho_Chi_Minh',hour:'2-digit',hourCycle:'h23'}).format(date));
-    const cool = hour < 8 || hour >= 18 ? -2 : hour >= 11 && hour <= 15 ? 2 : 0;
-    const aqiShift = (hour>=7&&hour<=9)||(hour>=16&&hour<=19) ? 8 : -3;
-    const uv = hour>=10&&hour<=14 ? 7 : hour>=8&&hour<=16 ? 3 : 0;
-    hourly.push({time:vnIso(date).slice(0,13)+':00',temp:temp+cool,feels:feels+cool,humidity,rain:hour===15?35:12,wind:wind+(hour>=14?3:0),uv,code:hour===15?2:1,aqi:Math.max(18,aqi+aqiShift),pm:Math.max(5,pm+aqiShift*.18),pm10:Math.max(8,pm*1.55)});
-  }
+  for(let i=0;i<48;i++){const date=new Date(now.getTime()+i*3600000);hourly.push({time:vnIso(date).slice(0,13)+':00'});}
   return {
-    cacheId:`demo:${item.key}`,key:item.key,source:'demo',updated:Date.now(),
+    cacheId:`none:${item.key}`,key:item.key,source:'demo',real:false,updated:Date.now(),meta:null,
     location:location || {lat:item.lat,lon:item.lon,label:item.name,accuracy:null,mode:'ward'},
-    current:{temp,feels,humidity,wind,rain:12,uv:3,code:1,aqi,pm,pm10:round(pm*1.55,1)},hourly
+    current:{temp:null,feels:null,humidity:null,wind:null,rain:null,uv:null,code:null,aqi:null,pm:null,pm10:null},hourly
   };
 }
 
@@ -221,7 +214,7 @@ async function fetchEnvironmentAt(lat, lon, options = {}){
   // V8: không trộn số mô phỏng vào dữ liệu thật. Trường nào chưa có từ API thì để null.
   const hourlyMap=new Map();
   let current={temp:null,feels:null,humidity:null,wind:null,rain:null,precip:null,uv:null,code:null,aqi:null,pm:null,pm10:null};
-  let weatherOk=false,airOk=false,weatherMs=null,airMs=null;
+  let weatherOk=false,airOk=false,weatherMs=null,airMs=null;const meta={weather:null,air:null};
 
   setSystemStatus('weather','loading','Đang kết nối…');
   setSystemStatus('air','loading','Đang kết nối…');
@@ -235,7 +228,7 @@ async function fetchEnvironmentAt(lat, lon, options = {}){
     return stale?{...stale,source:'cached'}:failedBackup();
   }
 
-  const safeLat=Number(lat).toFixed(5),safeLon=Number(lon).toFixed(5);
+  const safeLat=Number(lat).toFixed(2),safeLon=Number(lon).toFixed(2); // V10: chỉ gửi toạ độ gần đúng ~1 km
   const weatherUrl=`/api/weather/${safeLat}/${safeLon}`;
   const airUrl=`/api/air/${safeLat}/${safeLon}`;
   const nowHour=vnIso().slice(0,13)+':00';
@@ -252,7 +245,7 @@ async function fetchEnvironmentAt(lat, lon, options = {}){
       source:weatherOk&&airOk?'live':(weatherOk||airOk?'partial':'demo'),
       forecastSource:weatherOk&&airOk?'live':(weatherOk||airOk)?'partial':'demo',
       updated:Date.now(),location,current:cur,hourly,
-      liveParts:{weather:weatherOk,air:airOk},latency:{weather:weatherMs,air:airMs}
+      liveParts:{weather:weatherOk,air:airOk},latency:{weather:weatherMs,air:airMs},real:weatherOk||airOk,meta:{weather:meta.weather,air:meta.air,receivedAt:Date.now()}
     };
   };
   const publish=part=>{
@@ -274,7 +267,7 @@ async function fetchEnvironmentAt(lat, lon, options = {}){
   const weatherTask=(async()=>{
     const started=performance.now();
     try{
-      const w=await readProxy(weatherUrl),wc=w.current||{};
+      const w=await readProxy(weatherUrl),wc=w.current||{};meta.weather=w._meta||null;
       current={...current,
         temp:asNumber(wc.temperature_2m,null),
         feels:asNumber(wc.apparent_temperature,null),
@@ -292,7 +285,7 @@ async function fetchEnvironmentAt(lat, lon, options = {}){
   const airTask=(async()=>{
     const started=performance.now();
     try{
-      const a=await readProxy(airUrl),ac=a.current||{};
+      const a=await readProxy(airUrl),ac=a.current||{};meta.air=a._meta||null;
       current={...current,aqi:asNumber(ac.us_aqi,null),pm:asNumber(ac.pm2_5,null),pm10:asNumber(ac.pm10,null),uv:asNumber(ac.uv_index,current.uv)};
       const h=a.hourly||{},times=Array.isArray(h.time)?h.time:[];
       times.forEach((time,index)=>mergeHour(time,{aqi:h.us_aqi?.[index],pm:h.pm2_5?.[index],pm10:h.pm10?.[index],uv:h.uv_index?.[index]}));
@@ -540,6 +533,32 @@ function sourceLabel(source){
   return source==='live'?'Dữ liệu trực tiếp':source==='partial'?'Dữ liệu trực tiếp một phần':source==='cached'?'Dữ liệu thật đã lưu gần đây':'Chưa có dữ liệu thật';
 }
 const isNoData=data=>!data||data.source==='demo';
+
+/* ===== V10 · Chặng 2: nguồn và thời điểm cập nhật của dữ liệu ===== */
+function hhmm(t){const d=new Date(t);return Number.isFinite(d.getTime())?d.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Ho_Chi_Minh'}):'—';}
+function agoText(ms){if(!Number.isFinite(ms))return '';const m=Math.max(0,Math.round(ms/60000));return m<1?'vừa xong':m<60?`${m} phút trước`:`${Math.floor(m/60)} giờ ${m%60} phút trước`;}
+// Trả về {state, badge, line, rows[]}: state = live | cached | stale | none.
+function dataProvenance(data,now=Date.now()){
+  if(!data||isNoData(data))return {state:'none',badge:data?.failed?'Chưa có dữ liệu thật':'Đang tải',line:'Không hiển thị số minh hoạ: khi chưa nhận được dữ liệu thật, các ô để trống "—".',rows:[]};
+  const parts=['weather','air'].map(k=>({k,m:data.meta?.[k]||null,ok:Boolean(data.liveParts?.[k]??true)}));
+  const rows=parts.filter(p=>p.m).map(p=>{const obs=p.m.observedAt?new Date(p.m.observedAt).getTime():null;const fetched=new Date(p.m.fetchedAt).getTime();
+    return {name:p.k==='weather'?'Thời tiết':'Chất lượng không khí',source:p.m.source,method:p.m.method,url:p.m.sourceUrl,observed:obs,fetched,ageObs:obs?now-obs:null,ageFetch:now-fetched,cachedServer:p.m.cached};});
+  const oldest=rows.reduce((m,r)=>Math.max(m,r.ageObs??r.ageFetch??0),0);
+  const fromDevice=data.source==='cached';
+  let state='live';if(oldest>90*60000)state='stale';else if(fromDevice)state='cached';
+  const obsTimes=rows.map(r=>r.observed).filter(Boolean);
+  const obs=obsTimes.length?Math.min(...obsTimes):null;
+  const fetched=rows.length?Math.min(...rows.map(r=>r.fetched)):data.updated;
+  const badge=state==='stale'?'Dữ liệu cũ':state==='cached'?'Dữ liệu thật đã lưu':data.source==='partial'?'Trực tiếp một phần':'Dữ liệu thật';
+  const wr=rows.find(r=>r.name==='Thời tiết'),ar=rows.find(r=>r.name!=='Thời tiết');
+  const times=[wr?.observed?`thời tiết lúc ${hhmm(wr.observed)}`:'',ar?.observed?`không khí lúc ${hhmm(ar.observed)}`:''].filter(Boolean).join(', ');
+  const line=`Nguồn: Open-Meteo${times?` · ${times}`:''} · cập nhật ${agoText(now-fetched)}${state==='stale'?' — nên bấm cập nhật':''}`;
+  return {state,badge,line,rows,obs,fetched};
+}
+function provenanceHTML(p){
+  if(!p.rows.length)return `<p>${escapeHTML(p.line)}</p>`;
+  return `<ul class="prov-rows">${p.rows.map(r=>`<li><b>${escapeHTML(r.name)}</b>: ${escapeHTML(r.source)} — ${escapeHTML(r.method)}.<br>Số liệu lúc ${r.observed?hhmm(r.observed):'—'} · máy chủ AIRUN lấy lúc ${hhmm(r.fetched)}${r.cachedServer?' (bản lưu tạm của máy chủ, tối đa 10 phút)':''} · <a href="${escapeHTML(r.url)}" target="_blank" rel="noopener">tài liệu nguồn</a></li>`).join('')}</ul><p class="prov-note">Toạ độ gửi đi đã làm tròn khoảng 1 km. Khi không lấy được dữ liệu thật, AIRUN để trống chứ không dùng số minh hoạ.</p>`;
+}
 
 function quickEnvironmentForWard(key = selectedKey){
   const item=ward(key);
@@ -881,7 +900,7 @@ async function useGPS({scroll=true}={}){
       const near=nearestWard(latitude,longitude);selectedKey=near.item.key;$('area').value=selectedKey;
       const close=near.distance<=25;const label=close?`${near.item.name} · GPS`:'Vị trí GPS hiện tại';
       gpsLocation={lat:latitude,lon:longitude,accuracy,label,cacheId:`gps:${latitude.toFixed(3)},${longitude.toFixed(3)}`};
-      localSet('airun-v54-last-gps',{lat:latitude,lon:longitude,accuracy,label,at:Date.now()});
+      localSet('airun-v54-last-gps',{lat:round(latitude,3),lon:round(longitude,3),accuracy,label,at:Date.now()}); // V10: chỉ lưu gần đúng ~100 m
       setSystemStatus('gps','ok',`±${round(accuracy)} m`);
       setGpsPlanUi();updateMapSide();showUserMarker(latitude,longitude,accuracy);
       if(tracker.status==='idle'){
@@ -940,7 +959,7 @@ async function loadServerConfig(){
   try{
     const response=await fetch('/api/config',{cache:'no-store',headers:{Accept:'application/json'}});
     const data=await response.json();
-    Object.assign(SERVER_CFG,{loaded:true,server:Boolean(data.server),ai:Boolean(data.ai),routing:Boolean(data.routing),mapboxToken:String(data.mapboxToken||''),feedback:Boolean(data.feedback),version:data.version||null,aiModel:data.aiModel||null,googleMapsKey:String(data.googleMapsKey||''),googlePlaces:Boolean(data.googlePlaces),routePlan:Boolean(data.routePlan),accounts:Boolean(data.accounts)});
+    Object.assign(SERVER_CFG,{loaded:true,server:Boolean(data.server),ai:Boolean(data.ai),routing:Boolean(data.routing),mapboxToken:'',feedback:Boolean(data.feedback),version:data.version||null,aiModel:data.aiModel||null,googleMapsKey:'',googlePlaces:Boolean(data.googlePlaces),routePlan:Boolean(data.routePlan),accounts:Boolean(data.accounts)});
   }catch{Object.assign(SERVER_CFG,{loaded:true,server:false});}
   // Xóa khóa cũ mà V7 từng lưu trong trình duyệt.
   try{localStorage.removeItem(ROUTE_CONFIG_KEYS.graphhopper);localStorage.removeItem(ROUTE_CONFIG_KEYS.mapbox);}catch{}
@@ -950,7 +969,7 @@ async function loadServerConfig(){
   return SERVER_CFG;
 }
 function routeConfig(){
-  return {mapbox:SERVER_CFG.mapboxToken.startsWith('pk.')?SERVER_CFG.mapboxToken:'',graphhopper:SERVER_CFG.routing||SERVER_CFG.googlePlaces};
+  return {mapbox:'',graphhopper:SERVER_CFG.routing||SERVER_CFG.googlePlaces};
 }
 function syncRouteProviderStatus(message=''){
   if(!hasDom())return;const node=$('routeProviderStatus'),cfg=routeConfig();if(!node)return;
@@ -2151,24 +2170,11 @@ function renderHomeRun(){
 /* ===================== V9 · GOOGLE MAPS (tải khi mở tab Chạy) ===================== */
 const gmaps={loading:null,failed:false,route:{map:null,lines:[],markers:[],startMarker:null},run:{map:null,lines:{},current:null,accuracy:null,start:null,userAt:0,fitted:false}};
 const GMAP_STYLE=[{featureType:'poi.business',stylers:[{visibility:'off'}]},{featureType:'poi',elementType:'labels.icon',stylers:[{saturation:-60}]},{featureType:'transit',elementType:'labels.icon',stylers:[{visibility:'off'}]},{featureType:'road',elementType:'labels.icon',stylers:[{visibility:'off'}]}];
-function useGoogleMaps(){return Boolean(SERVER_CFG.googleMapsKey)&&!gmaps.failed;}
+function useGoogleMaps(){return false;}
 function mapsAllowed(){try{return currentView==='run';}catch{return false;}}
 function loadGoogleMaps(){
-  if(window.google?.maps?.Map&&window.google?.maps?.Polyline)return Promise.resolve(window.google.maps);
-  if(gmaps.loading)return gmaps.loading;
-  gmaps.loading=new Promise((resolve,reject)=>{
-    const timer=setTimeout(()=>reject(new Error('Google Maps tải quá lâu')),25000);
-    window.__airunGmapsReady=async()=>{
-      try{if(google.maps.importLibrary)await Promise.all([google.maps.importLibrary('maps'),google.maps.importLibrary('marker'),google.maps.importLibrary('core')]);clearTimeout(timer);resolve(google.maps);}
-      catch(error){clearTimeout(timer);reject(error);}
-    };
-    window.gm_authFailure=()=>{console.warn('AIRUN: Google Maps từ chối khoá');failGoogleMaps('Khoá Google Maps chưa hợp lệ hoặc chưa bật Maps JavaScript API');};
-    const s=document.createElement('script');
-    s.src=`https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(SERVER_CFG.googleMapsKey)}&v=weekly&language=vi&region=VN&loading=async&callback=__airunGmapsReady`;
-    s.async=true;s.onerror=()=>{clearTimeout(timer);reject(new Error('Không tải được Google Maps'));};
-    document.head.appendChild(s);
-  }).catch(error=>{failGoogleMaps(error.message);throw error;});
-  return gmaps.loading;
+  // V10 · Chặng 2: bỏ bản đồ nền Google trên trình duyệt (cần đưa khoá xuống máy người dùng). Bản đồ dùng OpenFreeMap, không cần khoá.
+  return Promise.reject(new Error('Google Maps trên trình duyệt đã tắt để không lộ khoá'));
 }
 function failGoogleMaps(reason){
   if(gmaps.failed)return;gmaps.failed=true;
@@ -2556,7 +2562,7 @@ async function sendAgent(question,{box='drawer'}={}){
   ['aiDrawerSend','coachSendBtn'].forEach(id=>{const b=$(id);if(b)b.disabled=true;});
   try{
     const o=routeOrigin();
-    const data=await postCoach('agent',agentContext(),agent.chat.slice(-10),{near:hasNum(o?.lat)&&hasNum(o?.lon)?{lat:round(o.lat,3),lon:round(o.lon,3)}:null});
+    const data=await postCoach('agent',agentContext(),agent.chat.slice(-10),{near:hasNum(o?.lat)&&hasNum(o?.lon)?{lat:round(o.lat,2),lon:round(o.lon,2)}:null});
     const r=data.result||{};const answer=String(r.reply||'').trim()||'Mình chưa có câu trả lời.';
     pending.textContent=answer;agent.chat.push({role:'assistant',content:answer});
     if(r.looked?.type==='place'&&Array.isArray(r.looked.results)&&r.looked.results.length)appendPlaces(box,r.looked.results);
@@ -2645,5 +2651,5 @@ if(hasDom()){
   else void init();
 }
 
-if(typeof module!=='undefined'&&module.exports){module.exports={WARDS,aqiInfo,uvInfo,analyzeSnapshot,fallbackData,haversine,weatherText,escapeHTML,clamp,round,formatPace,formatDuration,gpsLevel,parsePace,planEstimate,defaultPaceForIntensity,fetchEnvironmentAt};}
+if(typeof module!=='undefined'&&module.exports){module.exports={dataProvenance,WARDS,aqiInfo,uvInfo,analyzeSnapshot,fallbackData,haversine,weatherText,escapeHTML,clamp,round,formatPace,formatDuration,gpsLevel,parsePace,planEstimate,defaultPaceForIntensity,fetchEnvironmentAt};}
 
