@@ -2167,60 +2167,20 @@ function renderHomeRun(){
   else{head.textContent='Sẵn sàng chạy';text.textContent='Chọn số km, AIRUN tạo một vòng chạy rồi ghi quãng đường bằng GPS.';}
 }
 
-/* ===================== V9 · GOOGLE MAPS (tải khi mở tab Chạy) ===================== */
-const gmaps={loading:null,failed:false,route:{map:null,lines:[],markers:[],startMarker:null},run:{map:null,lines:{},current:null,accuracy:null,start:null,userAt:0,fitted:false}};
-const GMAP_STYLE=[{featureType:'poi.business',stylers:[{visibility:'off'}]},{featureType:'poi',elementType:'labels.icon',stylers:[{saturation:-60}]},{featureType:'transit',elementType:'labels.icon',stylers:[{visibility:'off'}]},{featureType:'road',elementType:'labels.icon',stylers:[{visibility:'off'}]}];
+/* ===================== V10 · KHÔNG DÙNG GOOGLE MAPS TRÊN TRÌNH DUYỆT =====================
+   Chặng 2: bản đồ Google trên trình duyệt cần đưa khoá xuống máy người dùng nên đã bị gỡ hẳn.
+   Bản đồ dùng OpenFreeMap/MapLibre (không cần khoá). Tìm địa điểm, vẽ cung đường vẫn qua máy chủ AIRUN. */
+const gmaps={route:{map:null},run:{map:null}};
 function useGoogleMaps(){return false;}
 function mapsAllowed(){try{return currentView==='run';}catch{return false;}}
-function loadGoogleMaps(){
-  // V10 · Chặng 2: bỏ bản đồ nền Google trên trình duyệt (cần đưa khoá xuống máy người dùng). Bản đồ dùng OpenFreeMap, không cần khoá.
-  return Promise.reject(new Error('Google Maps trên trình duyệt đã tắt để không lộ khoá'));
-}
-function failGoogleMaps(reason){
-  if(gmaps.failed)return;gmaps.failed=true;
-  ['routeGoogleMap','runGoogleMap'].forEach(id=>{const n=$(id);if(n)n.hidden=true;});
-  document.querySelectorAll('.gmap-active').forEach(n=>n.classList.remove('gmap-active'));
-  gmaps.route.map=null;gmaps.run.map=null;
-  showToast(`Google Maps chưa dùng được (${reason}) · AIRUN chuyển sang bản đồ dự phòng.`);
-  try{syncRouteProviderStatus();}catch{}
-  setTimeout(()=>{try{updateMapSide();if(routePlanner.current)renderSuggestedRoute(routePlanner.current);tracker.mapBounds=null;renderRunRoute();}catch(error){console.warn('AIRUN fallback maps:',error);}},50);
-}
 const gLL=p=>({lat:Number(p.lat),lng:Number(p.lon)});
-function gDot(fill,stroke='#ffffff',scale=7,weight=3){return {path:google.maps.SymbolPath.CIRCLE,fillColor:fill,fillOpacity:1,strokeColor:stroke,strokeWeight:weight,scale};}
-function gLabel(text,size=12){return {text:String(text),color:'#ffffff',fontSize:`${size}px`,fontWeight:'800',fontFamily:'Be Vietnam Pro, Arial, sans-serif'};}
-function gClear(list){(list||[]).forEach(o=>{try{o.setMap(null);}catch{}});return [];}
-function gFit(map,points,pad=56){
-  const pts=(points||[]).filter(p=>Number.isFinite(+p.lat)&&Number.isFinite(+p.lon));if(!pts.length)return;
-  if(pts.length===1){map.setCenter(gLL(pts[0]));map.setZoom(15.5);return;}
-  const b=new google.maps.LatLngBounds();pts.forEach(p=>b.extend(gLL(p)));map.fitBounds(b,pad);
-}
-async function ensureGRouteMap(){
-  if(gmaps.route.map)return gmaps.route.map;
-  await loadGoogleMaps();
-  const el=$('routeGoogleMap'),wrap=el?.closest('.map-wrap');if(!el)return null;
-  el.hidden=false;['routeMapLibreMap','mapboxRouteMap'].forEach(id=>{const n=$(id);if(n)n.hidden=true;});
-  const frame=$('areaMapFrame');if(frame){frame.style.visibility='hidden';frame.removeAttribute('src');}
-  wrap?.classList.add('gmap-active');
-  const o=routeOrigin();
-  const map=new google.maps.Map(el,{center:gLL(o),zoom:14.2,mapTypeControl:false,streetViewControl:false,fullscreenControl:true,clickableIcons:false,gestureHandling:'cooperative',styles:GMAP_STYLE});
-  map.addListener('click',e=>{if(routePlanner.picking&&e.latLng)setCustomStart({lat:e.latLng.lat(),lon:e.latLng.lng(),label:'Điểm chọn trên bản đồ',mode:'pick'});});
-  gmaps.route.map=map;const badge=$('routeMapBadge');if(badge&&!routePlanner.current)badge.textContent='Google Maps · chưa tạo cung';
-  return map;
-}
-function gStartMarker(map,state,origin){
-  if(!state.startMarker)state.startMarker=new google.maps.Marker({map,position:gLL(origin),icon:gDot('#08664f','#ffffff',10,4),label:gLabel('▶',11),title:`Xuất phát: ${origin.label||''}`,zIndex:30});
-  else{state.startMarker.setPosition(gLL(origin));state.startMarker.setMap(map);state.startMarker.setTitle(`Xuất phát: ${origin.label||''}`);}
-}
-async function gRouteArea(lat,lon){
-  const map=await ensureGRouteMap();if(!map)return;
-  if(routePlanner.current&&!gmaps.route.lines.length){await renderGRoute(routePlanner.current);return;}
-  const o=routeOrigin();gStartMarker(map,gmaps.route,routePlanner.current?{...routePlanner.current.points[0],label:o.label}:o);
-  if(!routePlanner.current){map.panTo(gLL(o));if(map.getZoom()<13)map.setZoom(14.2);}
-}
-/* Một điểm vào cho bản đồ GPS: Google → Mapbox → OpenFreeMap. Chờ /api/config để không tải 2 loại bản đồ. */
+function gStartMarker(){return false;}
+async function gRouteArea(){return false;}
+async function renderGRoute(){return false;}
+async function refreshGRunMap(){return false;}
+/* Một điểm vào cho bản đồ GPS: Mapbox (nếu có) → OpenFreeMap. Chờ /api/config để không tải 2 loại bản đồ. */
 function dispatchRunMap(fit=false){
   if(!SERVER_CFG.loaded)return;
-  if(useGoogleMaps()){void refreshGRunMap({fit});return;}
   if(runMapboxConfigured())void refreshRunMapbox({fit}).then(ok=>{if(!ok)void refreshRunMapLibre({fit});});else void refreshRunMapLibre({fit});
 }
 function onServerConfigReady(){
@@ -2232,70 +2192,6 @@ function onServerConfigReady(){
 function compactProfile(){
   const p=currentProfile();
   return {source:p.source,total_runs:p.total_runs,total_km:p.total_km,avg_km:p.avg_km,longest_km:p.longest_km,avg_pace:p.avg_pace,usual_start_hour:p.usual_start_hour,favorite_area:p.favorite_area,runs_last_28_days:p.runs_last_28_days,km_last_28_days:p.km_last_28_days,last_run:p.last_run,plans_saved:p.plans_saved,usual_intensity:p.usual_intensity,recent_notes:p.recent_notes||undefined};
-}
-async function renderGRoute(route){
-  const map=await ensureGRouteMap();if(!map)return false;
-  const st=gmaps.route;st.lines=gClear(st.lines);st.markers=gClear(st.markers);
-  const path=route.points.map(gLL);
-  st.lines.push(new google.maps.Polyline({map,path,strokeColor:'#ffffff',strokeOpacity:1,strokeWeight:10,zIndex:1}));
-  st.lines.push(new google.maps.Polyline({map,path,strokeColor:'#08664f',strokeOpacity:.95,strokeWeight:6,zIndex:2,icons:[{icon:{path:google.maps.SymbolPath.FORWARD_CLOSED_ARROW,scale:2.4,strokeColor:'#ffffff',strokeWeight:1,fillColor:'#c8f16b',fillOpacity:1},offset:'10%',repeat:'18%'}]}));
-  routeDistanceMarkers(route.points,1).filter(m=>m.km<Math.max(1,Math.ceil(route.distanceKm))).forEach(m=>st.markers.push(new google.maps.Marker({map,position:gLL(m),icon:gDot('#ffffff','#08664f',9,3),label:{...gLabel(m.km,11),color:'#08664f'},title:`${m.km} km`,zIndex:20})));
-  (route.waypoints||[]).forEach((w,i)=>st.markers.push(new google.maps.Marker({map,position:gLL(w),icon:gDot('#ef8a35','#ffffff',11,3),label:gLabel(i+1,12),title:w.label||`Điểm ${i+1}`,zIndex:25})));
-  gStartMarker(map,st,route.points[0]?{...route.points[0],label:route.start?.label||routeOrigin().label}:routeOrigin());
-  gFit(map,route.points,48);
-  const badge=$('routeMapBadge');if(badge)badge.textContent=`${routeSourceName(route.source)} · ${route.distanceKm.toFixed(2)} km`;
-  return true;
-}
-async function ensureGRunMap(){
-  if(gmaps.run.map)return gmaps.run.map;
-  await loadGoogleMaps();
-  const el=$('runGoogleMap'),wrap=$('trackerMapWrap');if(!el)return null;
-  el.hidden=false;['runMapLibreMap','runMapboxMap'].forEach(id=>{const n=$(id);if(n)n.hidden=true;});
-  const frame=$('runMapFrame');if(frame){frame.style.visibility='hidden';frame.removeAttribute('src');}
-  const svg=$('runRouteSvg');if(svg)svg.innerHTML='';
-  wrap?.classList.add('gmap-active');
-  const base=tracker.rawPoint||gpsLocation||routeOrigin();
-  const map=new google.maps.Map(el,{center:gLL(base),zoom:15.6,mapTypeControl:false,streetViewControl:false,fullscreenControl:true,clickableIcons:false,gestureHandling:'cooperative',styles:GMAP_STYLE});
-  const mark=()=>{gmaps.run.userAt=Date.now();};
-  map.addListener('dragstart',mark);el.addEventListener('wheel',mark,{passive:true});el.addEventListener('touchstart',e=>{if(e.touches?.length>1)mark();},{passive:true});
-  gmaps.run.map=map;const provider=$('runMapProvider');if(provider)provider.textContent='Google Maps · GPS trực tiếp';
-  return map;
-}
-function gSetLine(map,key,points,opts){
-  const st=gmaps.run.lines;const path=(points||[]).map(gLL);
-  if(path.length<2){if(st[key]){st[key].forEach(l=>l.setMap(null));delete st[key];}return;}
-  if(!st[key]){
-    const lines=[];
-    if(opts.casing)lines.push(new google.maps.Polyline({map,path,strokeColor:'#ffffff',strokeOpacity:1,strokeWeight:opts.weight+4,zIndex:opts.z-1}));
-    const line=opts.dashed?new google.maps.Polyline({map,path,strokeOpacity:0,zIndex:opts.z,icons:[{icon:{path:'M 0,-1 0,1',strokeOpacity:opts.opacity??.9,strokeColor:opts.color,scale:opts.weight},offset:'0',repeat:`${opts.weight*4}px`}]}):new google.maps.Polyline({map,path,strokeColor:opts.color,strokeOpacity:opts.opacity??1,strokeWeight:opts.weight,zIndex:opts.z});
-    lines.push(line);st[key]=lines;
-  }else st[key].forEach(l=>l.setPath(path));
-}
-async function refreshGRunMap({fit=false}={}){
-  if(!useGoogleMaps())return false;
-  if(!gmaps.run.map&&!mapsAllowed())return false;
-  let map;try{map=await ensureGRunMap();}catch{return false;}if(!map)return false;
-  const planned=tracker.plannedRoute?.points||[],rawPts=tracker.rawPoints||[],actual=tracker.points||[];
-  gSetLine(map,'plan',planned,{color:'#246bce',weight:4,dashed:true,z:3});
-  gSetLine(map,'raw',rawPts,{color:'#4b8f7e',weight:3,opacity:.45,z:4});
-  gSetLine(map,'actual',actual,{color:'#08664f',weight:6,casing:true,z:6});
-  const raw=tracker.rawPoint||gpsLocation;
-  if(raw){
-    const pos=gLL(raw);
-    if(!gmaps.run.current)gmaps.run.current=new google.maps.Marker({map,position:pos,icon:gDot('#3275dc','#ffffff',9,4),title:'Vị trí của bạn',zIndex:40});else gmaps.run.current.setPosition(pos);
-    const acc=Math.min(200,Number(raw.accuracy||0));
-    if(acc>0){if(!gmaps.run.accuracy)gmaps.run.accuracy=new google.maps.Circle({map,center:pos,radius:acc,strokeColor:'#3275dc',strokeOpacity:.35,strokeWeight:1,fillColor:'#3275dc',fillOpacity:.1,clickable:false,zIndex:2});else{gmaps.run.accuracy.setCenter(pos);gmaps.run.accuracy.setRadius(acc);}}
-  }
-  if(actual.length){const first=actual[0];if(!gmaps.run.start)gmaps.run.start=new google.maps.Marker({map,position:gLL(first),icon:gDot('#08664f','#ffffff',8,4),title:'Điểm bắt đầu',zIndex:35});else gmaps.run.start.setPosition(gLL(first));}
-  else if(gmaps.run.start){gmaps.run.start.setMap(null);gmaps.run.start=null;}
-  const running=tracker.status==='running';
-  const fitPts=planned.length?planned:(actual.length?actual:(raw?[raw]:[]));
-  if(!gmaps.run.fitted||(fit&&!running&&Date.now()-gmaps.run.userAt>20000)){gFit(map,fitPts,40);gmaps.run.fitted=true;}
-  else if(raw&&running&&Date.now()-gmaps.run.userAt>20000){
-    const b=map.getBounds();if(b){const ne=b.getNorthEast(),sw=b.getSouthWest(),mh=(ne.lat()-sw.lat())*.22,mw=(ne.lng()-sw.lng())*.22;
-      if(!(raw.lat<ne.lat()-mh&&raw.lat>sw.lat()+mh&&raw.lon<ne.lng()-mw&&raw.lon>sw.lng()+mw))map.panTo(gLL(raw));}
-  }
-  return true;
 }
 function routeSourceName(src){return src==='google'?'Google Maps · đường đi bộ':src==='graphhopper'?'GraphHopper · đường đi bộ':src==='network'?'Đường phố OpenStreetMap':'Phác thảo tham khảo';}
 

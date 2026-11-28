@@ -9,6 +9,7 @@
 
 ## 2. Bảo vệ thông tin bí mật ở máy chủ
 - `/api/config` không còn trả `mapboxToken` và `googleMapsKey`. Trình duyệt không còn tải Google Maps JavaScript bằng khoá, không dùng token Mapbox; bản đồ dùng OpenFreeMap (không cần khoá). Tìm địa điểm, vẽ cung đường vẫn đi qua máy chủ, khoá Google/GraphHopper nằm ở máy chủ (header `X-Goog-Api-Key`).
+- Gỡ hẳn mã bản đồ Google trên trình duyệt trong `js/app.js` (khoảng 130 dòng, không còn `google.maps` hay đường dẫn `maps/api/js?key=`).
 - Lớp chặn cuối trong `server.js` (`scrubSecrets`): mọi phản hồi JSON được quét, nếu lỡ chứa giá trị của biến bí mật (OpenAI, Google, GraphHopper, Mapbox, Sheets, SESSION_SECRET…) hoặc `key=…` trong URL thì thay bằng `***`.
 
 ## 3. Hạn chế chia sẻ tọa độ và lịch sử GPS
